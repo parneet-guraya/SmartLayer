@@ -1,10 +1,16 @@
 package com.parneet.smartlayer
 
 import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.C.TRACK_TYPE_NONE
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionParameters
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
@@ -12,7 +18,6 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 
 @OptIn(UnstableApi::class)
-
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private val viewModel: PlayerViewModel by viewModels()
@@ -27,7 +32,7 @@ class PlayerActivity : AppCompatActivity() {
         )
 
         binding.playerView.setFullscreenButtonClickListener { }
-
+        setInfoIconVisible(true)
     }
 
     override fun onStart() {
@@ -48,9 +53,15 @@ class PlayerActivity : AppCompatActivity() {
             .build().also { exoPlayer ->
                 binding.playerView.player = exoPlayer
                 exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
+
+                getInfoButton().setOnClickListener {
+                    infoButtonClickListener(exoPlayer)
+                }
+
                 exoPlayer.playWhenReady = viewModel.playWhenReady
                 exoPlayer.seekTo(viewModel.playBackPosition)
                 exoPlayer.prepare()
+
             }
     }
 
@@ -63,4 +74,26 @@ class PlayerActivity : AppCompatActivity() {
         player = null
     }
 
+    private fun getInfoButton(): ImageButton {
+        return binding.playerView.findViewById(R.id.custom_info_button)
+    }
+
+    private fun setInfoIconVisible(visibility: Boolean) {
+        val view = getInfoButton()
+        when (visibility) {
+            true -> view.visibility = View.VISIBLE
+            false -> view.visibility = View.GONE
+        }
+    }
+
+    private fun infoButtonClickListener(exoPlayer: Player) {
+        if (exoPlayer.isCommandAvailable(Player.COMMAND_GET_TEXT)) {
+            val cueGroup = exoPlayer.currentCues
+            val cueSize = cueGroup.cues.size
+            if (cueSize != 0) {
+                val text = cueGroup.cues[cueSize - 1].text.toString()
+                logDebug(text)
+            }
+        }
+    }
 }

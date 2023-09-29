@@ -10,6 +10,7 @@
         android:id="@+id/player_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:controller_layout_id="@layout/custom_player_control_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

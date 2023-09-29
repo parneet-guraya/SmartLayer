@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -11,6 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.parneet.smartlayer.databinding.ActivityMainBinding
 
 const val LOG_TAG = "MYCUSTOMLOGTAG"
+
+fun logDebug(message: String) {
+    Log.d(LOG_TAG, message)
+}
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
