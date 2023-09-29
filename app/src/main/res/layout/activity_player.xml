@@ -7,13 +7,14 @@
     tools:context=".PlayerActivity">
 
     <androidx.media3.ui.PlayerView
-    android:id="@+id/player_view"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:show_buffering="when_playing" />
+        android:id="@+id/player_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:show_buffering="when_playing"
+        app:show_subtitle_button="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
