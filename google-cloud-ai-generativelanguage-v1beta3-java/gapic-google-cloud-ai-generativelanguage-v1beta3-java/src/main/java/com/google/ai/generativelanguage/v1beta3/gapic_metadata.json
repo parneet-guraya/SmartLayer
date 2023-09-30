@@ -1,0 +1,102 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods",
+  "language": "java",
+  "protoPackage": "google.ai.generativelanguage.v1beta3",
+  "libraryPackage": "com.google.ai.generativelanguage.v1beta3",
+  "services": {
+    "DiscussService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DiscussServiceClient",
+          "rpcs": {
+            "CountMessageTokens": {
+              "methods": ["countMessageTokens", "countMessageTokens", "countMessageTokens", "countMessageTokensCallable"]
+            },
+            "GenerateMessage": {
+              "methods": ["generateMessage", "generateMessage", "generateMessage", "generateMessageCallable"]
+            }
+          }
+        }
+      }
+    },
+    "ModelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelServiceClient",
+          "rpcs": {
+            "CreateTunedModel": {
+              "methods": ["createTunedModelAsync", "createTunedModelAsync", "createTunedModelAsync", "createTunedModelOperationCallable", "createTunedModelCallable"]
+            },
+            "DeleteTunedModel": {
+              "methods": ["deleteTunedModel", "deleteTunedModel", "deleteTunedModel", "deleteTunedModelCallable"]
+            },
+            "GetModel": {
+              "methods": ["getModel", "getModel", "getModel", "getModelCallable"]
+            },
+            "GetTunedModel": {
+              "methods": ["getTunedModel", "getTunedModel", "getTunedModel", "getTunedModelCallable"]
+            },
+            "ListModels": {
+              "methods": ["listModels", "listModels", "listModelsPagedCallable", "listModelsCallable"]
+            },
+            "ListTunedModels": {
+              "methods": ["listTunedModels", "listTunedModels", "listTunedModelsPagedCallable", "listTunedModelsCallable"]
+            },
+            "UpdateTunedModel": {
+              "methods": ["updateTunedModel", "updateTunedModel", "updateTunedModelCallable"]
+            }
+          }
+        }
+      }
+    },
+    "PermissionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PermissionServiceClient",
+          "rpcs": {
+            "CreatePermission": {
+              "methods": ["createPermission", "createPermission", "createPermission", "createPermissionCallable"]
+            },
+            "DeletePermission": {
+              "methods": ["deletePermission", "deletePermission", "deletePermission", "deletePermissionCallable"]
+            },
+            "GetPermission": {
+              "methods": ["getPermission", "getPermission", "getPermission", "getPermissionCallable"]
+            },
+            "ListPermissions": {
+              "methods": ["listPermissions", "listPermissions", "listPermissions", "listPermissionsPagedCallable", "listPermissionsCallable"]
+            },
+            "TransferOwnership": {
+              "methods": ["transferOwnership", "transferOwnershipCallable"]
+            },
+            "UpdatePermission": {
+              "methods": ["updatePermission", "updatePermission", "updatePermissionCallable"]
+            }
+          }
+        }
+      }
+    },
+    "TextService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TextServiceClient",
+          "rpcs": {
+            "BatchEmbedText": {
+              "methods": ["batchEmbedText", "batchEmbedText", "batchEmbedText", "batchEmbedTextCallable"]
+            },
+            "CountTextTokens": {
+              "methods": ["countTextTokens", "countTextTokens", "countTextTokens", "countTextTokensCallable"]
+            },
+            "EmbedText": {
+              "methods": ["embedText", "embedText", "embedText", "embedTextCallable"]
+            },
+            "GenerateText": {
+              "methods": ["generateText", "generateText", "generateTextCallable"]
+            }
+          }
+        }
+      }
+    }
+  }
+}

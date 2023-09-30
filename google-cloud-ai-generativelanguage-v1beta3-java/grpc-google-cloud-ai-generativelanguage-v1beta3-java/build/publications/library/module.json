@@ -1,0 +1,99 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.google.api.grpc",
+    "module": "grpc-google-cloud-ai-generativelanguage-v1beta3-java",
+    "version": "0.0.0-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.6.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.api.grpc",
+          "module": "proto-google-cloud-ai-generativelanguage-v1beta3-java",
+          "version": {
+            "requires": "0.0.0-SNAPSHOT"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "grpc-google-cloud-ai-generativelanguage-v1beta3-java-0.0.0-SNAPSHOT.jar",
+          "url": "grpc-google-cloud-ai-generativelanguage-v1beta3-java-0.0.0-SNAPSHOT.jar",
+          "size": 61446,
+          "sha512": "cb8d0e1a674cfdf9ed0e53caa4a10c4feb8b347717e35c9253a84e9c2ac507ca35020ead1092143d901715429cf5139cb58bc73bce6328c64f677cee94d49847",
+          "sha256": "6e7df0b882d2a79909a7e0781da4ebe955199ee21eaa80ccf3f0415f99c2ab70",
+          "sha1": "4fdb1118415b67089aeaa47c09845cf6b3657ced",
+          "md5": "8d3d098279b5a4735655a5ecd10b2e1f"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.grpc",
+          "module": "grpc-stub",
+          "version": {
+            "requires": "1.56.1"
+          }
+        },
+        {
+          "group": "io.grpc",
+          "module": "grpc-protobuf",
+          "version": {
+            "requires": "1.56.1"
+          }
+        },
+        {
+          "group": "javax.annotation",
+          "module": "javax.annotation-api",
+          "version": {
+            "requires": "1.3.2"
+          }
+        },
+        {
+          "group": "com.google.api.grpc",
+          "module": "proto-google-cloud-ai-generativelanguage-v1beta3-java",
+          "version": {
+            "requires": "0.0.0-SNAPSHOT"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "grpc-google-cloud-ai-generativelanguage-v1beta3-java-0.0.0-SNAPSHOT.jar",
+          "url": "grpc-google-cloud-ai-generativelanguage-v1beta3-java-0.0.0-SNAPSHOT.jar",
+          "size": 61446,
+          "sha512": "cb8d0e1a674cfdf9ed0e53caa4a10c4feb8b347717e35c9253a84e9c2ac507ca35020ead1092143d901715429cf5139cb58bc73bce6328c64f677cee94d49847",
+          "sha256": "6e7df0b882d2a79909a7e0781da4ebe955199ee21eaa80ccf3f0415f99c2ab70",
+          "sha1": "4fdb1118415b67089aeaa47c09845cf6b3657ced",
+          "md5": "8d3d098279b5a4735655a5ecd10b2e1f"
+        }
+      ]
+    }
+  ]
+}

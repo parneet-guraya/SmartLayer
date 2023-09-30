@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SmartLayer</string>
+    <string name="sample_palm_hint">Answering Question using Google\'s PALM2 Text generation model</string>
 </resources>

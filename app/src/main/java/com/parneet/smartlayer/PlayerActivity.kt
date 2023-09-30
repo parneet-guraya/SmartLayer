@@ -50,6 +50,8 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
                 enterImmersiveMode()
+                askToAI("Translate this sentence --> What can one do about it???")
+
             } else {
                 exitImmersiveMode()
             }
@@ -131,6 +133,20 @@ class PlayerActivity : AppCompatActivity() {
             loadingView.visibility = View.GONE
             view.visibility = View.VISIBLE
         }
+    }
+
+    private fun askToAI(promptText: String) {
+        viewModel.generativeTextResponse.observe(this) { response ->
+            when (response) {
+                is Response.Error -> logDebug("AI service: " + response.exception.message!!)
+                is Response.Loading -> logDebug("Loading")
+                is Response.Success -> {
+                    logDebug(response.data.output)
+                    binding.includedInfoLayout.generatedTextView.text = response.data.output
+                }
+            }
+        }
+        viewModel.promptToAI(promptText)
     }
 
     override fun onStart() {
