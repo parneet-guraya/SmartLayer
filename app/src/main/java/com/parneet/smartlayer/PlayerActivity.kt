@@ -1,11 +1,18 @@
 package com.parneet.smartlayer
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -13,33 +20,118 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.google.android.material.chip.Chip
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
+import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.service.MlKitTranslationService
+
 
 @OptIn(UnstableApi::class)
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
+    private var windowInsetsController: WindowInsetsControllerCompat? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getWindow().getAttributes().layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+        }
         viewModel.videoUri = intent.getParcelableExtra(
             MainActivity.EXTRA_VIDEO_URI
         )
         setInfoIconVisible(true)
-        binding.playerView.setFullscreenButtonClickListener { }
 
-        binding.includedInfoLayout.googleSearchButton.setOnClickListener {
-            // trigger web dialog search dialog
+        initWindowInsetsController()
+        binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
+            if (isFullScreen) {
+                enterImmersiveMode()
+            } else {
+                exitImmersiveMode()
+            }
+
         }
+
 
         viewModel.currentSubText.observe(this) { currentText ->
             binding.includedInfoLayout.originalTextView.text = currentText
+            translateText(currentText!!, viewModel.currentTargetLang)
         }
+
+        (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
+            setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
+            setSelection(0)
+            setOnItemClickListener { _, view, _, _ ->
+                val textView = view as TextView
+                logDebug(textView.text.toString())
+                viewModel.currentTargetLang =
+                    MlKitTranslationService.langMap[textView.text.toString()]!!
+                translateText(
+                    binding.includedInfoLayout.originalTextView.text.toString(),
+                    viewModel.currentTargetLang
+                )
+            }
+        }
+
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                player?.pause()
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                player?.play()
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+
+        })
     }
 
+    private fun translateText(text: String, targetLanguage: String) {
+        viewModel.translateResponseState.observe(this) { response ->
+            when (response) {
+                is Response.Error -> logDebug("Translate text" + response.exception.message!!)
+                is Response.Loading -> {
+                    showLoading(
+                        true,
+                        binding.includedInfoLayout.translatedTextView,
+                        binding.includedInfoLayout.translateLoadingBar
+                    )
+                    logDebug("Translate Loading")
+                }
+
+                is Response.Success -> {
+                    showLoading(
+                        false,
+                        binding.includedInfoLayout.translatedTextView,
+                        binding.includedInfoLayout.translateLoadingBar
+                    )
+                    logDebug("Translate result: ${response.data}")
+                    binding.includedInfoLayout.translatedTextView.text = response.data
+                }
+            }
+        }
+        viewModel.translateText(text, viewModel.currentSourceLang, targetLanguage)
+    }
+
+    private fun showLoading(show: Boolean, view: View, loadingView: LinearProgressIndicator) {
+        if (show) {
+            loadingView.visibility = View.VISIBLE
+            view.visibility = View.GONE
+            loadingView.show()
+        } else {
+            loadingView.visibility = View.GONE
+            view.visibility = View.VISIBLE
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -100,7 +192,6 @@ class PlayerActivity : AppCompatActivity() {
             val cueSize = cueGroup.cues.size
             if (cueSize != 0) {
                 val text = cueGroup.cues[cueSize - 1].text.toString()
-                exoPlayer.pause()
                 openInfoDrawer(text)
                 logDebug(text)
             }
@@ -148,5 +239,22 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
         binding.includedInfoLayout.wordsChipGroup.addView(inflatedChip)
+    }
+
+    private fun initWindowInsetsController() {
+        windowInsetsController = WindowCompat.getInsetsController(
+            window, window.decorView
+        )
+        windowInsetsController?.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
+    }
+
+    private fun enterImmersiveMode() {
+        val type = WindowInsetsCompat.Type.systemBars()
+        windowInsetsController?.hide(type)
+    }
+
+    private fun exitImmersiveMode() {
+        val type = WindowInsetsCompat.Type.systemBars()
+        windowInsetsController?.show(type)
     }
 }

@@ -73,24 +73,46 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
-                    android:id="@+id/google_search_button"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/target_language_spinner"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Search on Google"
+                    android:layout_marginStart="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/translate_button"
-                    app:layout_constraintTop_toTopOf="@id/translate_button" />
+                    app:layout_constraintStart_toEndOf="@id/icon"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <Button
-                    android:id="@+id/translate_button"
+                    <AutoCompleteTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textAutoComplete" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/translate_loading_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:indeterminate="true"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/target_language_spinner" />
+
+                <TextView
+                    android:id="@+id/translated_text_view"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Translate on Google"
-                    app:layout_constraintEnd_toStartOf="@id/google_search_button"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/icon" />
+                    app:layout_constraintTop_toBottomOf="@id/target_language_spinner" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".PlayerActivity">
@@ -16,6 +16,7 @@
             android:id="@+id/player_view"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:background="@color/black"
             app:controller_layout_id="@layout/custom_player_control_view"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
