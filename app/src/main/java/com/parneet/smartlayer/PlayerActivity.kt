@@ -6,15 +6,13 @@ import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
-import androidx.media3.common.C.TRACK_TYPE_NONE
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.TrackSelectionParameters
-import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import com.google.android.material.chip.Chip
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 
 @OptIn(UnstableApi::class)
@@ -30,10 +28,18 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.videoUri = intent.getParcelableExtra(
             MainActivity.EXTRA_VIDEO_URI
         )
-
-        binding.playerView.setFullscreenButtonClickListener { }
         setInfoIconVisible(true)
+        binding.playerView.setFullscreenButtonClickListener { }
+
+        binding.includedInfoLayout.googleSearchButton.setOnClickListener {
+            // trigger web dialog search dialog
+        }
+
+        viewModel.currentSubText.observe(this) { currentText ->
+            binding.includedInfoLayout.originalTextView.text = currentText
+        }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -52,7 +58,9 @@ class PlayerActivity : AppCompatActivity() {
             .setTrackSelector(trackSelector)
             .build().also { exoPlayer ->
                 binding.playerView.player = exoPlayer
-                exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
+                if (viewModel.videoUri != null) {
+                    exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
+                }
 
                 getInfoButton().setOnClickListener {
                     infoButtonClickListener(exoPlayer)
@@ -92,8 +100,53 @@ class PlayerActivity : AppCompatActivity() {
             val cueSize = cueGroup.cues.size
             if (cueSize != 0) {
                 val text = cueGroup.cues[cueSize - 1].text.toString()
+                exoPlayer.pause()
+                openInfoDrawer(text)
                 logDebug(text)
             }
         }
+    }
+
+    private fun openInfoDrawer(text: String) {
+        viewModel.originalSubText = text
+        binding.drawerLayout.open()
+        viewModel.updateCurrentSubText(text)
+        binding.includedInfoLayout.wordsChipGroup.removeAllViews()
+        // extract words from line
+        val words = text.split(" ")
+        for (word in words) {
+            createWordChip(word.trim())
+        }
+    }
+
+    private fun createWordChip(word: String) {
+        val inflatedChip: Chip = layoutInflater.inflate(
+            R.layout.word_chip,
+            binding.includedInfoLayout.wordsChipGroup,
+            false
+        ) as Chip
+        inflatedChip.id = View.generateViewId()
+        inflatedChip.text = word
+        inflatedChip.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (viewModel.isOriginalSubShowing) {
+                viewModel.updateCurrentSubText("")
+                viewModel.isOriginalSubShowing = false
+            }
+            if (isChecked) {
+                // chip selected
+                logDebug(buttonView.text.toString())
+                val text = buttonView.text.toString()
+                val modifiedText = viewModel.currentSubText.value?.plus(" ").plus(text)
+                viewModel.updateCurrentSubText(modifiedText)
+            } else {
+                // chip unselected
+                viewModel.updateCurrentSubText(viewModel.currentSubText.value?.replace(word, ""))
+            }
+            if (binding.includedInfoLayout.wordsChipGroup.checkedChipIds.size == 0) {
+                viewModel.updateCurrentSubText(viewModel.originalSubText)
+                viewModel.isOriginalSubShowing = true
+            }
+        }
+        binding.includedInfoLayout.wordsChipGroup.addView(inflatedChip)
     }
 }
