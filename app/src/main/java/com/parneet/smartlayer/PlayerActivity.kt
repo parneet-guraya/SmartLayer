@@ -230,6 +230,8 @@ class PlayerActivity : AppCompatActivity() {
                 binding.playerView.player = exoPlayer
                 if (viewModel.videoUri != null) {
                     exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
+                }else{
+                    exoPlayer.setMediaItem(viewModel.currentPlayingMediaItem!!)
                 }
 
 
@@ -252,6 +254,7 @@ class PlayerActivity : AppCompatActivity() {
         player?.let { exoPlayer ->
             viewModel.playWhenReady = exoPlayer.playWhenReady
             viewModel.playBackPosition = exoPlayer.currentPosition
+            viewModel.currentPlayingMediaItem = exoPlayer.currentMediaItem
             exoPlayer.release()
         }
         player = null

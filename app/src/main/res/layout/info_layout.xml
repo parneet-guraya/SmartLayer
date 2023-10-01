@@ -11,13 +11,23 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
+        <TextView
+            android:id="@+id/info_layout_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Information"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/original_text_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/info_layout_header">
 
             <TextView
                 android:id="@+id/original_text_view"
@@ -26,18 +36,27 @@
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="This is the long subtitle text, that is showing for the current frame and kldjfajs "
-                android:textSize="24sp" />
+                android:textSize="20sp" />
         </com.google.android.material.card.MaterialCardView>
 
+        <TextView
+            android:id="@+id/word_picker_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pick Words"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/original_text_card_view"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/choose_words_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/original_text_card_view">
+            app:layout_constraintTop_toBottomOf="@id/word_picker_header">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/words_chip_group"
@@ -51,15 +70,24 @@
         </com.google.android.material.card.MaterialCardView>
 
 
+        <TextView
+            android:id="@+id/ai_view_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ask Google PALM"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/choose_words_card_view"
+            app:layout_constraintStart_toStartOf="parent" />
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/ai_search_card"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="8dp"
             android:minHeight="250dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/choose_words_card_view">
+            app:layout_constraintTop_toBottomOf="@id/ai_view_header">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -112,7 +140,7 @@
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Translate"/>
+                        android:text="Translate" />
 
                 </com.google.android.material.chip.ChipGroup>
 
@@ -144,17 +172,26 @@
             android:layout_margin="8dp"
             android:text="Generate Text"
             app:chipIcon="@drawable/ic_neuro"
-            app:layout_constraintTop_toBottomOf="@id/ai_search_card"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ai_search_card" />
 
+        <TextView
+            android:id="@+id/translate_view_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Translate"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/generate_text_button"
+            app:layout_constraintStart_toStartOf="parent" />
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/google_search_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/generate_text_button">
+            app:layout_constraintTop_toBottomOf="@id/translate_view_header">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -184,8 +221,8 @@
                     <AutoCompleteTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Hindi"
-                        android:inputType="none" />
+                        android:inputType="none"
+                        android:text="Hindi" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 

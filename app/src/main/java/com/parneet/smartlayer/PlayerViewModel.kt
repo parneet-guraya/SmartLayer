@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
 import com.google.ai.generativelanguage.v1beta3.TextCompletion
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.service.GooglePalm2Service
@@ -16,6 +17,7 @@ class PlayerViewModel : ViewModel() {
     var videoUri: Uri? = null
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
+    var currentPlayingMediaItem: MediaItem? = null
     private val _currentSubText: MutableLiveData<String?> = MutableLiveData("")
     val currentSubText: LiveData<String?> = _currentSubText
     var originalSubText: String = ""
@@ -49,7 +51,11 @@ class PlayerViewModel : ViewModel() {
     fun promptToAI(promptText: String) {
         viewModelScope.launch {
             _generativeTextResponse.value =
-                generateAIService.generateText(promptText, promptStyleOption,currentTargetLang).value
+                generateAIService.generateText(
+                    promptText,
+                    promptStyleOption,
+                    currentTargetLang
+                ).value
         }
     }
 
