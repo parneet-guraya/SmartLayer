@@ -26,7 +26,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.pickVideoFab.setOnClickListener {
             launchVideoPicker()
+        }
     }
 
     private fun launchVideoPicker() {
