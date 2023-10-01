@@ -3,12 +3,18 @@ package com.parneet.smartlayer
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.color.DynamicColors
 import com.parneet.smartlayer.databinding.ActivityMainBinding
 
 const val LOG_TAG = "MYCUSTOMLOGTAG"
@@ -25,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        setSupportActionBar(binding.topAppBar)
         binding.pickVideoFab.setOnClickListener {
             launchVideoPicker()
         }
