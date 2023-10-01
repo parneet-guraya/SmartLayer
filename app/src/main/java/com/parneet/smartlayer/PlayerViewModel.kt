@@ -9,6 +9,7 @@ import com.google.ai.generativelanguage.v1beta3.TextCompletion
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.service.GooglePalm2Service
 import com.parneet.smartlayer.service.MlKitTranslationService
+import com.parneet.smartlayer.service.PromptStyleOption
 import kotlinx.coroutines.launch
 
 class PlayerViewModel : ViewModel() {
@@ -21,6 +22,7 @@ class PlayerViewModel : ViewModel() {
     var isOriginalSubShowing = true
     var currentSourceLang: String = "en"
     var currentTargetLang: String = "hi"
+    var promptStyleOption = PromptStyleOption.NONE
 
     //    private val _identifyLangLiveData = MutableLiveData<Response<String>>()
 //    val identifyLangLiveData: LiveData<Response<String>> get() = _identifyLangLiveData
@@ -47,7 +49,7 @@ class PlayerViewModel : ViewModel() {
     fun promptToAI(promptText: String) {
         viewModelScope.launch {
             _generativeTextResponse.value =
-                generateAIService.generateText(promptText).value
+                generateAIService.generateText(promptText, promptStyleOption,currentTargetLang).value
         }
     }
 

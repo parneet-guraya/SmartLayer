@@ -25,6 +25,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.service.MlKitTranslationService
+import com.parneet.smartlayer.service.PromptStyleOption
 
 
 @OptIn(UnstableApi::class)
@@ -50,14 +51,50 @@ class PlayerActivity : AppCompatActivity() {
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
                 enterImmersiveMode()
-                askToAI("Translate this sentence --> What can one do about it???")
-
             } else {
                 exitImmersiveMode()
             }
 
         }
 
+        binding.includedInfoLayout.generateTextButton.setOnClickListener {
+//            askToAI(viewModel.originalSubText)
+            askToAI(viewModel.currentSubText.value.toString())
+        }
+        binding.includedInfoLayout.promptOptionsChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+            if (checkedIds.size == 0) {
+                logDebug("none checked")
+                viewModel.promptStyleOption = PromptStyleOption.NONE
+            }
+        }
+        binding.includedInfoLayout.optionDefine.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                // prompt style should be define
+                // Define sentence/word --> word/sentence
+                viewModel.promptStyleOption = PromptStyleOption.DEFINE
+            }
+        }
+        binding.includedInfoLayout.optionExplain.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                // prompt style should be define
+                // Define sentence/word --> word/sentence
+                viewModel.promptStyleOption = PromptStyleOption.EXPLAIN
+            }
+        }
+        binding.includedInfoLayout.optionMeaning.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                // prompt style should be define
+                // Define sentence/word --> word/sentence
+                viewModel.promptStyleOption = PromptStyleOption.MEANING
+            }
+        }
+        binding.includedInfoLayout.optionTranslate.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                // prompt style should be define
+                // Define sentence/word --> word/sentence
+                viewModel.promptStyleOption = PromptStyleOption.TRANSLATE
+            }
+        }
 
         viewModel.currentSubText.observe(this) { currentText ->
             binding.includedInfoLayout.originalTextView.text = currentText
@@ -66,7 +103,6 @@ class PlayerActivity : AppCompatActivity() {
 
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
             setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
-            setSelection(0)
             setOnItemClickListener { _, view, _, _ ->
                 val textView = view as TextView
                 logDebug(textView.text.toString())

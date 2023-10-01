@@ -83,16 +83,43 @@
                     android:padding="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ai_search_loading_bar">
+                    app:layout_constraintTop_toBottomOf="@id/ai_search_loading_bar"
+                    app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/option_define"
+                        style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Define"
                         app:chipIcon="@drawable/ic_info_24" />
 
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/option_meaning"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Meaning"
+                        app:chipIcon="@drawable/ic_info_24" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/option_explain"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Explain"
+                        app:chipIcon="@drawable/ic_info_24" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/option_translate"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Translate"
+                        app:chipIcon="@drawable/ic_info_24" />
+
                 </com.google.android.material.chip.ChipGroup>
+
 
                 <androidx.core.widget.NestedScrollView
                     android:layout_width="0dp"
@@ -110,10 +137,19 @@
                         android:padding="8dp"
                         android:textSize="18sp" />
                 </androidx.core.widget.NestedScrollView>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.chip.Chip
+            android:id="@+id/generate_text_button"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Generate Text"
+            app:chipIcon="@drawable/ic_info_24"
+            app:layout_constraintTop_toBottomOf="@id/ai_search_card"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/google_search_card_view"
@@ -122,7 +158,7 @@
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ai_search_card">
+            app:layout_constraintTop_toBottomOf="@id/generate_text_button">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -152,6 +188,7 @@
                     <AutoCompleteTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:text="Hindi"
                         android:inputType="none" />
 
                 </com.google.android.material.textfield.TextInputLayout>

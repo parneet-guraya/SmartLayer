@@ -14,17 +14,21 @@ import com.parneet.smartlayer.BuildConfig
 import com.parneet.smartlayer.logDebug
 import com.parneet.smartlayer.model.Response
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class GooglePalm2Service : GenerativeAIService {
-    private val client = getTextServiceClient(BuildConfig.PALM_API_KEY)
     private val _generatedTextResponse = MutableLiveData<Response<TextCompletion>>()
 
 
-    override suspend fun generateText(prompt: String): LiveData<Response<TextCompletion>> {
+    override suspend fun generateText(
+        prompt: String,
+        promptStyleOption: PromptStyleOption,
+        currentLang: String
+    ): LiveData<Response<TextCompletion>> {
         logDebug("generateTExt")
-        val textPrompt = createPrompt(prompt)
+        val client = getTextServiceClient(BuildConfig.PALM_API_KEY)
+        val textPrompt = createPrompt(prompt, promptStyleOption, currentLang)
+        logDebug("Modified prompt" + textPrompt.toString())
         val request = createTextRequest(textPrompt)
         _generatedTextResponse.setValue(Response.Loading)
         withContext(Dispatchers.IO) {
@@ -33,10 +37,10 @@ class GooglePalm2Service : GenerativeAIService {
                 logDebug("generateTExt backgroundthread try block")
                 val response = client.generateText(request)
                 val returnedText = response.candidatesList.last()
-                logDebug("generateTExt backgroundthread try block successs")
+                logDebug("generateTExt backgroundthread try block  success $returnedText")
                 _generatedTextResponse.postValue(Response.Success(returnedText))
             } catch (exception: Exception) {
-                logDebug("generateTExt backgroundthread try block exception ${exception.message}")
+                logDebug("generateTExt backgroundthread catch block exception ${exception.message}")
                 _generatedTextResponse.postValue(Response.Error(exception))
             }
         }
@@ -66,9 +70,35 @@ class GooglePalm2Service : GenerativeAIService {
         return textServiceClient
     }
 
-    private fun createPrompt(promptText: String): TextPrompt {
+    private fun createPrompt(
+        promptText: String,
+        promptStyleOption: PromptStyleOption,
+        currentLang: String
+    ): TextPrompt {
+        val modifiedText: String = when (promptStyleOption) {
+            PromptStyleOption.DEFINE -> {
+                "Define  --> $promptText"
+            }
+
+            PromptStyleOption.EXPLAIN -> {
+                "Explain  --> $promptText"
+            }
+
+            PromptStyleOption.MEANING -> {
+                "Tell me the meaning --> $promptText"
+            }
+
+            PromptStyleOption.TRANSLATE -> {
+                "Translate to $currentLang --> $promptText"
+            }
+
+            PromptStyleOption.NONE -> {
+                promptText
+            }
+        }
+
         val textPrompt = TextPrompt.newBuilder()
-            .setText(promptText)
+            .setText(modifiedText)
             .build()
         return textPrompt
     }
@@ -81,4 +111,12 @@ class GooglePalm2Service : GenerativeAIService {
             .build()
     }
 
+}
+
+enum class PromptStyleOption {
+    DEFINE,
+    MEANING,
+    EXPLAIN,
+    TRANSLATE,
+    NONE
 }
