@@ -58,7 +58,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.includedInfoLayout.generateTextButton.setOnClickListener {
-//            askToAI(viewModel.originalSubText)
+            showLoading(true, null, binding.includedInfoLayout.aiSearchLoadingBar)
             askToAI(viewModel.currentSubText.value.toString())
         }
         binding.includedInfoLayout.promptOptionsChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
@@ -160,24 +160,29 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.translateText(text, viewModel.currentSourceLang, targetLanguage)
     }
 
-    private fun showLoading(show: Boolean, view: View, loadingView: LinearProgressIndicator) {
+    private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
         if (show) {
             loadingView.visibility = View.VISIBLE
-            view.visibility = View.GONE
+            view?.visibility = View.GONE
             loadingView.show()
         } else {
             loadingView.visibility = View.GONE
-            view.visibility = View.VISIBLE
+            view?.visibility = View.VISIBLE
         }
     }
 
     private fun askToAI(promptText: String) {
         viewModel.generativeTextResponse.observe(this) { response ->
             when (response) {
-                is Response.Error -> logDebug("AI service: " + response.exception.message!!)
+                is Response.Error -> {
+                    showLoading(false, null, binding.includedInfoLayout.aiSearchLoadingBar)
+                    binding.includedInfoLayout.generatedTextView.text = "Error Occurred, Try Again!"
+                }
+
                 is Response.Loading -> logDebug("Loading")
                 is Response.Success -> {
                     logDebug(response.data.output)
+                    showLoading(false, null, binding.includedInfoLayout.aiSearchLoadingBar)
                     binding.includedInfoLayout.generatedTextView.text = response.data.output
                 }
             }
