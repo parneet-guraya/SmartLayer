@@ -1,11 +1,16 @@
 package com.parneet.smartlayer
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -34,6 +40,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel: PlayerViewModel by viewModels()
     private var player: ExoPlayer? = null
     private var windowInsetsController: WindowInsetsControllerCompat? = null
+    private val subPickerLauncher: ActivityResultLauncher<Intent> = onGetSub()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -225,8 +232,13 @@ class PlayerActivity : AppCompatActivity() {
                     exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
                 }
 
+
                 getInfoButton().setOnClickListener {
                     infoButtonClickListener(exoPlayer)
+                }
+
+                getAddSubButton().setOnClickListener {
+                    launchSubPicker()
                 }
 
                 exoPlayer.playWhenReady = viewModel.playWhenReady
@@ -249,6 +261,10 @@ class PlayerActivity : AppCompatActivity() {
         return binding.playerView.findViewById(R.id.custom_info_button)
     }
 
+    private fun getAddSubButton(): ImageButton {
+        return binding.playerView.findViewById(R.id.add_subtitle_button)
+    }
+
     private fun setInfoIconVisible(visibility: Boolean) {
         val view = getInfoButton()
         when (visibility) {
@@ -267,6 +283,47 @@ class PlayerActivity : AppCompatActivity() {
                 logDebug(text)
             }
         }
+    }
+
+
+    private fun launchSubPicker() {
+        val subPickerIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = MimeTypes.APPLICATION_SUBRIP
+        }
+        subPickerLauncher.launch(subPickerIntent)
+    }
+
+    private fun onGetSub(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+                val intent = activityResult.data
+                if (intent != null) {
+                    addSubClickListener(intent.data)
+                }
+            }
+
+        }
+    }
+
+    private fun addSubClickListener(uri: Uri?) {
+      if(uri != null){
+          val currentMediaItem = player?.currentMediaItem
+          val currentPosition = player?.currentPosition
+          val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
+              .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
+          val updatedMediaItem =
+              currentMediaItem?.buildUpon()?.setSubtitleConfigurations(listOf(subtitleConfiguration))
+                  ?.build()
+
+          if (updatedMediaItem != null) {
+              if (currentPosition != null) {
+                  player?.setMediaItem(updatedMediaItem, currentPosition)
+              }
+          }
+      }
     }
 
     private fun openInfoDrawer(text: String) {
