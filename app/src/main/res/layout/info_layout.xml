@@ -91,32 +91,28 @@
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Define"
-                        app:chipIcon="@drawable/ic_info_24" />
+                        android:text="Define" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/option_meaning"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Meaning"
-                        app:chipIcon="@drawable/ic_info_24" />
+                        android:text="Meaning" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/option_explain"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Explain"
-                        app:chipIcon="@drawable/ic_info_24" />
+                        android:text="Explain" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/option_translate"
                         style="@style/Widget.Material3.Chip.Filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Translate"
-                        app:chipIcon="@drawable/ic_info_24" />
+                        android:text="Translate"/>
 
                 </com.google.android.material.chip.ChipGroup>
 
@@ -147,7 +143,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="Generate Text"
-            app:chipIcon="@drawable/ic_info_24"
+            app:chipIcon="@drawable/ic_neuro"
             app:layout_constraintTop_toBottomOf="@id/ai_search_card"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -170,8 +166,8 @@
                     android:id="@+id/icon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:background="@color/black"
-                    android:src="@drawable/ic_launcher_foreground"
+                    android:src="@drawable/baseline_translate_24"
+                    app:layout_constraintBottom_toBottomOf="@id/target_language_spinner"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

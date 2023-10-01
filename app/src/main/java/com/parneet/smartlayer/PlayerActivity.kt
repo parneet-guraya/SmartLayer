@@ -40,7 +40,7 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(binding.root)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             getWindow().getAttributes().layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
         }
         viewModel.videoUri = intent.getParcelableExtra(
             MainActivity.EXTRA_VIDEO_URI
@@ -58,7 +58,11 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.includedInfoLayout.generateTextButton.setOnClickListener {
-            showLoading(true, null, binding.includedInfoLayout.aiSearchLoadingBar)
+            showLoading(
+                true,
+                binding.includedInfoLayout.generatedTextView,
+                binding.includedInfoLayout.aiSearchLoadingBar
+            )
             askToAI(viewModel.currentSubText.value.toString())
         }
         binding.includedInfoLayout.promptOptionsChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
@@ -161,6 +165,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
+        logDebug("show loading: $show")
         if (show) {
             loadingView.visibility = View.VISIBLE
             view?.visibility = View.GONE
@@ -168,6 +173,7 @@ class PlayerActivity : AppCompatActivity() {
         } else {
             loadingView.visibility = View.GONE
             view?.visibility = View.VISIBLE
+            loadingView.hide()
         }
     }
 
@@ -175,14 +181,22 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.generativeTextResponse.observe(this) { response ->
             when (response) {
                 is Response.Error -> {
-                    showLoading(false, null, binding.includedInfoLayout.aiSearchLoadingBar)
+                    showLoading(
+                        false,
+                        binding.includedInfoLayout.generatedTextView,
+                        binding.includedInfoLayout.aiSearchLoadingBar
+                    )
                     binding.includedInfoLayout.generatedTextView.text = "Error Occurred, Try Again!"
                 }
 
                 is Response.Loading -> logDebug("Loading")
                 is Response.Success -> {
                     logDebug(response.data.output)
-                    showLoading(false, null, binding.includedInfoLayout.aiSearchLoadingBar)
+                    showLoading(
+                        false,
+                        binding.includedInfoLayout.generatedTextView,
+                        binding.includedInfoLayout.aiSearchLoadingBar
+                    )
                     binding.includedInfoLayout.generatedTextView.text = response.data.output
                 }
             }
