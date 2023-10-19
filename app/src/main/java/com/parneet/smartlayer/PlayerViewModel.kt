@@ -4,9 +4,13 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import com.parneet.smartlayer.model.Response
-import com.parneet.smartlayer.service.MlKitTranslationService
+import com.parneet.smartlayer.model.service.MlKitTranslationService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class PlayerViewModel : ViewModel() {
     var videoUri: Uri? = null
@@ -20,8 +24,8 @@ class PlayerViewModel : ViewModel() {
     var currentSourceLang: String = "en"
     var currentTargetLang: String = "hi"
 
-    private var _translateResponseState = MutableLiveData<Response<String>>()
-    val translateResponseState: LiveData<Response<String>> get() = _translateResponseState
+    private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading)
+    val translateResponseState: StateFlow<Response<String>> = _translateResponseState
 
     private val mlKitTranslationService = MlKitTranslationService()
 
@@ -34,13 +38,19 @@ class PlayerViewModel : ViewModel() {
         sourceLanguage: String,
         targetLanguage: String
     ) {
-        _translateResponseState =
+        // here we're creating a new flow in each call hence same number of times observer will be notified. But why still observer getting notified once.
+        // Even though we created multiple flow (by calling this function multiple times) For example: Like if it was a call to room databse about getting
+        // the list then it would emit data to every flows get created. Is it because room is itself actively throwing values so every flow is getting it and
+        // here in our case we are emitting the values right away?
+        viewModelScope.launch {
             mlKitTranslationService.translate(
                 string,
                 sourceLanguage,
                 targetLanguage
-            ) as MutableLiveData<Response<String>>
-
+            ).collect {
+                _translateResponseState.value = it
+            }
+        }
     }
 
 }

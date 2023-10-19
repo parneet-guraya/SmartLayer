@@ -18,6 +18,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
@@ -30,7 +33,8 @@ import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
-import com.parneet.smartlayer.service.MlKitTranslationService
+import com.parneet.smartlayer.model.service.MlKitTranslationService
+import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
 class PlayerActivity : AppCompatActivity() {
@@ -61,13 +65,40 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
+       lifecycleScope.launch {
+        repeatOnLifecycle(Lifecycle.State.STARTED){
+            viewModel.translateResponseState.collect { response ->
+                when (response) {
+                    is Response.Error -> logDebug("Translate text" + response.exception.message!!)
+                    is Response.Loading -> {
+                        showLoading(
+                            true,
+                            binding.includedInfoLayout.translatedTextView,
+                            binding.includedInfoLayout.translateLoadingBar
+                        )
+                        logDebug("Translate Loading")
+                    }
 
-        binding.includedInfoLayout.generateTextButton.setOnClickListener {
-
+                    is Response.Success -> {
+                        showLoading(
+                            false,
+                            binding.includedInfoLayout.translatedTextView,
+                            binding.includedInfoLayout.translateLoadingBar
+                        )
+                        logDebug("Translate result: ${response.data}")
+                        binding.includedInfoLayout.translatedTextView.text = response.data
+                    }
+                }
+            }
         }
+       }
         viewModel.currentSubText.observe(this) { currentText ->
             binding.includedInfoLayout.originalTextView.text = currentText
-            translateText(currentText!!, viewModel.currentTargetLang)
+            viewModel.translateText(
+                currentText!!,
+                viewModel.currentSourceLang,
+                viewModel.currentTargetLang
+            )
         }
 
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
@@ -77,8 +108,9 @@ class PlayerActivity : AppCompatActivity() {
                 logDebug(textView.text.toString())
                 viewModel.currentTargetLang =
                     MlKitTranslationService.langMap[textView.text.toString()]!!
-                translateText(
+                viewModel.translateText(
                     binding.includedInfoLayout.originalTextView.text.toString(),
+                    viewModel.currentSourceLang,
                     viewModel.currentTargetLang
                 )
             }
@@ -101,34 +133,6 @@ class PlayerActivity : AppCompatActivity() {
 
         })
     }
-
-    private fun translateText(text: String, targetLanguage: String) {
-        viewModel.translateResponseState.observe(this) { response ->
-            when (response) {
-                is Response.Error -> logDebug("Translate text" + response.exception.message!!)
-                is Response.Loading -> {
-                    showLoading(
-                        true,
-                        binding.includedInfoLayout.translatedTextView,
-                        binding.includedInfoLayout.translateLoadingBar
-                    )
-                    logDebug("Translate Loading")
-                }
-
-                is Response.Success -> {
-                    showLoading(
-                        false,
-                        binding.includedInfoLayout.translatedTextView,
-                        binding.includedInfoLayout.translateLoadingBar
-                    )
-                    logDebug("Translate result: ${response.data}")
-                    binding.includedInfoLayout.translatedTextView.text = response.data
-                }
-            }
-        }
-        viewModel.translateText(text, viewModel.currentSourceLang, targetLanguage)
-    }
-
     private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
         logDebug("show loading: $show")
         if (show) {
@@ -308,7 +312,8 @@ class PlayerActivity : AppCompatActivity() {
         windowInsetsController = WindowCompat.getInsetsController(
             window, window.decorView
         )
-        windowInsetsController?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        windowInsetsController?.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
     private fun enterImmersiveMode() {
