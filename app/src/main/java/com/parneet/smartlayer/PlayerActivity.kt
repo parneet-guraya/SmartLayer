@@ -31,8 +31,6 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.service.MlKitTranslationService
-import com.parneet.smartlayer.service.PromptStyleOption
-
 
 @OptIn(UnstableApi::class)
 class PlayerActivity : AppCompatActivity() {
@@ -46,8 +44,8 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            getWindow().getAttributes().layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER;
+            window.attributes.layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
         viewModel.videoUri = intent.getParcelableExtra(
             MainActivity.EXTRA_VIDEO_URI
@@ -65,48 +63,8 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         binding.includedInfoLayout.generateTextButton.setOnClickListener {
-            showLoading(
-                true,
-                binding.includedInfoLayout.generatedTextView,
-                binding.includedInfoLayout.aiSearchLoadingBar
-            )
-            askToAI(viewModel.currentSubText.value.toString())
-        }
-        binding.includedInfoLayout.promptOptionsChipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-            if (checkedIds.size == 0) {
-                logDebug("none checked")
-                viewModel.promptStyleOption = PromptStyleOption.NONE
-            }
-        }
-        binding.includedInfoLayout.optionDefine.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                // prompt style should be define
-                // Define sentence/word --> word/sentence
-                viewModel.promptStyleOption = PromptStyleOption.DEFINE
-            }
-        }
-        binding.includedInfoLayout.optionExplain.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                // prompt style should be define
-                // Define sentence/word --> word/sentence
-                viewModel.promptStyleOption = PromptStyleOption.EXPLAIN
-            }
-        }
-        binding.includedInfoLayout.optionMeaning.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                // prompt style should be define
-                // Define sentence/word --> word/sentence
-                viewModel.promptStyleOption = PromptStyleOption.MEANING
-            }
-        }
-        binding.includedInfoLayout.optionTranslate.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                // prompt style should be define
-                // Define sentence/word --> word/sentence
-                viewModel.promptStyleOption = PromptStyleOption.TRANSLATE
-            }
-        }
 
+        }
         viewModel.currentSubText.observe(this) { currentText ->
             binding.includedInfoLayout.originalTextView.text = currentText
             translateText(currentText!!, viewModel.currentTargetLang)
@@ -184,33 +142,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun askToAI(promptText: String) {
-        viewModel.generativeTextResponse.observe(this) { response ->
-            when (response) {
-                is Response.Error -> {
-                    showLoading(
-                        false,
-                        binding.includedInfoLayout.generatedTextView,
-                        binding.includedInfoLayout.aiSearchLoadingBar
-                    )
-                    binding.includedInfoLayout.generatedTextView.text = "Error Occurred, Try Again!"
-                }
-
-                is Response.Loading -> logDebug("Loading")
-                is Response.Success -> {
-                    logDebug(response.data.output)
-                    showLoading(
-                        false,
-                        binding.includedInfoLayout.generatedTextView,
-                        binding.includedInfoLayout.aiSearchLoadingBar
-                    )
-                    binding.includedInfoLayout.generatedTextView.text = response.data.output
-                }
-            }
-        }
-        viewModel.promptToAI(promptText)
-    }
-
     override fun onStart() {
         super.onStart()
         initializePlayer()
@@ -230,7 +161,7 @@ class PlayerActivity : AppCompatActivity() {
                 binding.playerView.player = exoPlayer
                 if (viewModel.videoUri != null) {
                     exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
-                }else{
+                } else {
                     exoPlayer.setMediaItem(viewModel.currentPlayingMediaItem!!)
                 }
 
@@ -312,21 +243,22 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun addSubClickListener(uri: Uri?) {
-      if(uri != null){
-          val currentMediaItem = player?.currentMediaItem
-          val currentPosition = player?.currentPosition
-          val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
-              .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
-          val updatedMediaItem =
-              currentMediaItem?.buildUpon()?.setSubtitleConfigurations(listOf(subtitleConfiguration))
-                  ?.build()
+        if (uri != null) {
+            val currentMediaItem = player?.currentMediaItem
+            val currentPosition = player?.currentPosition
+            val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
+                .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
+            val updatedMediaItem =
+                currentMediaItem?.buildUpon()
+                    ?.setSubtitleConfigurations(listOf(subtitleConfiguration))
+                    ?.build()
 
-          if (updatedMediaItem != null) {
-              if (currentPosition != null) {
-                  player?.setMediaItem(updatedMediaItem, currentPosition)
-              }
-          }
-      }
+            if (updatedMediaItem != null) {
+                if (currentPosition != null) {
+                    player?.setMediaItem(updatedMediaItem, currentPosition)
+                }
+            }
+        }
     }
 
     private fun openInfoDrawer(text: String) {
@@ -376,7 +308,7 @@ class PlayerActivity : AppCompatActivity() {
         windowInsetsController = WindowCompat.getInsetsController(
             window, window.decorView
         )
-        windowInsetsController?.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
+        windowInsetsController?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
     }
 
     private fun enterImmersiveMode() {

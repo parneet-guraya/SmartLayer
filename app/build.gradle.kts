@@ -1,6 +1,3 @@
-import com.android.build.api.dsl.Packaging
-import com.android.builder.model.PackagingOptions
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -21,8 +18,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    packagingOptions{
-        resources{
+    packagingOptions {
+        resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/INDEX.LIST"
             excludes += "META-INF/DEPENDENCIES"
@@ -64,8 +61,8 @@ dependencies {
 
     implementation("androidx.webkit:webkit:1.8.0")
 
-    implementation ("com.google.mlkit:language-id:17.0.4")
-    implementation ("com.google.mlkit:translate:17.0.1")
+    implementation("com.google.mlkit:language-id:17.0.4")
+    implementation("com.google.mlkit:translate:17.0.1")
 
     // coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
@@ -73,13 +70,6 @@ dependencies {
     // lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-
-    // shimmer
-    implementation ("com.facebook.shimmer:shimmer:0.5.0")
-
-    //  Generative AI
-    implementation("com.google.cloud:gapic-google-cloud-ai-generativelanguage-v1beta3-java:0.0.0-SNAPSHOT")
-    implementation("io.grpc:grpc-okhttp:1.53.0")
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
