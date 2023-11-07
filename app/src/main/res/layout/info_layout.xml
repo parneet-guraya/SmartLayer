@@ -71,109 +71,25 @@
 
 
         <TextView
-            android:id="@+id/ai_view_header"
+            android:id="@+id/web_search_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ask Google PALM"
+            android:text="Google Search"
             android:layout_marginTop="8dp"
             android:textSize="24sp"
             app:layout_constraintTop_toBottomOf="@id/choose_words_card_view"
             app:layout_constraintStart_toStartOf="parent" />
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/ai_search_card"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:minHeight="250dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ai_view_header">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/ai_search_loading_bar"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:indeterminate="true"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/prompt_options_chip_group"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/ai_search_loading_bar"
-                    app:singleSelection="true">
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/option_define"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Define" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/option_meaning"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Meaning" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/option_explain"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Explain" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/option_translate"
-                        style="@style/Widget.Material3.Chip.Filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Translate" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-
-                <androidx.core.widget.NestedScrollView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/prompt_options_chip_group">
-
-                    <TextView
-                        android:id="@+id/generated_text_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="@string/sample_palm_hint"
-                        android:padding="8dp"
-                        android:textSize="18sp" />
-                </androidx.core.widget.NestedScrollView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.chip.Chip
-            android:id="@+id/generate_text_button"
+            android:id="@+id/web_search_button"
             style="@style/Widget.Material3.Chip.Assist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="Generate Text"
+            android:text="Google Search"
             app:chipIcon="@drawable/ic_neuro"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ai_search_card" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/web_search_header" />
 
         <TextView
             android:id="@+id/translate_view_header"
@@ -182,10 +98,10 @@
             android:text="Translate"
             android:layout_marginTop="8dp"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/generate_text_button"
+            app:layout_constraintTop_toBottomOf="@id/web_search_button"
             app:layout_constraintStart_toStartOf="parent" />
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/google_search_card_view"
+            android:id="@+id/google_translate_card_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

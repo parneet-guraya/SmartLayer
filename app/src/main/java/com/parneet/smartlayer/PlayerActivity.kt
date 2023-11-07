@@ -65,33 +65,33 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
-       lifecycleScope.launch {
-        repeatOnLifecycle(Lifecycle.State.STARTED){
-            viewModel.translateResponseState.collect { response ->
-                when (response) {
-                    is Response.Error -> logDebug("Translate text" + response.exception.message!!)
-                    is Response.Loading -> {
-                        showLoading(
-                            true,
-                            binding.includedInfoLayout.translatedTextView,
-                            binding.includedInfoLayout.translateLoadingBar
-                        )
-                        logDebug("Translate Loading")
-                    }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.translateResponseState.collect { response ->
+                    when (response) {
+                        is Response.Error -> logDebug("Translate text" + response.exception.message!!)
+                        is Response.Loading -> {
+                            showLoading(
+                                true,
+                                binding.includedInfoLayout.translatedTextView,
+                                binding.includedInfoLayout.translateLoadingBar
+                            )
+                            logDebug("Translate Loading")
+                        }
 
-                    is Response.Success -> {
-                        showLoading(
-                            false,
-                            binding.includedInfoLayout.translatedTextView,
-                            binding.includedInfoLayout.translateLoadingBar
-                        )
-                        logDebug("Translate result: ${response.data}")
-                        binding.includedInfoLayout.translatedTextView.text = response.data
+                        is Response.Success -> {
+                            showLoading(
+                                false,
+                                binding.includedInfoLayout.translatedTextView,
+                                binding.includedInfoLayout.translateLoadingBar
+                            )
+                            logDebug("Translate result: ${response.data}")
+                            binding.includedInfoLayout.translatedTextView.text = response.data
+                        }
                     }
                 }
             }
         }
-       }
         viewModel.currentSubText.observe(this) { currentText ->
             binding.includedInfoLayout.originalTextView.text = currentText
             viewModel.translateText(
@@ -132,7 +132,25 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         })
+
+        binding.includedInfoLayout.webSearchButton.setOnClickListener {
+            // launch google search web view dialog
+            launchWebView()
+        }
     }
+
+    private fun launchWebView() {
+        val dialog = WebSearchDialogFragment()
+        val bundle = Bundle()
+        bundle.putString(WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,binding.includedInfoLayout.originalTextView.text.toString())
+        dialog.arguments = bundle
+        dialog.show(supportFragmentManager,null)
+//        supportFragmentManager.beginTransaction()
+//            .add(android.R.id.content, dialog)
+//            .addToBackStack(null)
+//            .commit()
+    }
+
     private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
         logDebug("show loading: $show")
         if (show) {
