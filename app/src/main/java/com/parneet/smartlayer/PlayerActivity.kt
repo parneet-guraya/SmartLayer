@@ -140,15 +140,13 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun launchWebView() {
-        val dialog = WebSearchDialogFragment()
-        val bundle = Bundle()
-        bundle.putString(WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,binding.includedInfoLayout.originalTextView.text.toString())
-        dialog.arguments = bundle
-        dialog.show(supportFragmentManager,null)
-//        supportFragmentManager.beginTransaction()
-//            .add(android.R.id.content, dialog)
-//            .addToBackStack(null)
-//            .commit()
+        val wikiDialog = WikipediaArticlesDialogFragment()
+//        val dialog = WebSearchDialogFragment()
+//        val bundle = Bundle()
+//        bundle.putString(WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,binding.includedInfoLayout.originalTextView.text.toString())
+//        dialog.arguments = bundle
+//        dialog.show(supportFragmentManager,null)
+        wikiDialog.show(supportFragmentManager,null)
     }
 
     private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
