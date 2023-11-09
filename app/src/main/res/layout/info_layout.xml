@@ -91,6 +91,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/web_search_header" />
 
+
+        <TextView
+            android:id="@+id/wiki_search_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wikipedia Articles"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
+            app:layout_constraintTop_toBottomOf="@id/web_search_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/wiki_search_button"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Wiki Search"
+            app:chipIcon="@drawable/ic_neuro"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wiki_search_header" />
+
         <TextView
             android:id="@+id/translate_view_header"
             android:layout_width="wrap_content"
@@ -98,7 +120,7 @@
             android:text="Translate"
             android:layout_marginTop="8dp"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/web_search_button"
+            app:layout_constraintTop_toBottomOf="@id/wiki_search_button"
             app:layout_constraintStart_toStartOf="parent" />
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/google_translate_card_view"

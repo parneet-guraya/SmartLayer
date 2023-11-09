@@ -40,11 +40,14 @@ class WikipediaArticlesDialogFragment : DialogFragment() {
         val wikipediaApi = RetrofitClient.retrofit.create(WikipediaApi::class.java)
 
         lifecycleScope.launch {
-            val list = wikipediaApi.fetchArticles("smart").pages
+            val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
+            val list = wikipediaApi.fetchArticles(searchQuery!!).pages
            val  articlesAdapter = WikiArticlesListAdapter(list)
             binding.articlesRecyclerView.adapter = articlesAdapter
             println(list)
         }
     }
-
+companion object{
+    const val KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY"
+}
 }

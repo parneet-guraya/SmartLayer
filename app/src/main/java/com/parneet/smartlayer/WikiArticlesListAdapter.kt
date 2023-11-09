@@ -3,6 +3,7 @@ package com.parneet.smartlayer
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.parneet.smartlayer.databinding.WikipediaArticlesListBinding
 import com.parneet.smartlayer.model.Page
 
@@ -28,7 +29,7 @@ class WikiArticlesListAdapter(private val articlesList: List<Page>) :
         val article = articlesList[position]
         holder.titleTV.text = article.title
         holder.descriptionTV.text = article.description
-
+        holder.articleIV.load(article.thumbnail?.url)
         // yet to add image functionality using image loading libraries like Koil or Glide
 
     }
