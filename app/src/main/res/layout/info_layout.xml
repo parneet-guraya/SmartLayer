@@ -43,11 +43,11 @@
             android:id="@+id/word_picker_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pick Words"
             android:layout_marginTop="8dp"
+            android:text="Pick Words"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/original_text_card_view"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/original_text_card_view" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/choose_words_card_view"
@@ -58,15 +58,29 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/word_picker_header">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/words_chip_group"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp">
+                android:orientation="vertical">
+
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/splitting_words_progress_indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:visibility="gone" />
 
 
-            </com.google.android.material.chip.ChipGroup>
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/words_chip_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp">
 
+
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
 
@@ -74,11 +88,11 @@
             android:id="@+id/web_search_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Google Search"
             android:layout_marginTop="8dp"
+            android:text="Google Search"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/choose_words_card_view"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/choose_words_card_view" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/web_search_button"
@@ -96,11 +110,11 @@
             android:id="@+id/wiki_search_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Wikipedia Articles"
             android:layout_marginTop="8dp"
+            android:text="Wikipedia Articles"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/web_search_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/web_search_button" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/wiki_search_button"
@@ -117,11 +131,12 @@
             android:id="@+id/translate_view_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Translate"
             android:layout_marginTop="8dp"
+            android:text="Translate"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@id/wiki_search_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wiki_search_button" />
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/google_translate_card_view"
             android:layout_width="match_parent"

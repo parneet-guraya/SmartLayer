@@ -69,10 +69,23 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.tokenizedWords.observe(this) { responseOfWords ->
             when (responseOfWords) {
                 is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
-                Response.Loading -> println("Tokenizing")
+                Response.Loading -> {
+                    println("Tokenizing")
+                    showLoading(
+                        true,
+                        binding.includedInfoLayout.wordsChipGroup,
+                        binding.includedInfoLayout.splittingWordsProgressIndicator
+                    )
+                }
+
                 is Response.Success -> {
                     responseOfWords.data.onEach { word ->
                         createWordChip(word)
+                        showLoading(
+                            false,
+                            binding.includedInfoLayout.wordsChipGroup,
+                            binding.includedInfoLayout.splittingWordsProgressIndicator
+                        )
                     }
                 }
             }
