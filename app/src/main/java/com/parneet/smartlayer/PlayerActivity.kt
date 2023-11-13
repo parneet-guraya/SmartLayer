@@ -161,26 +161,50 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.includedInfoLayout.webSearchButton.setOnClickListener {
             // launch google search web view dialog
-            launchWebViewDialog()
+            launchWebViewDialog(
+                WebSearchDialogFragment.GOOGLE_SEARCH,
+                binding.includedInfoLayout.originalTextView.text.toString()
+            )
         }
         binding.includedInfoLayout.wikiSearchButton.setOnClickListener {
             launchWikiArticlesDialog()
         }
     }
 
-    private fun launchWebViewDialog() {
+    private fun launchWebViewDialog(webOperation: Int, data: String) {
         val dialog = WebSearchDialogFragment()
         val bundle = Bundle()
-        bundle.putString(
-            WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,
-            binding.includedInfoLayout.originalTextView.text.toString()
-        )
+        when (webOperation) {
+            WebSearchDialogFragment.GOOGLE_SEARCH -> {
+                bundle.putInt(
+                    WebSearchDialogFragment.KEY_WEB_OPERATION,
+                    WebSearchDialogFragment.GOOGLE_SEARCH
+                )
+            }
+            WebSearchDialogFragment.WIKI_ARTICLE_PAGE -> {
+                bundle.putInt(
+                    WebSearchDialogFragment.KEY_WEB_OPERATION,
+                    WebSearchDialogFragment.WIKI_ARTICLE_PAGE
+                )
+
+            }
+            else -> {
+                return
+            }
+        }
+        bundle.putString(WebSearchDialogFragment.KEY_URL_EXTRA_DATA_STRING, data)
+
         dialog.arguments = bundle
         dialog.show(supportFragmentManager, null)
     }
 
     private fun launchWikiArticlesDialog() {
-        val wikiDialog = WikipediaArticlesDialogFragment()
+        val wikiDialog =
+            WikipediaArticlesDialogFragment(object : WikiArticlesListAdapter.OnItemClickListener {
+                override fun onItemClick(pageId: Int) {
+                    launchWebViewDialog(WebSearchDialogFragment.WIKI_ARTICLE_PAGE,pageId.toString())
+                }
+            })
         wikiDialog.arguments = Bundle().apply {
             putString(
                 WikipediaArticlesDialogFragment.KEY_SEARCH_QUERY,

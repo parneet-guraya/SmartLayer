@@ -7,11 +7,25 @@ import coil.load
 import com.parneet.smartlayer.databinding.WikipediaArticlesListBinding
 import com.parneet.smartlayer.model.Page
 
-class WikiArticlesListAdapter(private val articlesList: List<Page>) :
+class WikiArticlesListAdapter(
+    private val articlesList: List<Page>,
+    private val wikiArticleClickListener: OnItemClickListener
+) :
     RecyclerView.Adapter<WikiArticlesListAdapter.ListItemViewHolder>() {
 
-    class ListItemViewHolder(binding: WikipediaArticlesListBinding) :
+    class ListItemViewHolder(
+        binding: WikipediaArticlesListBinding,
+        wikiArticleClickListener: OnItemClickListener,
+        articlesList: List<Page>
+    ) :
         RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                val pageId = articlesList[bindingAdapterPosition].id
+                wikiArticleClickListener.onItemClick(pageId)
+            }
+        }
+
         val titleTV = binding.articleTitle
         val descriptionTV = binding.description
         val articleIV = binding.articleImage
@@ -21,7 +35,9 @@ class WikiArticlesListAdapter(private val articlesList: List<Page>) :
         return ListItemViewHolder(
             WikipediaArticlesListBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
-            )
+            ),
+            wikiArticleClickListener,
+            articlesList
         )
     }
 
@@ -36,5 +52,11 @@ class WikiArticlesListAdapter(private val articlesList: List<Page>) :
 
     override fun getItemCount(): Int {
         return articlesList.size
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(pageId: Int) {
+
+        }
     }
 }

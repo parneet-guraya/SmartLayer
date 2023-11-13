@@ -10,7 +10,8 @@ import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
 import com.parneet.smartlayer.model.service.WikipediaApi
 import kotlinx.coroutines.launch
 
-class WikipediaArticlesDialogFragment : DialogFragment() {
+class WikipediaArticlesDialogFragment(private val wikiArticleItemClickListener: WikiArticlesListAdapter.OnItemClickListener) :
+    DialogFragment() {
 
     private var _binding: WikipediaArticlesDialogFragmentBinding? = null
     private val binding get() = _binding!!
@@ -42,12 +43,13 @@ class WikipediaArticlesDialogFragment : DialogFragment() {
         lifecycleScope.launch {
             val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
             val list = wikipediaApi.fetchArticles(searchQuery!!).pages
-           val  articlesAdapter = WikiArticlesListAdapter(list)
+            val articlesAdapter = WikiArticlesListAdapter(list, wikiArticleItemClickListener)
             binding.articlesRecyclerView.adapter = articlesAdapter
             println(list)
         }
     }
-companion object{
-    const val KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY"
-}
+
+    companion object {
+        const val KEY_SEARCH_QUERY = "KEY_SEARCH_QUERY"
+    }
 }

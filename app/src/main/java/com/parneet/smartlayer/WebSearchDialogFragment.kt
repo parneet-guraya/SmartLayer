@@ -12,9 +12,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.addCallback
-import androidx.core.view.marginStart
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.parneet.smartlayer.databinding.WebViewLayoutBinding
@@ -37,11 +35,11 @@ class WebSearchDialogFragment : DialogFragment() {
 
     //Revisit change the deprecated use of backpress
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialog = object: Dialog(requireContext(),theme){
+        val dialog = object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
-                if(binding.webView.canGoBack()){
+                if (binding.webView.canGoBack()) {
                     binding.webView.goBack()
-                }else{
+                } else {
                     super.onBackPressed()
                 }
             }
@@ -67,10 +65,12 @@ class WebSearchDialogFragment : DialogFragment() {
         val params = window?.attributes
 
         val margin = convertPixelsToDp(8)
-        binding.root.updateLayoutParams<MarginLayoutParams> { marginStart = margin
+        binding.root.updateLayoutParams<MarginLayoutParams> {
+            marginStart = margin
             marginEnd = margin
             topMargin = margin
-            bottomMargin = margin}
+            bottomMargin = margin
+        }
 
         params?.let { parameters ->
             parameters.width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -88,18 +88,31 @@ class WebSearchDialogFragment : DialogFragment() {
                 return false
             }
         }
-        webView.loadUrl("https://www.google.com/search?q=${arguments?.getString(
-            KEY_WEB_SEARCH_STRING)}")
+        getLoadUrl()?.let {
+            webView.loadUrl(it)
+        }
 
         binding.navigateBackButton.setOnClickListener {
-            if(webView.canGoBack()){
+            if (webView.canGoBack()) {
                 webView.goBack()
-            }else{
-                Snackbar.make(it,"At the home page, can't go back!", Snackbar.LENGTH_SHORT)
+            } else {
+                Snackbar.make(it, "At the home page, can't go back!", Snackbar.LENGTH_SHORT)
                     .show()
             }
         }
         binding.closeDialogButton.setOnClickListener { dialog?.dismiss() }
+    }
+
+    private fun getLoadUrl(): String? {
+        val data = arguments?.getString(KEY_URL_EXTRA_DATA_STRING)
+        val operation = arguments?.getInt(KEY_WEB_OPERATION)
+        return when (operation) {
+            GOOGLE_SEARCH -> "${GOOGLE_BASE_URL}$data"
+            WIKI_ARTICLE_PAGE -> "${WIKI_ARTICLE_PAGE_BASE_URL}$data"
+            else -> {
+                null
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -107,12 +120,18 @@ class WebSearchDialogFragment : DialogFragment() {
         _binding = null
     }
 
-    private fun convertPixelsToDp(pixels: Int):Int{
+    private fun convertPixelsToDp(pixels: Int): Int {
         val density = requireContext().resources.displayMetrics.density
         return pixels * density.toInt()
     }
 
-    companion object{
-        const val KEY_WEB_SEARCH_STRING = "KEY_WEB_SEARCH_STRING"
+    companion object {
+        const val KEY_URL_EXTRA_DATA_STRING = "KEY_URL_EXTRA_DATA_STRING"
+        const val KEY_WEB_OPERATION = "KEY_WEB_OPERATION"
+        private const val GOOGLE_BASE_URL = "https://www.google.com/search?q="
+        private const val WIKI_ARTICLE_PAGE_BASE_URL = "https://en.wikipedia.org/?curid="
+        const val GOOGLE_SEARCH = 1
+        const val WIKI_ARTICLE_PAGE = 2
+        // revisit see if we can use enum here to represent the web operation we want to do
     }
 }
