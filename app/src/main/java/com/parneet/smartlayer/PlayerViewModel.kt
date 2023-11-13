@@ -1,9 +1,10 @@
 package com.parneet.smartlayer
 
+import android.app.Application
 import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import com.parneet.smartlayer.model.Response
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PlayerViewModel : ViewModel() {
+class PlayerViewModel(private val application: Application) : AndroidViewModel(application) {
     var videoUri: Uri? = null
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
@@ -23,6 +24,10 @@ class PlayerViewModel : ViewModel() {
     var isOriginalSubShowing = true
     var currentSourceLang: String = "en"
     var currentTargetLang: String = "hi"
+    private var openNLPTokenizer: OpenNLPTokenizer? = null
+    private var _tokenizedWords = MutableLiveData<Response<Array<String>>>()
+    val tokenizedWords: LiveData<Response<Array<String>>> = _tokenizedWords
+
 
     private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading)
     val translateResponseState: StateFlow<Response<String>> = _translateResponseState
@@ -53,4 +58,21 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
+    fun splitIntoWords(subtitleString: String) {
+        _tokenizedWords.value = Response.Loading
+        viewModelScope.launch {
+            if (openNLPTokenizer == null) {
+                println("model initialised")
+                openNLPTokenizer = OpenNLPTokenizer(context = application.applicationContext)
+                openNLPTokenizer?.initialize()
+            }
+            println("tokenize")
+            _tokenizedWords.value = openNLPTokenizer?.tokenizeString(subtitleString)
+        }
+    }
+
+    fun releaseTokenizerModel(){
+        println("release model")
+        openNLPTokenizer?.release()
+    }
 }

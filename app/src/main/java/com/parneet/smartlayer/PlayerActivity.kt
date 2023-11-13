@@ -65,6 +65,19 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
+
+        viewModel.tokenizedWords.observe(this) { responseOfWords ->
+            when (responseOfWords) {
+                is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
+                Response.Loading -> println("Tokenizing")
+                is Response.Success -> {
+                    responseOfWords.data.onEach { word ->
+                        createWordChip(word)
+                    }
+                }
+            }
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.translateResponseState.collect { response ->
@@ -145,12 +158,15 @@ class PlayerActivity : AppCompatActivity() {
     private fun launchWebViewDialog() {
         val dialog = WebSearchDialogFragment()
         val bundle = Bundle()
-        bundle.putString(WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,binding.includedInfoLayout.originalTextView.text.toString())
+        bundle.putString(
+            WebSearchDialogFragment.KEY_WEB_SEARCH_STRING,
+            binding.includedInfoLayout.originalTextView.text.toString()
+        )
         dialog.arguments = bundle
-        dialog.show(supportFragmentManager,null)
+        dialog.show(supportFragmentManager, null)
     }
 
-    private fun launchWikiArticlesDialog(){
+    private fun launchWikiArticlesDialog() {
         val wikiDialog = WikipediaArticlesDialogFragment()
         wikiDialog.arguments = Bundle().apply {
             putString(
@@ -160,6 +176,7 @@ class PlayerActivity : AppCompatActivity() {
         }
         wikiDialog.show(supportFragmentManager, null)
     }
+
     private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
         logDebug("show loading: $show")
         if (show) {
@@ -176,6 +193,11 @@ class PlayerActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         initializePlayer()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.releaseTokenizerModel()
     }
 
     override fun onPause() {
@@ -298,10 +320,7 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.updateCurrentSubText(text)
         binding.includedInfoLayout.wordsChipGroup.removeAllViews()
         // extract words from line
-        val words = text.split(" ")
-        for (word in words) {
-            createWordChip(word.trim())
-        }
+        viewModel.splitIntoWords(text)
     }
 
     private fun createWordChip(word: String) {
