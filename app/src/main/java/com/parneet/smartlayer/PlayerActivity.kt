@@ -181,6 +181,7 @@ class PlayerActivity : AppCompatActivity() {
                     WebSearchDialogFragment.GOOGLE_SEARCH
                 )
             }
+
             WebSearchDialogFragment.WIKI_ARTICLE_PAGE -> {
                 bundle.putInt(
                     WebSearchDialogFragment.KEY_WEB_OPERATION,
@@ -188,6 +189,7 @@ class PlayerActivity : AppCompatActivity() {
                 )
 
             }
+
             else -> {
                 return
             }
@@ -202,7 +204,10 @@ class PlayerActivity : AppCompatActivity() {
         val wikiDialog =
             WikipediaArticlesDialogFragment(object : WikiArticlesListAdapter.OnItemClickListener {
                 override fun onItemClick(pageId: Int) {
-                    launchWebViewDialog(WebSearchDialogFragment.WIKI_ARTICLE_PAGE,pageId.toString())
+                    launchWebViewDialog(
+                        WebSearchDialogFragment.WIKI_ARTICLE_PAGE,
+                        pageId.toString()
+                    )
                 }
             })
         wikiDialog.arguments = Bundle().apply {
@@ -352,6 +357,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun openInfoDrawer(text: String) {
+        viewModel.isOriginalSubShowing = true
         viewModel.originalSubText = text
         binding.drawerLayout.open()
         viewModel.updateCurrentSubText(text)
