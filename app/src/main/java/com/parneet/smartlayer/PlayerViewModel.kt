@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.TrackSelectionParameters
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.model.service.MlKitTranslationService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +28,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private var openNLPTokenizer: OpenNLPTokenizer? = null
     private var _tokenizedWords = MutableLiveData<Response<Array<String>>>()
     val tokenizedWords: LiveData<Response<Array<String>>> = _tokenizedWords
+    var trackSelectionParameters: TrackSelectionParameters? = null
 
 
     private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading)
@@ -71,7 +73,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         }
     }
 
-    fun releaseTokenizerModel(){
+    fun releaseTokenizerModel() {
         println("release model")
         openNLPTokenizer?.release()
     }

@@ -26,8 +26,6 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
-import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.google.android.material.chip.Chip
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -35,6 +33,7 @@ import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.model.service.MlKitTranslationService
 import kotlinx.coroutines.launch
+
 
 @OptIn(UnstableApi::class)
 class PlayerActivity : AppCompatActivity() {
@@ -248,11 +247,11 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        val trackSelector = DefaultTrackSelector(this, AdaptiveTrackSelection.Factory())
-
         player = ExoPlayer.Builder(this)
-            .setTrackSelector(trackSelector)
             .build().also { exoPlayer ->
+                if (viewModel.trackSelectionParameters != null) {
+                    exoPlayer.trackSelectionParameters = viewModel.trackSelectionParameters!!
+                }
                 binding.playerView.player = exoPlayer
                 if (viewModel.videoUri != null) {
                     exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
@@ -281,6 +280,7 @@ class PlayerActivity : AppCompatActivity() {
             viewModel.playWhenReady = exoPlayer.playWhenReady
             viewModel.playBackPosition = exoPlayer.currentPosition
             viewModel.currentPlayingMediaItem = exoPlayer.currentMediaItem
+            viewModel.trackSelectionParameters = exoPlayer.trackSelectionParameters
             exoPlayer.release()
         }
         player = null
