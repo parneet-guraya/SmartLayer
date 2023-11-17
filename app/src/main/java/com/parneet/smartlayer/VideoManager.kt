@@ -49,9 +49,12 @@ object VideoManager {
 
     suspend fun getVideosInFolder(
         applicationContext: Context,
-        bucketId: String,
+        bucketId: String?,
         dpToPixels: (widthInDp: Int, heightInDp: Int) -> Size
-    ): List<Video> {
+    ): List<Video>? {
+        if (bucketId == null) {
+            return null
+        }
         return withContext(Dispatchers.IO) {
             val videoList = mutableListOf<Video>()
             val projection = arrayOf(
@@ -78,10 +81,11 @@ object VideoManager {
                 val titleColumn = cur.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE)
                 val durationColumn = cur.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
 
-                val id = cur.getLong(idColumn)
-                val uri =
-                    ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id)
+
                 while (cur.moveToNext()) {
+                    val id = cur.getLong(idColumn)
+                    val uri =
+                        ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id)
                     videoList.add(
                         Video(
                             id = id,

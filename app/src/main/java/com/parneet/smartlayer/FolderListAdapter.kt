@@ -7,10 +7,24 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.parneet.smartlayer.databinding.FolderItemBinding
 import com.parneet.smartlayer.model.Folder
 
-class FolderListAdapter(private val foldersList: List<Folder>) :
+class FolderListAdapter(
+    private val foldersList: List<Folder>,
+    private val onItemClick: (bucketId: String) -> Unit
+) :
     RecyclerView.Adapter<FolderListAdapter.FolderItemViewHolder>() {
 
-    class FolderItemViewHolder(binding: FolderItemBinding) : ViewHolder(binding.root) {
+    class FolderItemViewHolder(
+        binding: FolderItemBinding,
+        foldersList: List<Folder>,
+        onItemClick: (bucketId: String) -> Unit
+    ) : ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
+                val folder = foldersList[absoluteAdapterPosition]
+                onItemClick(folder.bucketId)
+            }
+        }
+
         val folderNameTV = binding.folderTitle
     }
 
@@ -20,7 +34,9 @@ class FolderListAdapter(private val foldersList: List<Folder>) :
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            )
+            ),
+            foldersList,
+            onItemClick
         )
     }
 

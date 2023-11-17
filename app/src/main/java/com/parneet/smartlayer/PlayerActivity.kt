@@ -50,7 +50,7 @@ class PlayerActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
         viewModel.videoUri = intent.getParcelableExtra(
-            MainActivity.EXTRA_VIDEO_URI
+            FolderListFragment.EXTRA_VIDEO_URI
         )
         setInfoIconVisible(true)
 
