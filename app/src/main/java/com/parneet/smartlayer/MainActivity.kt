@@ -1,14 +1,23 @@
 package com.parneet.smartlayer
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import com.parneet.smartlayer.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 
 const val LOG_TAG = "MYCUSTOMLOGTAG"
 
@@ -24,8 +33,38 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.topAppBar)
+        requestPermissionIfNeeded()
         binding.pickVideoFab.setOnClickListener {
             launchVideoPicker()
+        }
+    }
+    private fun requestPermissionIfNeeded() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_MEDIA_VIDEO
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            lifecycleScope.launch {
+                val foldersList = VideoManager.getVideoFolders(applicationContext)
+                println("Folders List: $foldersList")
+            }
+        } else {
+            requestPermissionLauncher().launch(Manifest.permission.READ_MEDIA_VIDEO)
+        }
+    }
+
+    private fun requestPermissionLauncher(): ActivityResultLauncher<String> {
+        return registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // show folders
+                lifecycleScope.launch {
+                    val foldersList = VideoManager.getVideoFolders(applicationContext)
+                    println("Folders List: $foldersList")
+                }
+            } else {
+                Toast.makeText(this@MainActivity, "Permission Denied", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 
