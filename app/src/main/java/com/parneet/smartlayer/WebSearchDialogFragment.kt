@@ -1,6 +1,7 @@
 package com.parneet.smartlayer
 
 import android.app.Dialog
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -80,7 +82,33 @@ class WebSearchDialogFragment : DialogFragment() {
 
 
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                super.onProgressChanged(view, newProgress)
+                binding.progressCircular.progress = newProgress
+            }
+        }
         webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                super.onPageStarted(view, url, favicon)
+                UiUtils.toggleLoading(
+                    true,
+                    null,
+                    binding.progressCircular,
+                    true
+                )
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                UiUtils.toggleLoading(
+                    false,
+                    null,
+                    binding.progressCircular,
+                    true
+                )
+            }
+
             override fun shouldOverrideUrlLoading(
                 view: WebView?,
                 request: WebResourceRequest?
@@ -91,6 +119,7 @@ class WebSearchDialogFragment : DialogFragment() {
         getLoadUrl()?.let {
             webView.loadUrl(it)
         }
+
 
         binding.navigateBackButton.setOnClickListener {
             if (webView.canGoBack()) {
