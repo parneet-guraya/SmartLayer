@@ -243,12 +243,15 @@ class PlayerActivity : AppCompatActivity() {
                     exoPlayer.trackSelectionParameters = viewModel.trackSelectionParameters!!
                 }
                 binding.playerView.player = exoPlayer
-                if (viewModel.videoUri != null) {
-                    exoPlayer.setMediaItem(MediaItem.fromUri(viewModel.videoUri!!))
+                if (viewModel.currentPlayingMediaItem == null) {
+                    val mediaItem = MediaItem.fromUri(viewModel.videoUri!!)
+                    viewModel.currentPlayingMediaItem = mediaItem
+                }
+                if (viewModel.subtitleUri != null) {
+                    setMediaItemWithSubtitleTrack(viewModel.subtitleUri)
                 } else {
                     exoPlayer.setMediaItem(viewModel.currentPlayingMediaItem!!)
                 }
-
 
                 getInfoButton().setOnClickListener {
                     infoButtonClickListener(exoPlayer)
@@ -263,6 +266,10 @@ class PlayerActivity : AppCompatActivity() {
                 exoPlayer.prepare()
 
             }
+        viewModel.subtitleUri?.let { subUri ->
+            println("add subtitle Uri: $subUri")
+            setMediaItemWithSubtitleTrack(subUri)
+        }
     }
 
     private fun releasePlayer() {
@@ -328,17 +335,18 @@ class PlayerActivity : AppCompatActivity() {
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 val intent = activityResult.data
                 if (intent != null) {
-                    addSubClickListener(intent.data)
+                    viewModel.subtitleUri = intent.data
+                    setMediaItemWithSubtitleTrack(viewModel.subtitleUri)
                 }
             }
 
         }
     }
 
-    private fun addSubClickListener(uri: Uri?) {
+    private fun setMediaItemWithSubtitleTrack(uri: Uri?) {
         if (uri != null) {
-            val currentMediaItem = player?.currentMediaItem
-            val currentPosition = player?.currentPosition
+            val currentMediaItem = viewModel.currentPlayingMediaItem
+            val currentPosition = viewModel.playBackPosition
             val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
                 .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
             val updatedMediaItem =
@@ -347,9 +355,8 @@ class PlayerActivity : AppCompatActivity() {
                     ?.build()
 
             if (updatedMediaItem != null) {
-                if (currentPosition != null) {
-                    player?.setMediaItem(updatedMediaItem, currentPosition)
-                }
+                println("player set updated media item")
+                player?.setMediaItem(updatedMediaItem, currentPosition)
             }
         }
     }

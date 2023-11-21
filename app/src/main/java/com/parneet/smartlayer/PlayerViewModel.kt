@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val application: Application) : AndroidViewModel(application) {
     var videoUri: Uri? = null
+    var subtitleUri: Uri? = null
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
     var currentPlayingMediaItem: MediaItem? = null
