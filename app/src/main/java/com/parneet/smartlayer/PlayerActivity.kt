@@ -27,7 +27,6 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
-import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
@@ -70,7 +69,7 @@ class PlayerActivity : AppCompatActivity() {
                 is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
                 Response.Loading -> {
                     println("Tokenizing")
-                    showLoading(
+                    UiUtils.toggleLoading(
                         true,
                         binding.includedInfoLayout.wordsChipGroup,
                         binding.includedInfoLayout.splittingWordsProgressIndicator
@@ -80,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
                 is Response.Success -> {
                     responseOfWords.data.onEach { word ->
                         createWordChip(word)
-                        showLoading(
+                        UiUtils.toggleLoading(
                             false,
                             binding.includedInfoLayout.wordsChipGroup,
                             binding.includedInfoLayout.splittingWordsProgressIndicator
@@ -96,7 +95,7 @@ class PlayerActivity : AppCompatActivity() {
                     when (response) {
                         is Response.Error -> logDebug("Translate text" + response.exception.message!!)
                         is Response.Loading -> {
-                            showLoading(
+                            UiUtils.toggleLoading(
                                 true,
                                 binding.includedInfoLayout.translatedTextView,
                                 binding.includedInfoLayout.translateLoadingBar
@@ -105,7 +104,7 @@ class PlayerActivity : AppCompatActivity() {
                         }
 
                         is Response.Success -> {
-                            showLoading(
+                            UiUtils.toggleLoading(
                                 false,
                                 binding.includedInfoLayout.translatedTextView,
                                 binding.includedInfoLayout.translateLoadingBar
@@ -216,19 +215,6 @@ class PlayerActivity : AppCompatActivity() {
             )
         }
         wikiDialog.show(supportFragmentManager, null)
-    }
-
-    private fun showLoading(show: Boolean, view: View?, loadingView: LinearProgressIndicator) {
-        logDebug("show loading: $show")
-        if (show) {
-            loadingView.visibility = View.VISIBLE
-            view?.visibility = View.GONE
-            loadingView.show()
-        } else {
-            loadingView.visibility = View.GONE
-            view?.visibility = View.VISIBLE
-            loadingView.hide()
-        }
     }
 
     override fun onStart() {
