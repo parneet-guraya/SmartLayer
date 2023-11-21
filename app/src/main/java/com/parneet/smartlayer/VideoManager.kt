@@ -50,7 +50,7 @@ object VideoManager {
     suspend fun getVideosInFolder(
         applicationContext: Context,
         bucketId: String?,
-        dpToPixels: (widthInDp: Int, heightInDp: Int) -> Size
+        sizeInPixels: (Int) -> Int,
     ): List<Video>? {
         if (bucketId == null) {
             return null
@@ -94,7 +94,10 @@ object VideoManager {
                             uri = uri,
                             applicationContext.contentResolver.loadThumbnail(
                                 uri,
-                                dpToPixels(160, 90),
+                                Size(
+                                    sizeInPixels(160),
+                                    sizeInPixels(90)
+                                ),
                                 null
                             )
                         )

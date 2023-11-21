@@ -3,7 +3,6 @@ package com.parneet.smartlayer
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,7 @@ class VideoFolderFragment : Fragment() {
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
         println("BucketId: $bucketId")
         lifecycleScope.launch {
-        loadVideos(bucketId)
+            loadVideos(bucketId)
         }
     }
 
@@ -38,22 +37,21 @@ class VideoFolderFragment : Fragment() {
         val videosList = VideoManager.getVideosInFolder(
             requireActivity().applicationContext,
             bucketId!!
-        ) { widthInDp, heightInDp ->
-            val density = resources.displayMetrics.density.toInt()
-            Size(widthInDp * density, heightInDp * density)
+        ) { sizeInPixels ->
+            UiUtils.dpToPixels(sizeInPixels, requireContext())
         }
         if (videosList != null) {
-            val videosListAdapter = VideoListAdapter(videosList) { uri,title ->
-                startPlayer(uri,title)
+            val videosListAdapter = VideoListAdapter(videosList) { uri, title ->
+                startPlayer(uri, title)
             }
             binding.videoListRecyclerView.adapter = videosListAdapter
         }
     }
 
-    private fun startPlayer(uri: Uri,title:String) {
+    private fun startPlayer(uri: Uri, title: String) {
         val startPlayerIntent = Intent(requireContext(), PlayerActivity::class.java)
         startPlayerIntent.putExtra(EXTRA_VIDEO_URI, uri)
-        startPlayerIntent.putExtra(EXTRA_VIDEO_TITLE,title)
+        startPlayerIntent.putExtra(EXTRA_VIDEO_TITLE, title)
         startActivity(startPlayerIntent)
     }
 
@@ -61,7 +59,8 @@ class VideoFolderFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-    companion object{
+
+    companion object {
         const val EXTRA_VIDEO_URI = "EXTRA_VIDEO_URI"
         const val EXTRA_VIDEO_TITLE = "EXTRA_VIDEO_TITLE"
     }
