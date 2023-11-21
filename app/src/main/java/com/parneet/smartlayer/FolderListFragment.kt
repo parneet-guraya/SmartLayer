@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.parneet.smartlayer.databinding.FragmentFolderListBinding
 import kotlinx.coroutines.launch
 
@@ -65,7 +66,7 @@ class FolderListFragment : Fragment() {
                 goToVideoList(bucketId)
             }
 
-            binding.foldersRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+            binding.foldersRecyclerView.layoutManager = LinearLayoutManager(requireContext()) // GridLayoutManager(requireContext(), 3)
             binding.foldersRecyclerView.adapter = adapter
         }
     }
