@@ -26,6 +26,53 @@
         android:background="@color/exo_black_opacity_60" />
 
     <FrameLayout
+        android:id="@+id/exo_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/exo_styled_bottom_bar_height"
+        android:layout_gravity="top"
+        android:layoutDirection="ltr">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layoutDirection="ltr"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/back_arrow_button"
+                style="@style/ExoStyledControls.Button.Bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_arrow_back_white_24" />
+
+            <TextView
+                android:id="@+id/video_title"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:hint="Sample Video 1080p"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:textSize="18sp" />
+
+
+            <ImageButton
+                android:id="@+id/add_subtitle_button"
+                style="@style/ExoStyledControls.Button.Bottom"
+                android:layout_toStartOf="@id/exo_settings"
+                android:src="@drawable/baseline_text_snippet_24" />
+
+            <ImageButton
+                android:id="@id/exo_settings"
+                style="@style/ExoStyledControls.Button.Bottom.Settings"
+                android:layout_alignParentEnd="true" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@id/exo_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/exo_styled_bottom_bar_height"
@@ -65,18 +112,6 @@
             android:layoutDirection="ltr">
 
             <ImageButton
-                android:id="@id/exo_vr"
-                style="@style/ExoStyledControls.Button.Bottom.VR" />
-
-            <ImageButton
-                android:id="@id/exo_shuffle"
-                style="@style/ExoStyledControls.Button.Bottom.Shuffle" />
-
-            <ImageButton
-                android:id="@id/exo_repeat_toggle"
-                style="@style/ExoStyledControls.Button.Bottom.RepeatToggle" />
-
-            <ImageButton
                 android:id="@+id/custom_info_button"
                 style="@style/ExoStyledControls.Button.Bottom"
                 android:src="@drawable/ic_info_24"
@@ -87,18 +122,8 @@
                 style="@style/ExoStyledControls.Button.Bottom.CC" />
 
             <ImageButton
-                android:id="@id/exo_settings"
-                style="@style/ExoStyledControls.Button.Bottom.Settings" />
-
-
-            <ImageButton
                 android:id="@id/exo_fullscreen"
                 style="@style/ExoStyledControls.Button.Bottom.FullScreen" />
-
-            <ImageButton
-                android:id="@+id/add_subtitle_button"
-                style="@style/ExoStyledControls.Button.Bottom"
-                android:src="@drawable/baseline_text_snippet_24" />
 
             <ImageButton
                 android:id="@id/exo_overflow_show"

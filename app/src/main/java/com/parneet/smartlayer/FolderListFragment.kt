@@ -1,9 +1,7 @@
 package com.parneet.smartlayer
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -83,7 +81,6 @@ class FolderListFragment : Fragment() {
     }
 
     companion object {
-        const val EXTRA_VIDEO_URI = "com.parneet.smartlayer.MainActivity.EXTRA_VIDEO_URI"
         const val EXTRA_BUCKET_ID = "EXTRA_BUCKET_ID"
     }
 

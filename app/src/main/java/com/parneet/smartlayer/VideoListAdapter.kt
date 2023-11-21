@@ -11,18 +11,18 @@ import com.parneet.smartlayer.model.Video
 
 class VideoListAdapter(
     private val videosList: List<Video>,
-    private val onItemClick: (uri: Uri) -> Unit
+    private val onItemClick: (uri: Uri,title:String) -> Unit
 ) : RecyclerView.Adapter<VideoListAdapter.VideoItemViewHolder>() {
 
     class VideoItemViewHolder(
         binding: VideoItemBinding,
         videosList: List<Video>,
-        onItemClick: (uri: Uri) -> Unit
+        onItemClick: (uri: Uri,title:String) -> Unit
     ) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
                 val video = videosList[absoluteAdapterPosition]
-                onItemClick(video.uri)
+                onItemClick(video.uri,video.title)
             }
         }
 

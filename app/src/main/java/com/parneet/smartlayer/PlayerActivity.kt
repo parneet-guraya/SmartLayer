@@ -50,10 +50,14 @@ class PlayerActivity : AppCompatActivity() {
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
         viewModel.videoUri = intent.getParcelableExtra(
-            FolderListFragment.EXTRA_VIDEO_URI
+            VideoFolderFragment.EXTRA_VIDEO_URI
         )
+        val title = intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE)
+        getVideoTitleView().text = title
         setInfoIconVisible(true)
-
+        getBackArrowButton().setOnClickListener {
+            super.onBackPressed()
+        }
         initWindowInsetsController()
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
@@ -278,6 +282,14 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun getAddSubButton(): ImageButton {
         return binding.playerView.findViewById(R.id.add_subtitle_button)
+    }
+
+    private fun getVideoTitleView(): TextView {
+        return binding.playerView.findViewById(R.id.video_title)
+    }
+
+    private fun getBackArrowButton(): ImageButton {
+        return binding.playerView.findViewById(R.id.back_arrow_button)
     }
 
     private fun setInfoIconVisible(visibility: Boolean) {

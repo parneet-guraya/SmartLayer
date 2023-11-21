@@ -43,21 +43,26 @@ class VideoFolderFragment : Fragment() {
             Size(widthInDp * density, heightInDp * density)
         }
         if (videosList != null) {
-            val videosListAdapter = VideoListAdapter(videosList) { uri ->
-                startPlayer(uri)
+            val videosListAdapter = VideoListAdapter(videosList) { uri,title ->
+                startPlayer(uri,title)
             }
             binding.videoListRecyclerView.adapter = videosListAdapter
         }
     }
 
-    private fun startPlayer(uri: Uri) {
+    private fun startPlayer(uri: Uri,title:String) {
         val startPlayerIntent = Intent(requireContext(), PlayerActivity::class.java)
-        startPlayerIntent.putExtra(FolderListFragment.EXTRA_VIDEO_URI, uri)
+        startPlayerIntent.putExtra(EXTRA_VIDEO_URI, uri)
+        startPlayerIntent.putExtra(EXTRA_VIDEO_TITLE,title)
         startActivity(startPlayerIntent)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    companion object{
+        const val EXTRA_VIDEO_URI = "EXTRA_VIDEO_URI"
+        const val EXTRA_VIDEO_TITLE = "EXTRA_VIDEO_TITLE"
     }
 }
