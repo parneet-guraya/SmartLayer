@@ -41,10 +41,21 @@ class WikipediaArticlesDialogFragment(private val wikiArticleItemClickListener: 
         val wikipediaApi = RetrofitClient.retrofit.create(WikipediaApi::class.java)
 
         lifecycleScope.launch {
+            UiUtils.toggleLoading(
+                true,
+                binding.articlesRecyclerView,
+                binding.progressCircular,
+                true
+            )
             val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
             val list = wikipediaApi.fetchArticles(searchQuery!!).pages
             val articlesAdapter = WikiArticlesListAdapter(list, wikiArticleItemClickListener)
             binding.articlesRecyclerView.adapter = articlesAdapter
+            UiUtils.toggleLoading(
+                false,
+                binding.articlesRecyclerView,
+                binding.progressCircular
+            )
             println(list)
         }
     }
