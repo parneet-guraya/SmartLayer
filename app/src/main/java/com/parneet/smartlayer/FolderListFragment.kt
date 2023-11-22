@@ -64,6 +64,7 @@ class FolderListFragment : Fragment() {
 
     private fun loadVideoFolders() {
         lifecycleScope.launch {
+            AppUtils.toggleLoading(true,binding.foldersRecyclerView,binding.progressCircular)
             val videoFolderList = VideoManager.getVideoFolders(requireActivity().applicationContext)
             val adapter = FolderListAdapter(videoFolderList) { bucketId ->
                 goToVideoList(bucketId)
@@ -72,6 +73,7 @@ class FolderListFragment : Fragment() {
             binding.foldersRecyclerView.layoutManager =
                 LinearLayoutManager(requireContext()) // GridLayoutManager(requireContext(), 3)
             binding.foldersRecyclerView.adapter = adapter
+            AppUtils.toggleLoading(false,binding.foldersRecyclerView,binding.progressCircular)
         }
     }
 
