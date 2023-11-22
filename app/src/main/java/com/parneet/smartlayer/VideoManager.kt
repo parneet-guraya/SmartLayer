@@ -2,6 +2,8 @@ package com.parneet.smartlayer
 
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Size
 import com.parneet.smartlayer.model.Folder
@@ -49,8 +51,7 @@ object VideoManager {
 
     suspend fun getVideosInFolder(
         applicationContext: Context,
-        bucketId: String?,
-        sizeInPixels: (Int) -> Int,
+        bucketId: String?
     ): List<Video>? {
         if (bucketId == null) {
             return null
@@ -91,15 +92,7 @@ object VideoManager {
                             id = id,
                             title = cur.getString(titleColumn),
                             duration = cur.getInt(durationColumn),
-                            uri = uri,
-                            applicationContext.contentResolver.loadThumbnail(
-                                uri,
-                                Size(
-                                    sizeInPixels(160),
-                                    sizeInPixels(90)
-                                ),
-                                null
-                            )
+                            uri = uri
                         )
                     )
                 }
@@ -108,4 +101,14 @@ object VideoManager {
         }
     }
 
+    fun loadThumbnail(applicationContext: Context, uri: Uri, sizeInPixels: (Int) -> Int): Bitmap? {
+        return applicationContext.contentResolver.loadThumbnail(
+            uri,
+            Size(
+                sizeInPixels(160),
+                sizeInPixels(90)
+            ),
+            null
+        )
+    }
 }

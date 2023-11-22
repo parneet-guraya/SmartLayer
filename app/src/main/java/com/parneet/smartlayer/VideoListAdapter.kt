@@ -1,5 +1,6 @@
 package com.parneet.smartlayer
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,7 +12,8 @@ import com.parneet.smartlayer.model.Video
 
 class VideoListAdapter(
     private val videosList: List<Video>,
-    private val onItemClick: (uri: Uri,title:String) -> Unit
+    private val onItemClick: (uri: Uri,title:String) -> Unit,
+    private val loadThumbnail: (uri:Uri) -> Bitmap?
 ) : RecyclerView.Adapter<VideoListAdapter.VideoItemViewHolder>() {
 
     class VideoItemViewHolder(
@@ -37,7 +39,7 @@ class VideoListAdapter(
 
     override fun onBindViewHolder(holder: VideoItemViewHolder, position: Int) {
         val video = videosList[position]
-        holder.videoThumbnailIV.load(video.thumbnail)
+        holder.videoThumbnailIV.load(loadThumbnail(video.uri))
         holder.videoTitleTV.text = video.title
     }
 
