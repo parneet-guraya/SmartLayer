@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PermissionDeniedFragment">
+
+    <TextView
+        android:id="@+id/rationale_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:padding="8dp"
+        android:layout_centerInParent="true"
+        android:text="Permission is denied. App needs the permission in order to work properly" />
+
+    <Button
+        android:id="@+id/open_app_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rationale_message"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Open Settings" />
+
+</RelativeLayout>
