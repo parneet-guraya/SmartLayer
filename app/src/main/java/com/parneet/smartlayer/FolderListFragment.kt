@@ -64,16 +64,22 @@ class FolderListFragment : Fragment() {
 
     private fun loadVideoFolders() {
         lifecycleScope.launch {
-            AppUtils.toggleLoading(true,binding.foldersRecyclerView,binding.progressCircular)
-            val videoFolderList = VideoManager.getVideoFolders(requireActivity().applicationContext)
-            val adapter = FolderListAdapter(videoFolderList) { bucketId ->
-                goToVideoList(bucketId)
-            }
+            try {
+                AppUtils.toggleLoading(true, binding.foldersRecyclerView, binding.progressCircular)
+                val videoFolderList =
+                    VideoManager.getVideoFolders(requireActivity().applicationContext)
+                val adapter = FolderListAdapter(videoFolderList) { bucketId ->
+                    goToVideoList(bucketId)
+                }
 
-            binding.foldersRecyclerView.layoutManager =
-                LinearLayoutManager(requireContext()) // GridLayoutManager(requireContext(), 3)
-            binding.foldersRecyclerView.adapter = adapter
-            AppUtils.toggleLoading(false,binding.foldersRecyclerView,binding.progressCircular)
+                binding.foldersRecyclerView.layoutManager =
+                    LinearLayoutManager(requireContext()) // GridLayoutManager(requireContext(), 3)
+                binding.foldersRecyclerView.adapter = adapter
+                AppUtils.toggleLoading(false, binding.foldersRecyclerView, binding.progressCircular)
+            } catch (e: Exception) {
+                AppUtils.toggleLoading(false, null, binding.progressCircular)
+                AppUtils.showSnackBar(binding.root, e.message)
+            }
         }
     }
 

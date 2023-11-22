@@ -6,6 +6,7 @@ import android.os.Build
 import android.view.View
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.progressindicator.BaseProgressIndicatorSpec
+import com.google.android.material.snackbar.Snackbar
 
 object AppUtils {
 
@@ -36,6 +37,10 @@ object AppUtils {
     fun dpToPixels(sizeInDp: Int, context: Context): Int {
         val density = context.resources.displayMetrics.density.toInt()
         return sizeInDp * density
+    }
+
+    fun showSnackBar(view: View, message: String?, duration: Int = Snackbar.LENGTH_SHORT) {
+        if(message != null) Snackbar.make(view, message, duration).show()
     }
 
     fun getReadMediaPermission(): String {

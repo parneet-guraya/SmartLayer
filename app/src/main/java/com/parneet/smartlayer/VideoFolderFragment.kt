@@ -29,9 +29,14 @@ class VideoFolderFragment : Fragment() {
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
         println("BucketId: $bucketId")
         lifecycleScope.launch {
-            AppUtils.toggleLoading(true,binding.videoListRecyclerView,binding.progressCircular)
-            loadVideos(bucketId)
-            AppUtils.toggleLoading(false,binding.videoListRecyclerView,binding.progressCircular)
+          try {
+              AppUtils.toggleLoading(true,binding.videoListRecyclerView,binding.progressCircular)
+              loadVideos(bucketId)
+              AppUtils.toggleLoading(false,binding.videoListRecyclerView,binding.progressCircular)
+          }catch (e:Exception){
+              AppUtils.toggleLoading(false,null,binding.progressCircular)
+              AppUtils.showSnackBar(binding.root,e.message)
+          }
         }
     }
 
