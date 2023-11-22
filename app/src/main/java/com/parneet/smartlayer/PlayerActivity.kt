@@ -73,7 +73,7 @@ class PlayerActivity : AppCompatActivity() {
                 is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
                 Response.Loading -> {
                     println("Tokenizing")
-                    UiUtils.toggleLoading(
+                    AppUtils.toggleLoading(
                         true,
                         binding.includedInfoLayout.wordsChipGroup,
                         binding.includedInfoLayout.splittingWordsProgressIndicator
@@ -83,7 +83,7 @@ class PlayerActivity : AppCompatActivity() {
                 is Response.Success -> {
                     responseOfWords.data.onEach { word ->
                         createWordChip(word)
-                        UiUtils.toggleLoading(
+                        AppUtils.toggleLoading(
                             false,
                             binding.includedInfoLayout.wordsChipGroup,
                             binding.includedInfoLayout.splittingWordsProgressIndicator
@@ -99,7 +99,7 @@ class PlayerActivity : AppCompatActivity() {
                     when (response) {
                         is Response.Error -> logDebug("Translate text" + response.exception.message!!)
                         is Response.Loading -> {
-                            UiUtils.toggleLoading(
+                            AppUtils.toggleLoading(
                                 true,
                                 binding.includedInfoLayout.translatedTextView,
                                 binding.includedInfoLayout.translateLoadingBar
@@ -108,7 +108,7 @@ class PlayerActivity : AppCompatActivity() {
                         }
 
                         is Response.Success -> {
-                            UiUtils.toggleLoading(
+                            AppUtils.toggleLoading(
                                 false,
                                 binding.includedInfoLayout.translatedTextView,
                                 binding.includedInfoLayout.translateLoadingBar

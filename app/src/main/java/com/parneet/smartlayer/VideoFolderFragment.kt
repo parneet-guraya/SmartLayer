@@ -38,7 +38,7 @@ class VideoFolderFragment : Fragment() {
             requireActivity().applicationContext,
             bucketId!!
         ) { sizeInPixels ->
-            UiUtils.dpToPixels(sizeInPixels, requireContext())
+            AppUtils.dpToPixels(sizeInPixels, requireContext())
         }
         if (videosList != null) {
             val videosListAdapter = VideoListAdapter(videosList) { uri, title ->

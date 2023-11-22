@@ -1,10 +1,8 @@
 package com.parneet.smartlayer
 
-import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -40,18 +38,10 @@ class PermissionDeniedFragment : Fragment() {
     private fun checkIfGranted() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                getReadMediaPermission()
+                AppUtils.getReadMediaPermission()
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             findNavController().navigate(R.id.action_permissionDeniedFragment_to_folderListFragment)
-        }
-    }
-
-    private fun getReadMediaPermission(): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_VIDEO
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
         }
     }
 

@@ -91,7 +91,7 @@ class WebSearchDialogFragment : DialogFragment() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                UiUtils.toggleLoading(
+                AppUtils.toggleLoading(
                     true,
                     null,
                     binding.progressCircular,
@@ -101,7 +101,7 @@ class WebSearchDialogFragment : DialogFragment() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                UiUtils.toggleLoading(
+                AppUtils.toggleLoading(
                     false,
                     null,
                     binding.progressCircular,
