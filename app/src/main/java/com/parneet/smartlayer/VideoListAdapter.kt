@@ -39,7 +39,11 @@ class VideoListAdapter(
 
     override fun onBindViewHolder(holder: VideoItemViewHolder, position: Int) {
         val video = videosList[position]
-        holder.videoThumbnailIV.load(loadThumbnail(video.uri))
+        holder.videoThumbnailIV.load(loadThumbnail(video.uri)){
+            crossfade(true)
+            placeholder(R.color.black)
+            fallback(R.color.black)
+        }
         holder.videoTitleTV.text = video.title
     }
 

@@ -45,7 +45,11 @@ class WikiArticlesListAdapter(
         val article = articlesList[position]
         holder.titleTV.text = article.title
         holder.descriptionTV.text = article.description
-        holder.articleIV.load(article.thumbnail?.url)
+        holder.articleIV.load(article.thumbnail?.url){
+            crossfade(true)
+//            error(R.drawable.baseline_broken_image_24)
+            fallback(R.drawable.baseline_broken_image_24)
+        }
         // yet to add image functionality using image loading libraries like Koil or Glide
 
     }
