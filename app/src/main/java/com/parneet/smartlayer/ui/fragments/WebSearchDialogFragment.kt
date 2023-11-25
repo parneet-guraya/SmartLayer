@@ -68,7 +68,7 @@ class WebSearchDialogFragment : DialogFragment() {
         val window = dialog?.window
         val params = window?.attributes
 
-        val margin = convertPixelsToDp(8)
+        val margin = AppUtils.dpToPixels(8,requireContext().applicationContext)
         binding.root.updateLayoutParams<MarginLayoutParams> {
             marginStart = margin
             marginEnd = margin
@@ -151,10 +151,6 @@ class WebSearchDialogFragment : DialogFragment() {
         _binding = null
     }
 
-    private fun convertPixelsToDp(pixels: Int): Int {
-        val density = requireContext().resources.displayMetrics.density
-        return pixels * density.toInt()
-    }
 
     companion object {
         const val KEY_URL_EXTRA_DATA_STRING = "KEY_URL_EXTRA_DATA_STRING"
