@@ -2,16 +2,15 @@ package com.parneet.smartlayer
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.parneet.smartlayer.databinding.FolderItemBinding
 import com.parneet.smartlayer.model.Folder
 
 class FolderListAdapter(
-    private val foldersList: List<Folder>,
     private val onItemClick: (bucketId: String) -> Unit
-) :
-    RecyclerView.Adapter<FolderListAdapter.FolderItemViewHolder>() {
+) : ListAdapter<Folder, FolderListAdapter.FolderItemViewHolder>(FolderItemDiffUtil) {
 
     class FolderItemViewHolder(
         binding: FolderItemBinding,
@@ -35,17 +34,24 @@ class FolderListAdapter(
                 parent,
                 false
             ),
-            foldersList,
+            currentList,
             onItemClick
         )
     }
 
     override fun onBindViewHolder(holder: FolderItemViewHolder, position: Int) {
-        val folder = foldersList[position]
+        val folder = currentList[position]
         holder.folderNameTV.text = folder.bucketDisplayName
     }
+}
 
-    override fun getItemCount(): Int {
-        return foldersList.size
+object FolderItemDiffUtil : DiffUtil.ItemCallback<Folder>() {
+    override fun areItemsTheSame(oldItem: Folder, newItem: Folder): Boolean {
+        return oldItem.bucketId == newItem.bucketId
     }
+
+    override fun areContentsTheSame(oldItem: Folder, newItem: Folder): Boolean {
+        return oldItem.bucketDisplayName == newItem.bucketDisplayName
+    }
+
 }

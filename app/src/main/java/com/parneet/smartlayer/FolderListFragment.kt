@@ -23,6 +23,7 @@ class FolderListFragment : Fragment() {
     private var _binding: FragmentFolderListBinding? = null
     private val binding get() = _binding!!
     private val requestPermissionLauncher = requestPermissionLauncher()
+    private lateinit var adapter: FolderListAdapter
     private val videoRepository = VideoRepository()
 
     override fun onCreateView(
@@ -46,6 +47,13 @@ class FolderListFragment : Fragment() {
                 AppUtils.getReadMediaPermission()
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            adapter = FolderListAdapter { bucketId ->
+                goToVideoList(bucketId)
+            }
+
+            binding.foldersRecyclerView.layoutManager =
+                LinearLayoutManager(requireContext())
+            binding.foldersRecyclerView.adapter = adapter
             loadVideoFolders()
         } else {
             requestPermissionLauncher.launch(AppUtils.getReadMediaPermission())
@@ -71,7 +79,11 @@ class FolderListFragment : Fragment() {
             val folderList = videoRepository.getVideoFolders(requireContext().applicationContext)
             folderList.collectLatest { folderListResponse ->
                 when (folderListResponse) {
-                    is Response.Error -> AppUtils.showSnackBar(binding.root, folderListResponse.message)
+                    is Response.Error -> AppUtils.showSnackBar(
+                        binding.root,
+                        folderListResponse.message
+                    )
+
                     is Response.Loading -> AppUtils.toggleLoading(
                         folderListResponse.isLoading,
                         binding.foldersRecyclerView,
@@ -79,13 +91,7 @@ class FolderListFragment : Fragment() {
                     )
 
                     is Response.Success -> {
-                        val adapter = FolderListAdapter(folderListResponse.data) { bucketId ->
-                            goToVideoList(bucketId)
-                        }
-
-                        binding.foldersRecyclerView.layoutManager =
-                            LinearLayoutManager(requireContext())
-                        binding.foldersRecyclerView.adapter = adapter
+                      adapter.submitList(folderListResponse.data)
                     }
                 }
             }
