@@ -9,21 +9,22 @@ import com.parneet.smartlayer.databinding.WikipediaArticlesListBinding
 import com.parneet.smartlayer.model.Page
 
 class WikiArticlesListAdapter(
-    private val articlesList: List<Page>,
-    private val wikiArticleClickListener: OnItemClickListener
+    private val onItemClick: (pageId: Int) -> Unit
 ) :
     RecyclerView.Adapter<WikiArticlesListAdapter.ListItemViewHolder>() {
 
+    private var articlesList: List<Page> = listOf()
+
     class ListItemViewHolder(
         binding: WikipediaArticlesListBinding,
-        wikiArticleClickListener: OnItemClickListener,
+        onItemClick: (pageId: Int) -> Unit,
         articlesList: List<Page>
     ) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
                 val pageId = articlesList[bindingAdapterPosition].id
-                wikiArticleClickListener.onItemClick(pageId)
+                onItemClick(pageId)
             }
         }
 
@@ -37,7 +38,7 @@ class WikiArticlesListAdapter(
             WikipediaArticlesListBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             ),
-            wikiArticleClickListener,
+            onItemClick,
             articlesList
         )
     }
@@ -46,7 +47,7 @@ class WikiArticlesListAdapter(
         val article = articlesList[position]
         holder.titleTV.text = article.title
         holder.descriptionTV.text = article.description
-        holder.articleIV.load(article.thumbnail?.url){
+        holder.articleIV.load(article.thumbnail?.url) {
             crossfade(true)
 //            error(R.drawable.baseline_broken_image_24)
             fallback(R.drawable.baseline_broken_image_24)
@@ -59,9 +60,7 @@ class WikiArticlesListAdapter(
         return articlesList.size
     }
 
-    interface OnItemClickListener {
-        fun onItemClick(pageId: Int) {
-
-        }
+    fun submitList(articlesList: List<Page>) {
+        this.articlesList = articlesList
     }
 }

@@ -31,13 +31,12 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
-import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
 import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
 import com.parneet.smartlayer.ui.fragments.WebSearchDialogFragment
 import com.parneet.smartlayer.ui.fragments.WikipediaArticlesDialogFragment
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
-import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
 import kotlinx.coroutines.launch
 
 
@@ -205,14 +204,12 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun launchWikiArticlesDialog() {
         val wikiDialog =
-            WikipediaArticlesDialogFragment(object : WikiArticlesListAdapter.OnItemClickListener {
-                override fun onItemClick(pageId: Int) {
-                    launchWebViewDialog(
-                        WebSearchDialogFragment.WIKI_ARTICLE_PAGE,
-                        pageId.toString()
-                    )
-                }
-            })
+            WikipediaArticlesDialogFragment() {pageId ->
+                launchWebViewDialog(
+                    WebSearchDialogFragment.WIKI_ARTICLE_PAGE,
+                    pageId.toString()
+                )
+            }
         wikiDialog.arguments = Bundle().apply {
             putString(
                 WikipediaArticlesDialogFragment.KEY_SEARCH_QUERY,

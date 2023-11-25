@@ -6,19 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.data.RetrofitClient
+import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
-import com.parneet.smartlayer.data.wikiarticles.WikipediaApi
+import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class WikipediaArticlesDialogFragment(private val wikiArticleItemClickListener: WikiArticlesListAdapter.OnItemClickListener) :
+class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> Unit) :
     DialogFragment() {
 
     private var _binding: WikipediaArticlesDialogFragmentBinding? = null
     private val binding get() = _binding!!
-
+    private val wikiArticlesRepository = WikiArticlesRepository()
+    private lateinit var adapter: WikiArticlesListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,25 +44,35 @@ class WikipediaArticlesDialogFragment(private val wikiArticleItemClickListener: 
 
         window?.attributes = params
 
-        val wikipediaApi = RetrofitClient.retrofit.create(WikipediaApi::class.java)
+        adapter = WikiArticlesListAdapter(onItemClick = onItemClick)
+        binding.articlesRecyclerView.adapter = adapter
 
         lifecycleScope.launch {
-            AppUtils.toggleLoading(
-                true,
-                binding.articlesRecyclerView,
-                binding.progressCircular,
-                true
-            )
             val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
-            val list = wikipediaApi.fetchArticles(searchQuery!!).pages
-            val articlesAdapter = WikiArticlesListAdapter(list, wikiArticleItemClickListener)
-            binding.articlesRecyclerView.adapter = articlesAdapter
-            AppUtils.toggleLoading(
-                false,
-                binding.articlesRecyclerView,
-                binding.progressCircular
-            )
-            println(list)
+
+            val wikiArticlesRequestResponse = wikiArticlesRepository.fetchArticles(searchQuery!!)
+            wikiArticlesRequestResponse.collectLatest { response ->
+                println(response)
+                when (response) {
+                    is Response.Error -> logDebug(response.message!!)
+                    is Response.Loading -> AppUtils.toggleLoading(
+                        response.isLoading,
+                        binding.articlesRecyclerView,
+                        binding.progressCircular
+                    )
+
+                    is Response.Success -> {
+                        val list = response.data?.pages
+                        println("wiki response : $list")
+                        if (!list.isNullOrEmpty()) {
+                            adapter.submitList(list)
+                        } else {
+                            println("wiki articles list empty")
+                            //revisit: show message that list is empty
+                        }
+                    }
+                }
+            }
         }
     }
 
