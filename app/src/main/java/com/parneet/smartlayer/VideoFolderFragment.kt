@@ -17,12 +17,13 @@ import kotlinx.coroutines.launch
 class VideoFolderFragment : Fragment() {
     private var _binding: FragmentVideoFolderBinding? = null
     private val binding get() = _binding!!
+    private lateinit var videoListAdapter: VideoListAdapter
     private val videoRepository = VideoRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentVideoFolderBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,6 +33,24 @@ class VideoFolderFragment : Fragment() {
 
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
         println("BucketId: $bucketId")
+
+        videoListAdapter =
+            VideoListAdapter(
+                onItemClick = { uri, title ->
+                    startPlayer(uri, title)
+                },
+                loadThumbnail = { uri ->
+                    videoRepository.getVideoThumbnail(
+                        requireContext().applicationContext,
+                        uri
+                    ) { sizeInDp ->
+                        AppUtils.dpToPixels(
+                            sizeInDp,
+                            requireContext().applicationContext
+                        )
+                    }
+                })
+        binding.videoListRecyclerView.adapter = videoListAdapter
         lifecycleScope.launch {
             loadVideos(bucketId)
         }
@@ -56,26 +75,7 @@ class VideoFolderFragment : Fragment() {
 
                 is Response.Success -> {
                     val videosList = videosResponse.data
-                    if (videosList != null) {
-                        val videosListAdapter =
-                            VideoListAdapter(
-                                videosList = videosList,
-                                onItemClick = { uri, title ->
-                                    startPlayer(uri, title)
-                                },
-                                loadThumbnail = { uri ->
-                                    videoRepository.getVideoThumbnail(
-                                        requireContext().applicationContext,
-                                        uri
-                                    ) { sizeInDp ->
-                                        AppUtils.dpToPixels(
-                                            sizeInDp,
-                                            requireContext().applicationContext
-                                        )
-                                    }
-                                })
-                        binding.videoListRecyclerView.adapter = videosListAdapter
-                    }
+                    videoListAdapter.submitList(videosList)
                 }
             }
         }
