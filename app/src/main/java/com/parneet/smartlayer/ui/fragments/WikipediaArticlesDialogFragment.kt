@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.RetrofitClient
+import com.parneet.smartlayer.data.RetrofitClient
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
-import com.parneet.smartlayer.model.service.WikipediaApi
+import com.parneet.smartlayer.data.wikiarticles.WikipediaApi
+import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
+import com.parneet.smartlayer.ui.util.AppUtils
 import kotlinx.coroutines.launch
 
 class WikipediaArticlesDialogFragment(private val wikiArticleItemClickListener: WikiArticlesListAdapter.OnItemClickListener) :

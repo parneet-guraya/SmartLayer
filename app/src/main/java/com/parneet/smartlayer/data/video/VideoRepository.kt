@@ -1,9 +1,8 @@
-package com.parneet.smartlayer.data
+package com.parneet.smartlayer.data.video
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import com.parneet.smartlayer.ui.VideoManager
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Resource
 import com.parneet.smartlayer.model.Response

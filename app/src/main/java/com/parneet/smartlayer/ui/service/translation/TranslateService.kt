@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.model.service
+package com.parneet.smartlayer.ui.service.translation
 
 import androidx.lifecycle.LiveData
 import com.parneet.smartlayer.model.Response

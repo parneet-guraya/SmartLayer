@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.util
 
 import android.Manifest
 import android.content.Context

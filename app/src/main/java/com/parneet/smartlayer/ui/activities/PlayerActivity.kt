@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.activities
 
 import android.app.Activity
 import android.content.Intent
@@ -31,7 +31,13 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
-import com.parneet.smartlayer.model.service.MlKitTranslationService
+import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
+import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
+import com.parneet.smartlayer.ui.fragments.WebSearchDialogFragment
+import com.parneet.smartlayer.ui.fragments.WikipediaArticlesDialogFragment
+import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
+import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
+import com.parneet.smartlayer.ui.util.AppUtils
 import kotlinx.coroutines.launch
 
 

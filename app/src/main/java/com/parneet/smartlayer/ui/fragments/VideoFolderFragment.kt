@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.fragments
 
 import android.content.Intent
 import android.net.Uri
@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.data.VideoRepository
+import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
 import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.ui.activities.PlayerActivity
+import com.parneet.smartlayer.ui.adapter.VideoListAdapter
+import com.parneet.smartlayer.ui.util.AppUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.fragments
 
 import android.app.Dialog
 import android.graphics.Bitmap
@@ -18,6 +18,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.parneet.smartlayer.databinding.WebViewLayoutBinding
+import com.parneet.smartlayer.ui.activities.logDebug
+import com.parneet.smartlayer.ui.util.AppUtils
 
 
 class WebSearchDialogFragment : DialogFragment() {

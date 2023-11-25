@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.model.service
+package com.parneet.smartlayer.data.wikiarticles
 
 import com.parneet.smartlayer.model.WikiArticlesListResponse
 import retrofit2.http.GET

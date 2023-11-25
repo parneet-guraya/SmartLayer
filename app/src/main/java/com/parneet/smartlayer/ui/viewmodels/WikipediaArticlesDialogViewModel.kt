@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 

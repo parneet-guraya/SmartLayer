@@ -18,11 +18,11 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
-            android:name=".ui.PlayerActivity"
+            android:name=".ui.activities.PlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

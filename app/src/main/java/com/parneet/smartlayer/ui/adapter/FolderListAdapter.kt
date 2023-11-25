@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

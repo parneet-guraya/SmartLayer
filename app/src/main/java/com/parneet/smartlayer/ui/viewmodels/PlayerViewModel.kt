@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.viewmodels
 
 import android.app.Application
 import android.net.Uri
@@ -9,7 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
 import com.parneet.smartlayer.model.Response
-import com.parneet.smartlayer.model.service.MlKitTranslationService
+import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
+import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

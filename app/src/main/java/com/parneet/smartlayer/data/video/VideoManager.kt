@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.data.video
 
 import android.content.ContentUris
 import android.content.Context

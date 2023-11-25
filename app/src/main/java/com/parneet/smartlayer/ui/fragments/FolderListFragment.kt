@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.fragments
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -14,9 +14,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.data.VideoRepository
+import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentFolderListBinding
 import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.ui.adapter.FolderListAdapter
+import com.parneet.smartlayer.ui.util.AppUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

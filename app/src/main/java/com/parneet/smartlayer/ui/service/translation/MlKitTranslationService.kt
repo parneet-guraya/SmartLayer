@@ -1,8 +1,8 @@
-package com.parneet.smartlayer.model.service
+package com.parneet.smartlayer.ui.service.translation
 
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
-import com.parneet.smartlayer.ui.logDebug
+import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.model.Response
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

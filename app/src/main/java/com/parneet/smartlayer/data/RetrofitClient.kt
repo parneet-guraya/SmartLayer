@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.data
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

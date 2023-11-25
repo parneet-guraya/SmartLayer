@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui
+package com.parneet.smartlayer.ui.adapter
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -12,6 +12,7 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Resource
 import com.parneet.smartlayer.model.Video
+import com.parneet.smartlayer.ui.activities.logDebug
 
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
