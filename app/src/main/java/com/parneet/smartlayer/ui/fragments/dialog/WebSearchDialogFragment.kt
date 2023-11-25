@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui.fragments
+package com.parneet.smartlayer.ui.fragments.dialog
 
 import android.app.Dialog
 import android.graphics.Bitmap

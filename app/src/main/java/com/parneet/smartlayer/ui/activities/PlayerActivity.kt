@@ -32,8 +32,8 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
-import com.parneet.smartlayer.ui.fragments.WebSearchDialogFragment
-import com.parneet.smartlayer.ui.fragments.WikipediaArticlesDialogFragment
+import com.parneet.smartlayer.ui.fragments.dialog.WebSearchDialogFragment
+import com.parneet.smartlayer.ui.fragments.dialog.WikipediaArticlesDialogFragment
 import com.parneet.smartlayer.ui.service.translation.TranslateService
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel

@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.ui.fragments
+package com.parneet.smartlayer.ui.fragments.dialog
 
 import android.os.Bundle
 import android.view.LayoutInflater
