@@ -13,13 +13,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.parneet.smartlayer.data.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentFolderListBinding
+import com.parneet.smartlayer.model.Response
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FolderListFragment : Fragment() {
     private var _binding: FragmentFolderListBinding? = null
     private val binding get() = _binding!!
     private val requestPermissionLauncher = requestPermissionLauncher()
+    private val videoRepository = VideoRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,21 +68,26 @@ class FolderListFragment : Fragment() {
 
     private fun loadVideoFolders() {
         lifecycleScope.launch {
-            try {
-                AppUtils.toggleLoading(true, binding.foldersRecyclerView, binding.progressCircular)
-                val videoFolderList =
-                    VideoManager.getVideoFolders(requireActivity().applicationContext)
-                val adapter = FolderListAdapter(videoFolderList) { bucketId ->
-                    goToVideoList(bucketId)
-                }
+            val folderList = videoRepository.getVideoFolders(requireContext().applicationContext)
+            folderList.collectLatest { folderListResponse ->
+                when (folderListResponse) {
+                    is Response.Error -> AppUtils.showSnackBar(binding.root, folderListResponse.message)
+                    is Response.Loading -> AppUtils.toggleLoading(
+                        folderListResponse.isLoading,
+                        binding.foldersRecyclerView,
+                        binding.progressCircular
+                    )
 
-                binding.foldersRecyclerView.layoutManager =
-                    LinearLayoutManager(requireContext()) // GridLayoutManager(requireContext(), 3)
-                binding.foldersRecyclerView.adapter = adapter
-                AppUtils.toggleLoading(false, binding.foldersRecyclerView, binding.progressCircular)
-            } catch (e: Exception) {
-                AppUtils.toggleLoading(false, null, binding.progressCircular)
-                AppUtils.showSnackBar(binding.root, e.message)
+                    is Response.Success -> {
+                        val adapter = FolderListAdapter(folderListResponse.data) { bucketId ->
+                            goToVideoList(bucketId)
+                        }
+
+                        binding.foldersRecyclerView.layoutManager =
+                            LinearLayoutManager(requireContext())
+                        binding.foldersRecyclerView.adapter = adapter
+                    }
+                }
             }
         }
     }

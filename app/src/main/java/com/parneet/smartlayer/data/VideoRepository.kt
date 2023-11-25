@@ -14,8 +14,16 @@ import kotlinx.coroutines.flow.flow
 class VideoRepository() {
 
     // revisit will there be any problem if context saved using val context in the constructor (for both application and context)
-    suspend fun getVideoFolders(applicationContext: Context): List<Folder> {
-        return VideoManager.getVideoFolders(applicationContext)
+    suspend fun getVideoFolders(applicationContext: Context): Flow<Response<List<Folder>>> = flow{
+        emit(Response.Loading(true))
+        try {
+            val folderList = VideoManager.getVideoFolders(applicationContext)
+            emit(Response.Loading(false))
+            emit(Response.Success(folderList))
+        }catch (e:Exception){
+            emit(Response.Loading(false))
+            emit(Response.Error(e))
+        }
     }
 
     suspend fun getVideosInFolder(
