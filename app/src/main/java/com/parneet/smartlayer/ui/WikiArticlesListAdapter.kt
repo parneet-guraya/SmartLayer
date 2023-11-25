@@ -1,9 +1,10 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WikipediaArticlesListBinding
 import com.parneet.smartlayer.model.Page
 

@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.graphics.Bitmap
 import android.net.Uri
@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Resource
 import com.parneet.smartlayer.model.Video

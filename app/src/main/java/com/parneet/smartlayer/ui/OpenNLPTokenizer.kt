@@ -1,7 +1,6 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.content.Context
-import com.parneet.smartlayer.model.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import opennlp.tools.tokenize.Tokenizer
@@ -21,10 +20,10 @@ class OpenNLPTokenizer(private val context: Context) {
         }
     }
 
-    suspend fun tokenizeString(string: String): Response<Array<String>> {
+    suspend fun tokenizeString(string: String): Array<String> {
         return withContext(Dispatchers.Default) {
             val tokens = tokenizer.tokenize(string)
-            Response.Success(tokens)
+            tokens
         }
     }
 

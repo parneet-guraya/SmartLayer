@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -28,6 +28,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.model.Response
 import com.parneet.smartlayer.model.service.MlKitTranslationService
@@ -68,26 +69,20 @@ class PlayerActivity : AppCompatActivity() {
 
         }
 
-        viewModel.tokenizedWords.observe(this) { responseOfWords ->
-            when (responseOfWords) {
-                is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
+        viewModel.tokenizedWords.observe(this) { tokenizingResponse ->
+            when (tokenizingResponse) {
+                is Response.Error -> logDebug("Error: ${tokenizingResponse.exception} while tokenizing")
                 is Response.Loading -> {
-                    println("Tokenizing")
                     AppUtils.toggleLoading(
-                        true,
+                        tokenizingResponse.isLoading,
                         binding.includedInfoLayout.wordsChipGroup,
                         binding.includedInfoLayout.splittingWordsProgressIndicator
                     )
                 }
 
                 is Response.Success -> {
-                    responseOfWords.data.onEach { word ->
+                    tokenizingResponse.data?.onEach { word ->
                         createWordChip(word)
-                        AppUtils.toggleLoading(
-                            false,
-                            binding.includedInfoLayout.wordsChipGroup,
-                            binding.includedInfoLayout.splittingWordsProgressIndicator
-                        )
                     }
                 }
             }

@@ -2,7 +2,7 @@ package com.parneet.smartlayer.model.service
 
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
-import com.parneet.smartlayer.logDebug
+import com.parneet.smartlayer.ui.logDebug
 import com.parneet.smartlayer.model.Response
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

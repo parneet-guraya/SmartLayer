@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.os.Bundle
 import android.util.Log

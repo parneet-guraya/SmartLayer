@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.app.Application
 import android.net.Uri
@@ -69,13 +69,20 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 openNLPTokenizer = OpenNLPTokenizer(context = application.applicationContext)
                 openNLPTokenizer?.initialize()
             }
-            println("tokenize")
-            _tokenizedWords.value = openNLPTokenizer?.tokenizeString(subtitleString)
+            try {
+                val tokens = openNLPTokenizer?.tokenizeString(subtitleString)
+                _tokenizedWords.value = Response.Loading(false)
+                _tokenizedWords.value = Response.Success(tokens)
+            } catch (e: Exception) {
+                _tokenizedWords.value = Response.Loading(true)
+                _tokenizedWords.value = Response.Error(e)
+            }
         }
     }
 
     fun releaseTokenizerModel() {
         println("release model")
         openNLPTokenizer?.release()
+        openNLPTokenizer = null
     }
 }

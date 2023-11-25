@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentPermissionDeniedBinding
 
 class PermissionDeniedFragment : Fragment() {

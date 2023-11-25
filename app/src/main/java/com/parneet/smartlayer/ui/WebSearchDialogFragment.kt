@@ -1,4 +1,4 @@
-package com.parneet.smartlayer
+package com.parneet.smartlayer.ui
 
 import android.app.Dialog
 import android.graphics.Bitmap
@@ -136,8 +136,8 @@ class WebSearchDialogFragment : DialogFragment() {
         val data = arguments?.getString(KEY_URL_EXTRA_DATA_STRING)
         val operation = arguments?.getInt(KEY_WEB_OPERATION)
         return when (operation) {
-            GOOGLE_SEARCH -> "${GOOGLE_BASE_URL}$data"
-            WIKI_ARTICLE_PAGE -> "${WIKI_ARTICLE_PAGE_BASE_URL}$data"
+            GOOGLE_SEARCH -> "$GOOGLE_BASE_URL$data"
+            WIKI_ARTICLE_PAGE -> "$WIKI_ARTICLE_PAGE_BASE_URL$data"
             else -> {
                 null
             }
