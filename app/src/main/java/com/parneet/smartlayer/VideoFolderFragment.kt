@@ -8,12 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.parneet.smartlayer.data.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
+import com.parneet.smartlayer.model.Response
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class VideoFolderFragment : Fragment() {
     private var _binding: FragmentVideoFolderBinding? = null
     private val binding get() = _binding!!
+    private val videoRepository = VideoRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,46 +33,53 @@ class VideoFolderFragment : Fragment() {
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
         println("BucketId: $bucketId")
         lifecycleScope.launch {
-            try {
-                AppUtils.toggleLoading(
-                    true,
-                    binding.videoListRecyclerView,
-                    binding.progressCircular
-                )
-                loadVideos(bucketId)
-                AppUtils.toggleLoading(
-                    false,
-                    binding.videoListRecyclerView,
-                    binding.progressCircular
-                )
-            } catch (e: Exception) {
-                AppUtils.toggleLoading(false, null, binding.progressCircular)
-                AppUtils.showSnackBar(binding.root, e.message)
-            }
+            loadVideos(bucketId)
         }
     }
 
     private suspend fun loadVideos(bucketId: String?) {
-        val videosList = VideoManager.getVideosInFolder(
-            requireContext().applicationContext,
-            bucketId!!
-        )
-        if (videosList != null) {
-            val videosListAdapter =
-                VideoListAdapter(videosList = videosList,
-                    onItemClick = { uri, title ->
-                        startPlayer(uri, title)
-                    },
-                    loadThumbnail = { uri ->
-                        VideoManager.loadThumbnail(
-                            requireContext().applicationContext,
-                            uri
-                        ) { sizeInDp ->
-                            AppUtils.dpToPixels(sizeInDp, requireContext().applicationContext)
-                        }
-                    })
-            binding.videoListRecyclerView.adapter = videosListAdapter
+        val videoListResponse =
+            videoRepository.getVideosInFolder(requireContext().applicationContext, bucketId)
+        videoListResponse.collectLatest { videosResponse ->
+            println("VideoResponse Flow: $videosResponse")
+            when (videosResponse) {
+                is Response.Error -> AppUtils.showSnackBar(
+                    binding.root,
+                    videosResponse.exception?.message
+                )
+
+                is Response.Loading -> AppUtils.toggleLoading(
+                    videosResponse.isLoading,
+                    binding.videoListRecyclerView,
+                    binding.progressCircular
+                )
+
+                is Response.Success -> {
+                    val videosList = videosResponse.data
+                    if (videosList != null) {
+                        val videosListAdapter =
+                            VideoListAdapter(
+                                videosList = videosList,
+                                onItemClick = { uri, title ->
+                                    startPlayer(uri, title)
+                                },
+                                loadThumbnail = { uri ->
+                                    videoRepository.getVideoThumbnail(
+                                        requireContext().applicationContext,
+                                        uri
+                                    ) { sizeInDp ->
+                                        AppUtils.dpToPixels(
+                                            sizeInDp,
+                                            requireContext().applicationContext
+                                        )
+                                    }
+                                })
+                        binding.videoListRecyclerView.adapter = videosListAdapter
+                    }
+                }
+            }
         }
+
     }
 
     private fun startPlayer(uri: Uri, title: String) {

@@ -71,7 +71,7 @@ class PlayerActivity : AppCompatActivity() {
         viewModel.tokenizedWords.observe(this) { responseOfWords ->
             when (responseOfWords) {
                 is Response.Error -> println("Error: ${responseOfWords.exception} while tokenizing")
-                Response.Loading -> {
+                is Response.Loading -> {
                     println("Tokenizing")
                     AppUtils.toggleLoading(
                         true,
@@ -97,7 +97,7 @@ class PlayerActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.translateResponseState.collect { response ->
                     when (response) {
-                        is Response.Error -> logDebug("Translate text" + response.exception.message!!)
+                        is Response.Error -> logDebug("Translate text" + response.exception?.message!!)
                         is Response.Loading -> {
                             AppUtils.toggleLoading(
                                 true,

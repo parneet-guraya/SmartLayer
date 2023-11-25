@@ -8,23 +8,24 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
 import com.parneet.smartlayer.databinding.VideoItemBinding
+import com.parneet.smartlayer.model.Resource
 import com.parneet.smartlayer.model.Video
 
 class VideoListAdapter(
     private val videosList: List<Video>,
-    private val onItemClick: (uri: Uri,title:String) -> Unit,
-    private val loadThumbnail: (uri:Uri) -> Bitmap?
+    private val onItemClick: (uri: Uri, title: String) -> Unit,
+    private val loadThumbnail: (uri: Uri) -> Resource<Bitmap?>,
 ) : RecyclerView.Adapter<VideoListAdapter.VideoItemViewHolder>() {
 
     class VideoItemViewHolder(
         binding: VideoItemBinding,
         videosList: List<Video>,
-        onItemClick: (uri: Uri,title:String) -> Unit
+        onItemClick: (uri: Uri, title: String) -> Unit
     ) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
                 val video = videosList[absoluteAdapterPosition]
-                onItemClick(video.uri,video.title)
+                onItemClick(video.uri, video.title)
             }
         }
 
@@ -39,11 +40,17 @@ class VideoListAdapter(
 
     override fun onBindViewHolder(holder: VideoItemViewHolder, position: Int) {
         val video = videosList[position]
-        holder.videoThumbnailIV.load(loadThumbnail(video.uri)){
-            crossfade(true)
-            placeholder(R.color.black)
-            fallback(R.color.black)
+        val result = loadThumbnail(video.uri)
+        when (result) {
+            is Resource.Failure -> logDebug(result.exception.message!!)
+            is Resource.Success -> {
+                holder.videoThumbnailIV.load(result.data) {
+                    crossfade(true)
+                    placeholder(R.color.black)
+                }
+            }
         }
+
         holder.videoTitleTV.text = video.title
     }
 

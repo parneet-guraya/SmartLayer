@@ -38,7 +38,7 @@ class MlKitTranslationService : TranslateService {
                 .setTargetLanguage(targetLanguage)
                 .build()
             val translator = Translation.getClient(options)
-            trySend(Response.Loading)
+            trySend(Response.Loading(true))
             translator.downloadModelIfNeeded().addOnSuccessListener {
                 try {
                     translator.translate(string).addOnSuccessListener {

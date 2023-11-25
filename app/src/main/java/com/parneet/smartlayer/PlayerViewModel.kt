@@ -32,7 +32,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var trackSelectionParameters: TrackSelectionParameters? = null
 
 
-    private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading)
+    private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading(true))
     val translateResponseState: StateFlow<Response<String>> = _translateResponseState
 
     private val mlKitTranslationService = MlKitTranslationService()
@@ -62,7 +62,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     fun splitIntoWords(subtitleString: String) {
-        _tokenizedWords.value = Response.Loading
+        _tokenizedWords.value = Response.Loading(true)
         viewModelScope.launch {
             if (openNLPTokenizer == null) {
                 println("model initialised")
