@@ -35,6 +35,7 @@ import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
 import com.parneet.smartlayer.ui.fragments.WebSearchDialogFragment
 import com.parneet.smartlayer.ui.fragments.WikipediaArticlesDialogFragment
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
+import com.parneet.smartlayer.ui.service.translation.TranslateService
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
 import kotlinx.coroutines.launch
@@ -96,11 +97,14 @@ class PlayerActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.translateResponseState.collect { response ->
+                    println("Translation: $response")
                     when (response) {
-                        is Response.Error -> logDebug("Translate text" + response.exception?.message!!)
+                        is Response.Error -> binding.includedInfoLayout.translatedTextView.text =
+                            response.message.toString()
+
                         is Response.Loading -> {
                             AppUtils.toggleLoading(
-                                true,
+                                response.isLoading,
                                 binding.includedInfoLayout.translatedTextView,
                                 binding.includedInfoLayout.translateLoadingBar
                             )
@@ -108,11 +112,6 @@ class PlayerActivity : AppCompatActivity() {
                         }
 
                         is Response.Success -> {
-                            AppUtils.toggleLoading(
-                                false,
-                                binding.includedInfoLayout.translatedTextView,
-                                binding.includedInfoLayout.translateLoadingBar
-                            )
                             logDebug("Translate result: ${response.data}")
                             binding.includedInfoLayout.translatedTextView.text = response.data
                         }
@@ -130,12 +129,12 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
-            setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
+            setSimpleItems(TranslateService.langMap.keys.toTypedArray())
             setOnItemClickListener { _, view, _, _ ->
                 val textView = view as TextView
                 logDebug(textView.text.toString())
                 viewModel.currentTargetLang =
-                    MlKitTranslationService.langMap[textView.text.toString()]!!
+                    TranslateService.langMap[textView.text.toString()]!!
                 viewModel.translateText(
                     binding.includedInfoLayout.originalTextView.text.toString(),
                     viewModel.currentSourceLang,
@@ -204,7 +203,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun launchWikiArticlesDialog() {
         val wikiDialog =
-            WikipediaArticlesDialogFragment() {pageId ->
+            WikipediaArticlesDialogFragment() { pageId ->
                 launchWebViewDialog(
                     WebSearchDialogFragment.WIKI_ARTICLE_PAGE,
                     pageId.toString()

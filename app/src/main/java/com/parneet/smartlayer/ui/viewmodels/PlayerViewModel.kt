@@ -13,6 +13,7 @@ import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -43,20 +44,16 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     fun translateText(
-        string: String,
+        originalString: String,
         sourceLanguage: String,
         targetLanguage: String
     ) {
-        // here we're creating a new flow in each call hence same number of times observer will be notified. But why still observer getting notified once.
-        // Even though we created multiple flow (by calling this function multiple times) For example: Like if it was a call to room databse about getting
-        // the list then it would emit data to every flows get created. Is it because room is itself actively throwing values so every flow is getting it and
-        // here in our case we are emitting the values right away?
         viewModelScope.launch {
             mlKitTranslationService.translate(
-                string,
+                originalString,
                 sourceLanguage,
                 targetLanguage
-            ).collect {
+            ).collectLatest {
                 _translateResponseState.value = it
             }
         }
@@ -75,7 +72,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 _tokenizedWords.value = Response.Loading(false)
                 _tokenizedWords.value = Response.Success(tokens)
             } catch (e: Exception) {
-                _tokenizedWords.value = Response.Loading(true)
+                _tokenizedWords.value = Response.Loading(false)
                 _tokenizedWords.value = Response.Error(e)
             }
         }
