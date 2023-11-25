@@ -1,4 +1,4 @@
-package com.parneet.smartlayer.model
+package com.parneet.smartlayer.common
 
 sealed class Response<out T> {
     data class Success<out T>(val data: T?) : Response<T>()

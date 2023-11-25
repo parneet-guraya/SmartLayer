@@ -35,7 +35,7 @@ object AppUtils {
     }
 
     fun dpToPixels(sizeInDp: Int, applicationContext: Context): Int {
-        val density = context.resources.displayMetrics.density.toInt()
+        val density = applicationContext.resources.displayMetrics.density.toInt()
         return sizeInDp * density
     }
 

@@ -4,7 +4,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

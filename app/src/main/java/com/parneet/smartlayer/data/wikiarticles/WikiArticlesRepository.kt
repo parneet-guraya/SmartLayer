@@ -1,7 +1,7 @@
 package com.parneet.smartlayer.data.wikiarticles
 
 import com.parneet.smartlayer.data.RetrofitClient
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.model.WikiArticlesListResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

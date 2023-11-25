@@ -8,7 +8,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils

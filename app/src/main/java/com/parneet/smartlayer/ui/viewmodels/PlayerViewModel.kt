@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import kotlinx.coroutines.flow.MutableStateFlow

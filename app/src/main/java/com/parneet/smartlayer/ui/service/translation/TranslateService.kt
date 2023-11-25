@@ -1,6 +1,6 @@
 package com.parneet.smartlayer.ui.service.translation
 
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import kotlinx.coroutines.flow.Flow
 
 interface TranslateService {

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
-import com.parneet.smartlayer.model.Response
+import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.ui.activities.PlayerActivity
 import com.parneet.smartlayer.ui.adapter.VideoListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
