@@ -42,7 +42,6 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     fun updateCurrentSubText(text: String?) {
         _currentSubText.value = text
     }
-
     fun translateText(
         originalString: String,
         sourceLanguage: String,

@@ -10,29 +10,27 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentFolderListBinding
-import com.parneet.smartlayer.common.Response
-import com.parneet.smartlayer.ui.adapter.FolderListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
-import kotlinx.coroutines.flow.collectLatest
+import com.parneet.smartlayer.ui.viewmodels.FolderListFragmentViewModel
 import kotlinx.coroutines.launch
 
 class FolderListFragment : Fragment() {
     private var _binding: FragmentFolderListBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: FolderListFragmentViewModel by viewModels()
     private val requestPermissionLauncher = requestPermissionLauncher()
-    private lateinit var adapter: FolderListAdapter
-    private val videoRepository = VideoRepository()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentFolderListBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,16 +48,39 @@ class FolderListFragment : Fragment() {
                 AppUtils.getReadMediaPermission()
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            adapter = FolderListAdapter { bucketId ->
-                goToVideoList(bucketId)
-            }
-
-            binding.foldersRecyclerView.layoutManager =
-                LinearLayoutManager(requireContext())
-            binding.foldersRecyclerView.adapter = adapter
-            loadVideoFolders()
+            initializeRecyclerView()
+            observeState()
+            viewModel.loadVideoFolders()
         } else {
             requestPermissionLauncher.launch(AppUtils.getReadMediaPermission())
+        }
+    }
+
+    private fun initializeRecyclerView() {
+        viewModel.initializeListAdapter { bucketId -> goToVideoList(bucketId) }
+        binding.foldersRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext())
+        binding.foldersRecyclerView.adapter = viewModel.adapter
+    }
+
+    private fun observeState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    AppUtils.toggleLoading(
+                        state.isLoading,
+                        binding.foldersRecyclerView,
+                        binding.progressCircular
+                    )
+                    if (state.errorMessage.isNotEmpty()) {
+                        AppUtils.showSnackBar(binding.root, state.errorMessage)
+                    } else if (state.folderList.isEmpty()) {
+                        AppUtils.showSnackBar(binding.root, "No Video Folders are present!")
+                    } else {
+                        viewModel.adapter.submitList(state.folderList)
+                    }
+                }
+            }
         }
     }
 
@@ -68,35 +89,11 @@ class FolderListFragment : Fragment() {
             println("launch result callback")
             if (isGranted) {
                 // show folders
-                loadVideoFolders()
+                viewModel.loadVideoFolders()
             } else {
                 Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT)
                     .show()
                 findNavController().navigate(R.id.permissionDeniedFragment)
-            }
-        }
-    }
-
-    private fun loadVideoFolders() {
-        lifecycleScope.launch {
-            val folderList = videoRepository.getVideoFolders(requireContext().applicationContext)
-            folderList.collectLatest { folderListResponse ->
-                when (folderListResponse) {
-                    is Response.Error -> AppUtils.showSnackBar(
-                        binding.root,
-                        folderListResponse.message
-                    )
-
-                    is Response.Loading -> AppUtils.toggleLoading(
-                        folderListResponse.isLoading,
-                        binding.foldersRecyclerView,
-                        binding.progressCircular
-                    )
-
-                    is Response.Success -> {
-                      adapter.submitList(folderListResponse.data)
-                    }
-                }
             }
         }
     }
