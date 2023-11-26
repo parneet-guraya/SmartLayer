@@ -72,12 +72,18 @@ class FolderListFragment : Fragment() {
                         binding.foldersRecyclerView,
                         binding.progressCircular
                     )
-                    if (state.errorMessage.isNotEmpty()) {
-                        AppUtils.showSnackBar(binding.root, state.errorMessage)
-                    } else if (state.folderList.isEmpty()) {
-                        AppUtils.showSnackBar(binding.root, "No Video Folders are present!")
-                    } else {
-                        viewModel.adapter.submitList(state.folderList)
+                    when {
+                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                            binding.root,
+                            state.errorMessage
+                        )
+
+                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                            binding.root,
+                            "No Video Folders are present!"
+                        )
+
+                        else -> viewModel.adapter.submitList(state.folderList)
                     }
                 }
             }

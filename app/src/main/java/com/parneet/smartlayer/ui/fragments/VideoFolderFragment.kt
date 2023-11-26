@@ -70,7 +70,7 @@ class VideoFolderFragment : Fragment() {
                             "No Videos"
                         )
 
-                        (state.videoList?.isNotEmpty() == true) -> viewModel.videoListAdapter.submitList(
+                        else -> viewModel.videoListAdapter.submitList(
                             state.videoList
                         )
                     }
