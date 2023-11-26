@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
-import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
 import com.parneet.smartlayer.common.Response
+import com.parneet.smartlayer.data.RetrofitClient
+import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
+import com.parneet.smartlayer.data.wikiarticles.WikipediaApi
+import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
 import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
@@ -20,7 +22,11 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
 
     private var _binding: WikipediaArticlesDialogFragmentBinding? = null
     private val binding get() = _binding!!
-    private val wikiArticlesRepository = WikiArticlesRepository()
+    private val wikiArticlesRepository =
+        WikiArticlesRepository(
+            RetrofitClient.create(WikiArticlesRepository.WIKI_ARTICLES_BASE_URL)
+                .create(WikipediaApi::class.java)
+        )
     private lateinit var adapter: WikiArticlesListAdapter
 
     override fun onCreateView(

@@ -1,14 +1,11 @@
 package com.parneet.smartlayer.data.wikiarticles
 
-import com.parneet.smartlayer.data.RetrofitClient
 import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.model.WikiArticlesListResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class WikiArticlesRepository() {
-
-    private val wikipediaApi = RetrofitClient.create(WIKI_ARTICLES_BASE_URL).create(WikipediaApi::class.java)
+class WikiArticlesRepository(private val wikipediaApi: WikipediaApi) {
 
     suspend fun fetchArticles(searchQuery: String): Flow<Response<WikiArticlesListResponse>> =
         flow {
@@ -26,7 +23,7 @@ class WikiArticlesRepository() {
         }
 
     companion object {
-        private const val WIKI_ARTICLES_BASE_URL = "https://api.wikimedia.org/core/v1/wikipedia/en/search/"
+        const val WIKI_ARTICLES_BASE_URL = "https://api.wikimedia.org/core/v1/wikipedia/en/search/"
 
     }
 }
