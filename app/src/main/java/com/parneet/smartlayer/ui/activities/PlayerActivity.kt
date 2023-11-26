@@ -79,12 +79,12 @@ class PlayerActivity : AppCompatActivity() {
             setOnItemClickListener { _, view, _, _ ->
                 val textView = view as TextView
                 logDebug(textView.text.toString())
-                viewModel.currentTargetLang =
-                    MlKitTranslationService.langMap[textView.text.toString()]!!
+                val selectedTargetLang = MlKitTranslationService.langMap[textView.text.toString()]!!
+                viewModel.changeTargetLanguage(selectedTargetLang)
                 viewModel.translateText(
                     binding.includedInfoLayout.originalTextView.text.toString(),
-                    viewModel.currentSourceLang,
-                    viewModel.currentTargetLang
+                    viewModel.translatorState.value.currentSourceLang,
+                    viewModel.translatorState.value.currentTargetLang
                 )
             }
         }
@@ -127,8 +127,8 @@ class PlayerActivity : AppCompatActivity() {
                         binding.includedInfoLayout.originalTextView.text = state.currentText
                         viewModel.translateText(
                             state.currentText,
-                            viewModel.currentSourceLang,
-                            viewModel.currentTargetLang
+                            viewModel.translatorState.value.currentSourceLang,
+                            viewModel.translatorState.value.currentTargetLang
                         )
                     }
                 }
@@ -208,7 +208,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun launchWikiArticlesDialog() {
         val wikiDialog =
-            WikipediaArticlesDialogFragment() { pageId ->
+            WikipediaArticlesDialogFragment { pageId ->
                 launchWebViewDialog(
                     WebSearchDialogFragment.WIKI_ARTICLE_PAGE,
                     pageId.toString()
@@ -383,11 +383,11 @@ class PlayerActivity : AppCompatActivity() {
         inflatedChip.setOnCheckedChangeListener { buttonView, isChecked ->
             if (binding.includedInfoLayout.wordsChipGroup.checkedChipIds.size == 0) {
                 viewModel.updateCurrentSubText(viewModel.subtitleHeaderState.value.originalText)
-                viewModel.subtitleHeaderState.value.isOriginalShowing = true
+                viewModel.changeOriginalSubShowingState(true)
             } else {
                 if (viewModel.subtitleHeaderState.value.isOriginalShowing) {
                     viewModel.updateCurrentSubText("")
-                    viewModel.subtitleHeaderState.value.isOriginalShowing = false
+                    viewModel.changeOriginalSubShowingState(false)
                 }
                 if (isChecked) {
                     // chip selected

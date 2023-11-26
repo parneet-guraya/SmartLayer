@@ -26,8 +26,6 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var trackSelectionParameters: TrackSelectionParameters? = null
 
     private var openNLPTokenizer: OpenNLPTokenizer? = null
-    var currentSourceLang: String = "en"
-    var currentTargetLang: String = "hi"
     private val mlKitTranslationService = MlKitTranslationService()
 
     private var _wordsChipGroupState = MutableStateFlow(WordsChipGroupState())
@@ -105,6 +103,14 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 }
             }
         }
+    }
+
+    fun changeTargetLanguage(targetLanguage: String) {
+        _translatorState.update { it.copy(currentTargetLang = targetLanguage) }
+    }
+
+    fun changeOriginalSubShowingState(isShowing: Boolean) {
+        _subtitleHeaderState.update { it.copy(isOriginalShowing = isShowing) }
     }
 
     fun releaseTokenizerModel() {
