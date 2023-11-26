@@ -7,21 +7,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.data.video.VideoRepository
+import androidx.lifecycle.repeatOnLifecycle
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
-import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.ui.activities.PlayerActivity
-import com.parneet.smartlayer.ui.adapter.VideoListAdapter
+import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.util.AppUtils
-import kotlinx.coroutines.flow.collectLatest
+import com.parneet.smartlayer.ui.viewmodels.VideoListFragmentViewModel
 import kotlinx.coroutines.launch
 
 class VideoFolderFragment : Fragment() {
     private var _binding: FragmentVideoFolderBinding? = null
     private val binding get() = _binding!!
-    private lateinit var videoListAdapter: VideoListAdapter
-    private val videoRepository = VideoRepository()
+    private val viewModel: VideoListFragmentViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,52 +37,46 @@ class VideoFolderFragment : Fragment() {
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
         println("BucketId: $bucketId")
 
-        videoListAdapter =
-            VideoListAdapter(
-                onItemClick = { uri, title ->
-                    startPlayer(uri, title)
-                },
-                loadThumbnail = { uri ->
-                    videoRepository.getVideoThumbnail(
-                        requireContext().applicationContext,
-                        uri
-                    ) { sizeInDp ->
-                        AppUtils.dpToPixels(
-                            sizeInDp,
-                            requireContext().applicationContext
-                        )
-                    }
-                })
-        binding.videoListRecyclerView.adapter = videoListAdapter
-        lifecycleScope.launch {
-            loadVideos(bucketId)
+        observeState()
+        viewModel.initializeAdapter { uri, title ->
+            startPlayer(uri, title)
+        }
+
+        binding.videoListRecyclerView.adapter = viewModel.videoListAdapter
+        if (bucketId != null) {
+            viewModel.loadVideos(bucketId)
+        } else {
+            logDebug("BucketId is null")
         }
     }
 
-    private suspend fun loadVideos(bucketId: String?) {
-        val videoListResponse =
-            videoRepository.getVideosInFolder(requireContext().applicationContext, bucketId)
-        videoListResponse.collectLatest { videosResponse ->
-            println("VideoResponse Flow: $videosResponse")
-            when (videosResponse) {
-                is Response.Error -> AppUtils.showSnackBar(
-                    binding.root,
-                    videosResponse.exception?.message
-                )
+    private fun observeState() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    AppUtils.toggleLoading(
+                        state.isLoading,
+                        binding.videoListRecyclerView,
+                        binding.progressCircular
+                    )
+                    when {
+                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                            binding.root,
+                            state.errorMessage
+                        )
 
-                is Response.Loading -> AppUtils.toggleLoading(
-                    videosResponse.isLoading,
-                    binding.videoListRecyclerView,
-                    binding.progressCircular
-                )
+                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                            binding.root,
+                            "No Videos"
+                        )
 
-                is Response.Success -> {
-                    val videosList = videosResponse.data
-                    videoListAdapter.submitList(videosList)
+                        (state.videoList?.isNotEmpty() == true) -> viewModel.videoListAdapter.submitList(
+                            state.videoList
+                        )
+                    }
                 }
             }
         }
-
     }
 
     private fun startPlayer(uri: Uri, title: String) {

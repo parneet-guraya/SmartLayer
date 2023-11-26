@@ -8,11 +8,9 @@ import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Video
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
-class VideoRepository() {
+class VideoRepository {
 
     // revisit will there be any problem if context saved using val context in the constructor (for both application and context)
     suspend fun getVideoFolders(applicationContext: Context): Resource<List<Folder>> {
@@ -28,16 +26,15 @@ class VideoRepository() {
 
     suspend fun getVideosInFolder(
         applicationContext: Context,
-        bucketId: String?
-    ): Flow<Response<List<Video>?>> = flow {
-        emit(Response.Loading(true))
-        try {
-            val videoList = VideoManager.getVideosInFolder(applicationContext, bucketId)
-            emit(Response.Loading(false))
-            emit(Response.Success(videoList))
-        } catch (e: Exception) {
-            emit(Response.Loading(false))
-            emit(Response.Error(e))
+        bucketId: String
+    ): Resource<List<Video>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val videoList = VideoManager.getVideosInFolder(applicationContext, bucketId)
+                return@withContext Resource.Success(videoList)
+            } catch (e: Exception) {
+                return@withContext Resource.Failure(e)
+            }
         }
     }
 

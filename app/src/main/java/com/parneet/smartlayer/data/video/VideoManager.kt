@@ -51,11 +51,8 @@ object VideoManager {
 
     suspend fun getVideosInFolder(
         applicationContext: Context,
-        bucketId: String?
-    ): List<Video>? {
-        if (bucketId == null) {
-            return null
-        }
+        bucketId: String
+    ): List<Video> {
         return withContext(Dispatchers.IO) {
             val videoList = mutableListOf<Video>()
             val projection = arrayOf(
