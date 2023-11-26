@@ -20,10 +20,10 @@ class OpenNLPTokenizer(private val context: Context) {
         }
     }
 
-    suspend fun tokenizeString(string: String): Array<String> {
+    suspend fun tokenizeString(string: String): List<String> {
         return withContext(Dispatchers.Default) {
             val tokens = tokenizer.tokenize(string)
-            tokens
+            tokens.toList()
         }
     }
 

@@ -29,8 +29,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.common.Response
+import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WebSearchDialogFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WikipediaArticlesDialogFragment
@@ -73,25 +73,7 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
-
-        viewModel.tokenizedWords.observe(this) { tokenizingResponse ->
-            when (tokenizingResponse) {
-                is Response.Error -> logDebug("Error: ${tokenizingResponse.exception} while tokenizing")
-                is Response.Loading -> {
-                    AppUtils.toggleLoading(
-                        tokenizingResponse.isLoading,
-                        binding.includedInfoLayout.wordsChipGroup,
-                        binding.includedInfoLayout.splittingWordsProgressIndicator
-                    )
-                }
-
-                is Response.Success -> {
-                    tokenizingResponse.data?.onEach { word ->
-                        createWordChip(word)
-                    }
-                }
-            }
-        }
+        observeViewStates()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -117,14 +99,6 @@ class PlayerActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
-        viewModel.currentSubText.observe(this) { currentText ->
-            binding.includedInfoLayout.originalTextView.text = currentText
-            viewModel.translateText(
-                currentText!!,
-                viewModel.currentSourceLang,
-                viewModel.currentTargetLang
-            )
         }
 
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
@@ -168,6 +142,46 @@ class PlayerActivity : AppCompatActivity() {
         }
         binding.includedInfoLayout.wikiSearchButton.setOnClickListener {
             launchWikiArticlesDialog()
+        }
+    }
+
+    private fun observeViewStates() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // subtitle header state
+                launch {
+                    viewModel.subtitleHeaderState.collect { state ->
+                        binding.includedInfoLayout.originalTextView.text = state.currentText
+                        viewModel.translateText(
+                            state.currentText,
+                            viewModel.currentSourceLang,
+                            viewModel.currentTargetLang
+                        )
+                    }
+                }
+                // words chip group state
+                launch {
+                    viewModel.wordsChipGroupState.collect { state ->
+                        AppUtils.toggleLoading(
+                            state.isLoading,
+                            binding.includedInfoLayout.wordsChipGroup,
+                            binding.includedInfoLayout.splittingWordsProgressIndicator
+                        )
+                        when {
+                            (state.errorMessage.isNotEmpty()) -> logDebug(state.errorMessage)
+
+                            (!state.words.isNullOrEmpty()) -> {
+                                state.words.onEach { word ->
+                                    createWordChip(word)
+                                }
+                            }
+
+                            else -> logDebug("Empty Tokens List")
+                        }
+
+                    }
+                }
+            }
         }
     }
 
@@ -358,10 +372,9 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun openInfoDrawer(text: String) {
-        viewModel.isOriginalSubShowing = true
-        viewModel.originalSubText = text
         binding.drawerLayout.open()
-        viewModel.updateCurrentSubText(text)
+        viewModel.initializeSubtitleHeader(text)
+        // revisit remove all the views or reset the view after the drawer is closed.
         binding.includedInfoLayout.wordsChipGroup.removeAllViews()
         // extract words from line
         viewModel.splitIntoWords(text)
@@ -376,23 +389,30 @@ class PlayerActivity : AppCompatActivity() {
         inflatedChip.id = View.generateViewId()
         inflatedChip.text = word
         inflatedChip.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (viewModel.isOriginalSubShowing) {
-                viewModel.updateCurrentSubText("")
-                viewModel.isOriginalSubShowing = false
-            }
-            if (isChecked) {
-                // chip selected
-                logDebug(buttonView.text.toString())
-                val text = buttonView.text.toString()
-                val modifiedText = viewModel.currentSubText.value?.plus(" ").plus(text)
-                viewModel.updateCurrentSubText(modifiedText)
-            } else {
-                // chip unselected
-                viewModel.updateCurrentSubText(viewModel.currentSubText.value?.replace(word, ""))
-            }
             if (binding.includedInfoLayout.wordsChipGroup.checkedChipIds.size == 0) {
-                viewModel.updateCurrentSubText(viewModel.originalSubText)
-                viewModel.isOriginalSubShowing = true
+                viewModel.updateCurrentSubText(viewModel.subtitleHeaderState.value.originalText)
+                viewModel.subtitleHeaderState.value.isOriginalShowing = true
+            } else {
+                if (viewModel.subtitleHeaderState.value.isOriginalShowing) {
+                    viewModel.updateCurrentSubText("")
+                    viewModel.subtitleHeaderState.value.isOriginalShowing = false
+                }
+                if (isChecked) {
+                    // chip selected
+                    logDebug(buttonView.text.toString())
+                    val text = buttonView.text.toString()
+                    val modifiedText =
+                        viewModel.subtitleHeaderState.value.currentText.plus(" ").plus(text)
+                    viewModel.updateCurrentSubText(modifiedText)
+                } else {
+                    // chip unselected
+                    viewModel.updateCurrentSubText(
+                        viewModel.subtitleHeaderState.value.currentText.replace(
+                            word,
+                            ""
+                        )
+                    )
+                }
             }
         }
         binding.includedInfoLayout.wordsChipGroup.addView(inflatedChip)

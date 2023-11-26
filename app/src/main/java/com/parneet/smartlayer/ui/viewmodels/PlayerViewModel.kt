@@ -3,17 +3,19 @@ package com.parneet.smartlayer.ui.viewmodels
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
 import com.parneet.smartlayer.common.Response
-import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
+import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
+import com.parneet.smartlayer.ui.state.SubtitleHeaderState
+import com.parneet.smartlayer.ui.state.WordsChipGroupState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val application: Application) : AndroidViewModel(application) {
@@ -22,15 +24,11 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
     var currentPlayingMediaItem: MediaItem? = null
-    private val _currentSubText: MutableLiveData<String?> = MutableLiveData("")
-    val currentSubText: LiveData<String?> = _currentSubText
-    var originalSubText: String = ""
-    var isOriginalSubShowing = true
     var currentSourceLang: String = "en"
     var currentTargetLang: String = "hi"
     private var openNLPTokenizer: OpenNLPTokenizer? = null
-    private var _tokenizedWords = MutableLiveData<Response<Array<String>>>()
-    val tokenizedWords: LiveData<Response<Array<String>>> = _tokenizedWords
+    private var _wordsChipGroupState = MutableStateFlow(WordsChipGroupState())
+    val wordsChipGroupState = _wordsChipGroupState.asStateFlow()
     var trackSelectionParameters: TrackSelectionParameters? = null
 
 
@@ -38,10 +36,24 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     val translateResponseState: StateFlow<Response<String>> = _translateResponseState
 
     private val mlKitTranslationService = MlKitTranslationService()
+    private val _subtitleHeaderState = MutableStateFlow(SubtitleHeaderState())
+    val subtitleHeaderState = _subtitleHeaderState.asStateFlow()
 
-    fun updateCurrentSubText(text: String?) {
-        _currentSubText.value = text
+
+    fun initializeSubtitleHeader(text: String) {
+        _subtitleHeaderState.update {
+            it.copy(
+                currentText = text,
+                originalText = text,
+                isOriginalShowing = true
+            )
+        }
     }
+
+    fun updateCurrentSubText(text: String) {
+        _subtitleHeaderState.update { it.copy(currentText = text) }
+    }
+
     fun translateText(
         originalString: String,
         sourceLanguage: String,
@@ -59,7 +71,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     fun splitIntoWords(subtitleString: String) {
-        _tokenizedWords.value = Response.Loading(true)
+        _wordsChipGroupState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             if (openNLPTokenizer == null) {
                 println("model initialised")
@@ -68,11 +80,14 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
             }
             try {
                 val tokens = openNLPTokenizer?.tokenizeString(subtitleString)
-                _tokenizedWords.value = Response.Loading(false)
-                _tokenizedWords.value = Response.Success(tokens)
+                _wordsChipGroupState.update { it.copy(isLoading = false, words = tokens) }
             } catch (e: Exception) {
-                _tokenizedWords.value = Response.Loading(false)
-                _tokenizedWords.value = Response.Error(e)
+                _wordsChipGroupState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "Error while tokenizing string."
+                    )
+                }
             }
         }
     }
