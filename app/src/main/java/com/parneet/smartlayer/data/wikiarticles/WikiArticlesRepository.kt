@@ -14,7 +14,7 @@ class WikiArticlesRepository(private val wikipediaApi: WikipediaApi) {
                 Resource.Success(response)
 
             } catch (e: Exception) {
-                Resource.Failure(e)
+                Resource.Error(e)
             }
         }
     }

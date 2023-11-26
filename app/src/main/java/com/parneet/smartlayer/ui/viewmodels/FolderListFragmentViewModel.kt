@@ -31,7 +31,7 @@ class FolderListFragmentViewModel(private val application: Application) :
         viewModelScope.launch {
             val response = videoRepository.getVideoFolders(application.applicationContext)
             when (response) {
-                is Resource.Failure -> _uiState.update {
+                is Resource.Error -> _uiState.update {
                     it.copy(
                         isLoading = false,
                         errorMessage = response.exception.message!!

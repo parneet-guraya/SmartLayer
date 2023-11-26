@@ -19,7 +19,7 @@ class VideoRepository {
                 val folderList = VideoManager.getVideoFolders(applicationContext)
                 return@withContext Resource.Success(folderList)
             } catch (e: Exception) {
-                return@withContext Resource.Failure(e)
+                return@withContext Resource.Error(e)
             }
         }
     }
@@ -33,7 +33,7 @@ class VideoRepository {
                 val videoList = VideoManager.getVideosInFolder(applicationContext, bucketId)
                 return@withContext Resource.Success(videoList)
             } catch (e: Exception) {
-                return@withContext Resource.Failure(e)
+                return@withContext Resource.Error(e)
             }
         }
     }
@@ -46,7 +46,7 @@ class VideoRepository {
         return try {
             Resource.Success(VideoManager.loadThumbnail(applicationContext, uri, sizeInPixels))
         } catch (e: Exception) {
-            Resource.Failure(e)
+            Resource.Error(e)
         }
     }
 

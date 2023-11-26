@@ -44,7 +44,7 @@ class VideoListAdapter(
         val video = currentList[position]
         val result = loadThumbnail(video.uri)
         when (result) {
-            is Resource.Failure -> logDebug(result.exception.message!!)
+            is Resource.Error -> logDebug(result.exception.message!!)
             is Resource.Success -> {
                 holder.videoThumbnailIV.load(result.data) {
                     crossfade(true)

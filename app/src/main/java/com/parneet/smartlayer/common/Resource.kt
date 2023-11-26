@@ -1,6 +1,6 @@
 package com.parneet.smartlayer.common
 
-sealed class Resource<out T> {
-    data class Success<out T>(val data: T) : Resource<T>()
-    data class Failure(val exception: Exception) : Resource<Nothing>()
+sealed class Resource<T>() {
+    class Success<T>(val data: T) : Resource<T>()
+    class Error<T>(val exception: Exception) : Resource<T>()
 }

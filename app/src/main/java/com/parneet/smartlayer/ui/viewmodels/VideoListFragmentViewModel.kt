@@ -29,7 +29,7 @@ class VideoListFragmentViewModel(private val application: Application) :
             val response =
                 videoRepository.getVideosInFolder(application.applicationContext, bucketId)
             when (response) {
-                is Resource.Failure -> _uiState.update {
+                is Resource.Error -> _uiState.update {
                     it.copy(
                         isLoading = false,
                         errorMessage = response.exception.message!!

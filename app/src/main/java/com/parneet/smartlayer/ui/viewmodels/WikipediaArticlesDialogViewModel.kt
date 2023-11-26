@@ -34,7 +34,7 @@ class WikipediaArticlesDialogViewModel : ViewModel() {
         viewModelScope.launch {
             val response = wikiArticlesRepository.fetchArticles(searchQuery)
             when (response) {
-                is Resource.Failure -> _uiState.update {
+                is Resource.Error -> _uiState.update {
                     it.copy(
                         isLoading = false,
                         errorMessage = response.exception.message ?: "Error Fetching Articles"
