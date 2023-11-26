@@ -60,7 +60,10 @@ class WikiArticlesListAdapter(
         return articlesList.size
     }
 
-    fun submitList(articlesList: List<Page>) {
-        this.articlesList = articlesList
+    fun submitList(articlesList: List<Page>?) {
+        if (articlesList != null) {
+            this.articlesList = articlesList
+            notifyDataSetChanged()
+        }
     }
 }

@@ -5,16 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.parneet.smartlayer.common.Response
-import com.parneet.smartlayer.data.RetrofitClient
-import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
-import com.parneet.smartlayer.data.wikiarticles.WikipediaApi
+import androidx.lifecycle.repeatOnLifecycle
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
-import com.parneet.smartlayer.ui.activities.logDebug
-import com.parneet.smartlayer.ui.adapter.WikiArticlesListAdapter
 import com.parneet.smartlayer.ui.util.AppUtils
-import kotlinx.coroutines.flow.collectLatest
+import com.parneet.smartlayer.ui.viewmodels.WikipediaArticlesDialogViewModel
 import kotlinx.coroutines.launch
 
 class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> Unit) :
@@ -22,12 +19,7 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
 
     private var _binding: WikipediaArticlesDialogFragmentBinding? = null
     private val binding get() = _binding!!
-    private val wikiArticlesRepository =
-        WikiArticlesRepository(
-            RetrofitClient.create(WikiArticlesRepository.WIKI_ARTICLES_BASE_URL)
-                .create(WikipediaApi::class.java)
-        )
-    private lateinit var adapter: WikiArticlesListAdapter
+    private val viewModel: WikipediaArticlesDialogViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,32 +46,37 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
             dialog?.dismiss()
         }
 
-        adapter = WikiArticlesListAdapter(onItemClick = onItemClick)
-        binding.articlesRecyclerView.adapter = adapter
+        observeState()
+        viewModel.initializeAdapter(onItemClick)
+        binding.articlesRecyclerView.adapter = viewModel.adapter
+        val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
 
+        if (searchQuery != null) {
+            viewModel.loadWikiArticles(searchQuery)
+        }
+    }
+
+    private fun observeState() {
         lifecycleScope.launch {
-            val searchQuery = arguments?.getString(KEY_SEARCH_QUERY)
-
-            val wikiArticlesRequestResponse = wikiArticlesRepository.fetchArticles(searchQuery!!)
-            wikiArticlesRequestResponse.collectLatest { response ->
-                println(response)
-                when (response) {
-                    is Response.Error -> logDebug(response.exception?.message!!)
-                    is Response.Loading -> AppUtils.toggleLoading(
-                        response.isLoading,
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collect { state ->
+                    AppUtils.toggleLoading(
+                        state.isLoading,
                         binding.articlesRecyclerView,
                         binding.progressCircular
                     )
+                    when {
+                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                            binding.root,
+                            state.errorMessage
+                        )
 
-                    is Response.Success -> {
-                        val list = response.data?.pages
-                        println("wiki response : $list")
-                        if (!list.isNullOrEmpty()) {
-                            adapter.submitList(list)
-                        } else {
-                            println("wiki articles list empty")
-                            //revisit: show message that list is empty
-                        }
+                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                            binding.root,
+                            "No Articles to show!!"
+                        )
+
+                        else -> viewModel.adapter.submitList(state.articlesList)
                     }
                 }
             }
