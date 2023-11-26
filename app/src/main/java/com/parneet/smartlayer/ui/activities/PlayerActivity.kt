@@ -29,12 +29,11 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
 import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WebSearchDialogFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WikipediaArticlesDialogFragment
-import com.parneet.smartlayer.ui.service.translation.TranslateService
+import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
 import kotlinx.coroutines.launch
@@ -75,39 +74,13 @@ class PlayerActivity : AppCompatActivity() {
         }
         observeViewStates()
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.translateResponseState.collect { response ->
-                    println("Translation: $response")
-                    when (response) {
-                        is Response.Error -> binding.includedInfoLayout.translatedTextView.text =
-                            response.message.toString()
-
-                        is Response.Loading -> {
-                            AppUtils.toggleLoading(
-                                response.isLoading,
-                                binding.includedInfoLayout.translatedTextView,
-                                binding.includedInfoLayout.translateLoadingBar
-                            )
-                            logDebug("Translate Loading")
-                        }
-
-                        is Response.Success -> {
-                            logDebug("Translate result: ${response.data}")
-                            binding.includedInfoLayout.translatedTextView.text = response.data
-                        }
-                    }
-                }
-            }
-        }
-
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
-            setSimpleItems(TranslateService.langMap.keys.toTypedArray())
+            setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
             setOnItemClickListener { _, view, _, _ ->
                 val textView = view as TextView
                 logDebug(textView.text.toString())
                 viewModel.currentTargetLang =
-                    TranslateService.langMap[textView.text.toString()]!!
+                    MlKitTranslationService.langMap[textView.text.toString()]!!
                 viewModel.translateText(
                     binding.includedInfoLayout.originalTextView.text.toString(),
                     viewModel.currentSourceLang,
@@ -179,6 +152,25 @@ class PlayerActivity : AppCompatActivity() {
                             else -> logDebug("Empty Tokens List")
                         }
 
+                    }
+                }
+                // translator state
+                launch {
+                    viewModel.translatorState.collect { state ->
+                        AppUtils.toggleLoading(
+                            state.isLoading,
+                            binding.includedInfoLayout.translatedTextView,
+                            binding.includedInfoLayout.translateLoadingBar
+                        )
+                        when {
+                            (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                                binding.root,
+                                state.errorMessage
+                            )
+
+                            (state.translateResult.isNotEmpty()) -> binding.includedInfoLayout.translatedTextView.text =
+                                state.translateResult
+                        }
                     }
                 }
             }

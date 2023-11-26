@@ -6,15 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.TrackSelectionParameters
-import com.parneet.smartlayer.common.Response
+import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.state.SubtitleHeaderState
+import com.parneet.smartlayer.ui.state.TranslatorState
 import com.parneet.smartlayer.ui.state.WordsChipGroupState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,18 +23,19 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
     var currentPlayingMediaItem: MediaItem? = null
-    var currentSourceLang: String = "en"
-    var currentTargetLang: String = "hi"
-    private var openNLPTokenizer: OpenNLPTokenizer? = null
-    private var _wordsChipGroupState = MutableStateFlow(WordsChipGroupState())
-    val wordsChipGroupState = _wordsChipGroupState.asStateFlow()
     var trackSelectionParameters: TrackSelectionParameters? = null
 
-
-    private var _translateResponseState = MutableStateFlow<Response<String>>(Response.Loading(true))
-    val translateResponseState: StateFlow<Response<String>> = _translateResponseState
-
+    private var openNLPTokenizer: OpenNLPTokenizer? = null
+    var currentSourceLang: String = "en"
+    var currentTargetLang: String = "hi"
     private val mlKitTranslationService = MlKitTranslationService()
+
+    private var _wordsChipGroupState = MutableStateFlow(WordsChipGroupState())
+    val wordsChipGroupState = _wordsChipGroupState.asStateFlow()
+
+    private var _translatorState = MutableStateFlow(TranslatorState())
+    val translatorState = _translatorState.asStateFlow()
+
     private val _subtitleHeaderState = MutableStateFlow(SubtitleHeaderState())
     val subtitleHeaderState = _subtitleHeaderState.asStateFlow()
 
@@ -59,13 +59,28 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         sourceLanguage: String,
         targetLanguage: String
     ) {
+        _translatorState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
-            mlKitTranslationService.translate(
+            val translateResult = mlKitTranslationService.translate(
                 originalString,
                 sourceLanguage,
                 targetLanguage
-            ).collectLatest {
-                _translateResponseState.value = it
+            )
+            when (translateResult) {
+                is Resource.Error -> _translatorState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = translateResult.exception.message
+                            ?: "Error while translating"
+                    )
+                }
+
+                is Resource.Success -> _translatorState.update {
+                    it.copy(
+                        isLoading = false,
+                        translateResult = translateResult.data
+                    )
+                }
             }
         }
     }
