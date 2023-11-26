@@ -34,7 +34,7 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        isCancelable = false
         val window = dialog?.window
         val params = window?.attributes
 
@@ -43,6 +43,10 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
         }
 
         window?.attributes = params
+
+        binding.closeDialogButton.setOnClickListener {
+            dialog?.dismiss()
+        }
 
         adapter = WikiArticlesListAdapter(onItemClick = onItemClick)
         binding.articlesRecyclerView.adapter = adapter
@@ -54,7 +58,7 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
             wikiArticlesRequestResponse.collectLatest { response ->
                 println(response)
                 when (response) {
-                    is Response.Error -> logDebug(response.message!!)
+                    is Response.Error -> logDebug(response.exception?.message!!)
                     is Response.Loading -> AppUtils.toggleLoading(
                         response.isLoading,
                         binding.articlesRecyclerView,
