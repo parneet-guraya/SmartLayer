@@ -67,6 +67,7 @@ class FolderListFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
+                    println("folder state")
                     AppUtils.toggleLoading(
                         state.isLoading,
                         binding.foldersRecyclerView,
@@ -95,6 +96,8 @@ class FolderListFragment : Fragment() {
             println("launch result callback")
             if (isGranted) {
                 // show folders
+                initializeRecyclerView()
+                observeState()
                 viewModel.loadVideoFolders()
             } else {
                 Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT)
