@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import com.parneet.smartlayer.common.Resource
-import com.parneet.smartlayer.common.Response
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Video
 import kotlinx.coroutines.Dispatchers
