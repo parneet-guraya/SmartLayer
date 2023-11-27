@@ -32,7 +32,6 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = false
         val window = dialog?.window
         val params = window?.attributes
 
