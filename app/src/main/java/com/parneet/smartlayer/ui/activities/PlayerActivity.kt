@@ -21,7 +21,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.common.MediaItem.SubtitleConfiguration
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -43,7 +42,6 @@ import kotlinx.coroutines.launch
 class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private val viewModel: PlayerViewModel by viewModels()
-    private var player: ExoPlayer? = null
     private var windowInsetsController: WindowInsetsControllerCompat? = null
     private val subPickerLauncher: ActivityResultLauncher<Intent> = onGetSub()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,11 +93,11 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             override fun onDrawerOpened(drawerView: View) {
-                player?.pause()
+                viewModel.player?.pause()
             }
 
             override fun onDrawerClosed(drawerView: View) {
-                player?.play()
+                viewModel.player?.play()
             }
 
             override fun onDrawerStateChanged(newState: Int) {
@@ -125,7 +123,7 @@ class PlayerActivity : AppCompatActivity() {
                 // subtitles list state
                 launch {
                     viewModel.subtitlesUriListState.collect { subUriList ->
-                        setMediaItemWithSubtitleTrack(subUriList)
+                        viewModel.setMediaItemWithSubtitleTrack(subUriList)
                     }
                 }
 
@@ -243,46 +241,19 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        releasePlayer()
+        viewModel.releasePlayer()
     }
 
     private fun initializePlayer() {
-        player = ExoPlayer.Builder(this)
-            .build().also { exoPlayer ->
-                if (viewModel.trackSelectionParameters != null) {
-                    exoPlayer.trackSelectionParameters = viewModel.trackSelectionParameters!!
-                }
-                if (viewModel.subtitlesUriListState.value.isNotEmpty()) {
-                    setMediaItemWithSubtitleTrack(viewModel.subtitlesUriListState.value)
-                } else {
-                    exoPlayer.setMediaItem(viewModel.currentPlayingMediaItem!!)
-                }
-
-                getInfoButton().setOnClickListener {
-                    infoButtonClickListener(exoPlayer)
-                }
-
-                getAddSubButton().setOnClickListener {
-                    launchSubPicker()
-                }
-
-                exoPlayer.playWhenReady = viewModel.playWhenReady
-                exoPlayer.seekTo(viewModel.playBackPosition)
-                exoPlayer.prepare()
-
-            }
-        binding.playerView.player = player
-    }
-
-    private fun releasePlayer() {
-        player?.let { exoPlayer ->
-            viewModel.playWhenReady = exoPlayer.playWhenReady
-            viewModel.playBackPosition = exoPlayer.currentPosition
-            viewModel.updateCurrentMediaItem(exoPlayer.currentMediaItem)
-            viewModel.trackSelectionParameters = exoPlayer.trackSelectionParameters
-            exoPlayer.release()
+        viewModel.initializeMediaPlayer()
+        getInfoButton().setOnClickListener {
+            infoButtonClickListener(viewModel.player!!)
         }
-        player = null
+
+        getAddSubButton().setOnClickListener {
+            launchSubPicker()
+        }
+        binding.playerView.player = viewModel.player
     }
 
     private fun getInfoButton(): ImageButton {
@@ -309,7 +280,7 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun infoButtonClickListener(exoPlayer: Player) {
+    private fun infoButtonClickListener(exoPlayer: ExoPlayer) {
         if (exoPlayer.isCommandAvailable(Player.COMMAND_GET_TEXT)) {
             val cueGroup = exoPlayer.currentCues
             val cueSize = cueGroup.cues.size
@@ -342,30 +313,6 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
 
-        }
-    }
-
-    private fun setMediaItemWithSubtitleTrack(subUriList: List<Uri?>) {
-        if (subUriList.isNotEmpty()) {
-            val currentMediaItem = viewModel.currentPlayingMediaItem
-            val currentPosition = viewModel.playBackPosition
-            val subtitleConfigurationList = mutableListOf<SubtitleConfiguration>()
-            subUriList.onEach { subUri ->
-                if (subUri != null) {
-                    val subtitleConfiguration = SubtitleConfiguration.Builder(subUri)
-                        .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
-                    subtitleConfigurationList.add(subtitleConfiguration)
-                }
-            }
-            val updatedMediaItem =
-                currentMediaItem?.buildUpon()
-                    ?.setSubtitleConfigurations(subtitleConfigurationList)
-                    ?.build()
-
-            if (updatedMediaItem != null) {
-                println("player set updated media item")
-                player?.setMediaItem(updatedMediaItem, currentPosition)
-            }
         }
     }
 
