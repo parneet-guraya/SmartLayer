@@ -23,10 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.MimeTypes
-import androidx.media3.common.Player
-import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
@@ -101,6 +98,7 @@ class PlayerActivity : AppCompatActivity() {
                 // words chip group state
                 launch {
                     viewModel.wordsChipGroupState.collect { state ->
+                        binding.includedInfoLayout.wordsChipGroup.removeAllViews()
                         AppUtils.toggleLoading(
                             state.isLoading,
                             binding.includedInfoLayout.wordsChipGroup,
@@ -207,22 +205,26 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun addDrawerListener() {
-        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-            }
+        binding.drawerLayout.let {
+            it.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            it.addDrawerListener(object : DrawerLayout.DrawerListener {
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                }
 
-            override fun onDrawerOpened(drawerView: View) {
-                viewModel.player?.pause()
-            }
+                override fun onDrawerOpened(drawerView: View) {
+                    viewModel.player?.pause()
+                    updateInfoDrawerText(viewModel.currentText)
+                }
 
-            override fun onDrawerClosed(drawerView: View) {
-                viewModel.player?.play()
-            }
+                override fun onDrawerClosed(drawerView: View) {
+                    viewModel.player?.play()
+                }
 
-            override fun onDrawerStateChanged(newState: Int) {
-            }
+                override fun onDrawerStateChanged(newState: Int) {
+                }
 
-        })
+            })
+        }
     }
 
     private fun addListeners() {
@@ -257,10 +259,18 @@ class PlayerActivity : AppCompatActivity() {
     private fun initializePlayer() {
         viewModel.initializeMediaPlayer()
         binding.playerView.player = viewModel.player
-        println("Initialize player subs available: ${viewModel.player?.currentTracks?.containsType(
-            TRACK_TYPE_TEXT)}")
+        println(
+            "Initialize player subs available: ${
+                viewModel.player?.currentTracks?.containsType(
+                    TRACK_TYPE_TEXT
+                )
+            }"
+        )
         getInfoButton().let {
-            it.setOnClickListener { infoButtonClickListener(viewModel.player!!) }
+            it.setOnClickListener { if (showInfoDrawerIfAvailable()) {
+                viewModel.currentText = getSubtitleText()
+                binding.drawerLayout.open()
+            } }
         }
 
         getAddSubButton().setOnClickListener {
@@ -284,16 +294,24 @@ class PlayerActivity : AppCompatActivity() {
         return binding.playerView.findViewById(R.id.back_arrow_button)
     }
 
-    private fun infoButtonClickListener(exoPlayer: ExoPlayer) {
+    private fun showInfoDrawerIfAvailable(): Boolean {
+        val exoPlayer = viewModel.player
+        if (exoPlayer != null) {
             val cueGroup = exoPlayer.currentCues
             val cueSize = cueGroup.cues.size
-            if (cueSize != 0) {
-                val text = cueGroup.cues[cueSize - 1].text.toString()
-                openInfoDrawer(text)
-                logDebug(text)
-            }
+            return cueSize != 0
+        }
+        return false
     }
 
+    private fun getSubtitleText(): String? {
+        return viewModel.player?.let {
+            val cueGroup = it.currentCues
+            val cueSize = cueGroup.cues.size
+            val text = cueGroup.cues[cueSize - 1].text.toString()
+            return text
+        }
+    }
 
     private fun launchSubPicker() {
         val subPickerIntent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -318,13 +336,11 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun openInfoDrawer(text: String) {
-        binding.drawerLayout.open()
-        viewModel.initializeSubtitleHeader(text)
-        // revisit remove all the views or reset the view after the drawer is closed.
-        binding.includedInfoLayout.wordsChipGroup.removeAllViews()
-        // extract words from line
-        viewModel.splitIntoWords(text)
+    private fun updateInfoDrawerText(text: String?) {
+        if (text != null) {
+            viewModel.initializeSubtitleHeader(text)
+            viewModel.splitIntoWords(text)
+        }
     }
 
     private fun createWordChip(word: String) {

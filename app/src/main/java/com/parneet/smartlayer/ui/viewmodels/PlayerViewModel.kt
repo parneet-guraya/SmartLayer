@@ -26,6 +26,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private var playBackPosition: Long = 0L
     private var currentPlayingMediaItem: MediaItem? = null
     private var trackSelectionParameters: TrackSelectionParameters? = null
+    var currentText: String? = ""
 
     private var _subtitlesUriListState = MutableStateFlow(listOf<Uri?>())
     val subtitlesUriListState = _subtitlesUriListState.asStateFlow()
@@ -125,10 +126,16 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 isOriginalShowing = true
             )
         }
+
     }
 
     fun updateCurrentSubText(text: String) {
         _subtitleHeaderState.update { it.copy(currentText = text) }
+    }
+
+    fun addSubTextToHeader(text: String) {
+        _subtitleHeaderState.update { it.copy(currentText = text) }
+        _wordsChipGroupState.update { it.copy() }
     }
 
     fun translateText(
