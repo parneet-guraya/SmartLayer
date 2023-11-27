@@ -34,13 +34,27 @@ object AppUtils {
 
     }
 
+    fun toggleVisibility(toggleVisibility: Boolean, view: View?, shouldGoInvisible: Boolean = false) {
+        if (view != null) {
+            view.visibility = if (toggleVisibility) {
+                View.VISIBLE
+            } else {
+                if (shouldGoInvisible) {
+                    View.INVISIBLE
+                } else {
+                    View.GONE
+                }
+            }
+        }
+    }
+
     fun dpToPixels(sizeInDp: Int, applicationContext: Context): Int {
         val density = applicationContext.resources.displayMetrics.density.toInt()
         return sizeInDp * density
     }
 
     fun showSnackBar(view: View, message: String?, duration: Int = Snackbar.LENGTH_SHORT) {
-        if(message != null) Snackbar.make(view, message, duration).show()
+        if (message != null) Snackbar.make(view, message, duration).show()
     }
 
     fun getReadMediaPermission(): String {

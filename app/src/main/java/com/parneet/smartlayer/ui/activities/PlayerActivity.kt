@@ -21,8 +21,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.google.android.material.chip.Chip
@@ -54,7 +56,6 @@ class PlayerActivity : AppCompatActivity() {
         }
         val title = intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE)
         getVideoTitleView().text = title
-        setInfoIconVisible(true)
         getBackArrowButton().setOnClickListener {
             super.onBackPressed()
         }
@@ -72,49 +73,8 @@ class PlayerActivity : AppCompatActivity() {
         )
         viewModel.setCurrentMedia(uri)
         observeViewStates()
-
-        (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
-            setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
-            setOnItemClickListener { _, view, _, _ ->
-                val textView = view as TextView
-                logDebug(textView.text.toString())
-                val selectedTargetLang = MlKitTranslationService.langMap[textView.text.toString()]!!
-                viewModel.changeTargetLanguage(selectedTargetLang)
-                viewModel.translateText(
-                    binding.includedInfoLayout.originalTextView.text.toString(),
-                    viewModel.translatorState.value.currentSourceLang,
-                    viewModel.translatorState.value.currentTargetLang
-                )
-            }
-        }
-
-        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-            }
-
-            override fun onDrawerOpened(drawerView: View) {
-                viewModel.player?.pause()
-            }
-
-            override fun onDrawerClosed(drawerView: View) {
-                viewModel.player?.play()
-            }
-
-            override fun onDrawerStateChanged(newState: Int) {
-            }
-
-        })
-
-        binding.includedInfoLayout.webSearchButton.setOnClickListener {
-            // launch google search web view dialog
-            launchWebViewDialog(
-                WebSearchDialogFragment.GOOGLE_SEARCH,
-                binding.includedInfoLayout.originalTextView.text.toString()
-            )
-        }
-        binding.includedInfoLayout.wikiSearchButton.setOnClickListener {
-            launchWikiArticlesDialog()
-        }
+        initializeTranslatorSpinner()
+        addListeners()
     }
 
     private fun observeViewStates() {
@@ -212,7 +172,7 @@ class PlayerActivity : AppCompatActivity() {
         dialog.show(supportFragmentManager, null)
     }
 
-    private fun launchWikiArticlesDialog() {
+    private fun launchWikiArticlesDialog(query: String) {
         val wikiDialog =
             WikipediaArticlesDialogFragment { pageId ->
                 launchWebViewDialog(
@@ -223,10 +183,60 @@ class PlayerActivity : AppCompatActivity() {
         wikiDialog.arguments = Bundle().apply {
             putString(
                 WikipediaArticlesDialogFragment.KEY_SEARCH_QUERY,
-                binding.includedInfoLayout.originalTextView.text.toString()
+                query
             )
         }
         wikiDialog.show(supportFragmentManager, null)
+    }
+
+    private fun initializeTranslatorSpinner() {
+        (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
+            setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
+            setOnItemClickListener { _, view, _, _ ->
+                val textView = view as TextView
+                logDebug(textView.text.toString())
+                val selectedTargetLang = MlKitTranslationService.langMap[textView.text.toString()]!!
+                viewModel.changeTargetLanguage(selectedTargetLang)
+                viewModel.translateText(
+                    binding.includedInfoLayout.originalTextView.text.toString(),
+                    viewModel.translatorState.value.currentSourceLang,
+                    viewModel.translatorState.value.currentTargetLang
+                )
+            }
+        }
+    }
+
+    private fun addDrawerListener() {
+        binding.drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                viewModel.player?.pause()
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                viewModel.player?.play()
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+
+        })
+    }
+
+    private fun addListeners() {
+        addDrawerListener()
+        binding.includedInfoLayout.webSearchButton.setOnClickListener {
+            // launch google search web view dialog
+            launchWebViewDialog(
+                WebSearchDialogFragment.GOOGLE_SEARCH,
+                binding.includedInfoLayout.originalTextView.text.toString()
+            )
+        }
+        binding.includedInfoLayout.wikiSearchButton.setOnClickListener {
+            launchWikiArticlesDialog(binding.includedInfoLayout.originalTextView.text.toString())
+        }
     }
 
     override fun onStart() {
@@ -246,14 +256,16 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun initializePlayer() {
         viewModel.initializeMediaPlayer()
-        getInfoButton().setOnClickListener {
-            infoButtonClickListener(viewModel.player!!)
+        binding.playerView.player = viewModel.player
+        println("Initialize player subs available: ${viewModel.player?.currentTracks?.containsType(
+            TRACK_TYPE_TEXT)}")
+        getInfoButton().let {
+            it.setOnClickListener { infoButtonClickListener(viewModel.player!!) }
         }
 
         getAddSubButton().setOnClickListener {
             launchSubPicker()
         }
-        binding.playerView.player = viewModel.player
     }
 
     private fun getInfoButton(): ImageButton {
@@ -272,16 +284,7 @@ class PlayerActivity : AppCompatActivity() {
         return binding.playerView.findViewById(R.id.back_arrow_button)
     }
 
-    private fun setInfoIconVisible(visibility: Boolean) {
-        val view = getInfoButton()
-        when (visibility) {
-            true -> view.visibility = View.VISIBLE
-            false -> view.visibility = View.GONE
-        }
-    }
-
     private fun infoButtonClickListener(exoPlayer: ExoPlayer) {
-        if (exoPlayer.isCommandAvailable(Player.COMMAND_GET_TEXT)) {
             val cueGroup = exoPlayer.currentCues
             val cueSize = cueGroup.cues.size
             if (cueSize != 0) {
@@ -289,7 +292,6 @@ class PlayerActivity : AppCompatActivity() {
                 openInfoDrawer(text)
                 logDebug(text)
             }
-        }
     }
 
 

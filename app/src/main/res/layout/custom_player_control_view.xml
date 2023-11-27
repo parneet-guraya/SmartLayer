@@ -114,8 +114,7 @@
             <ImageButton
                 android:id="@+id/custom_info_button"
                 style="@style/ExoStyledControls.Button.Bottom"
-                android:src="@drawable/ic_info_24"
-                android:visibility="gone" />
+                android:src="@drawable/ic_info_24" />
 
             <ImageButton
                 android:id="@id/exo_subtitle"
