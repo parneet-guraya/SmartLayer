@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.common.Resource
+import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.activities.logDebug
 

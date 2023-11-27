@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 
 class VideoRepository {
 
-    // revisit will there be any problem if context saved using val context in the constructor (for both application and context)
     suspend fun getVideoFolders(applicationContext: Context): Resource<List<Folder>> {
         return withContext(Dispatchers.IO) {
             try {

@@ -17,7 +17,7 @@ data class Thumbnail(
     val width: Int?,
     val height: Int?,
     val duration: Int?,
-){
+) {
     val url: String = ""
         get() = "https:$field"
 }

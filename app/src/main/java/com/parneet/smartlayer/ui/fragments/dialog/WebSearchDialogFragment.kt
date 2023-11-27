@@ -26,8 +26,6 @@ class WebSearchDialogFragment : DialogFragment() {
     private var _binding: WebViewLayoutBinding? = null
     private val binding get() = _binding!!
 
-    // Revisit: Also onCreateView and OnCreateDialog both should not be overridden at the same time see about that because
-    //  tried getting rid of createView and using setContentView of dialog in createDialog, does not work.
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,7 +35,6 @@ class WebSearchDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    //Revisit change the deprecated use of backpress
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = object : Dialog(requireContext(), theme) {
             override fun onBackPressed() {
@@ -51,8 +48,6 @@ class WebSearchDialogFragment : DialogFragment() {
         return dialog
     }
 
-    // Revisit: Why need to define width to the window instead of the fragment layout?
-    //  also applying width to the layout does not take effect
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner) {
@@ -68,7 +63,7 @@ class WebSearchDialogFragment : DialogFragment() {
         val window = dialog?.window
         val params = window?.attributes
 
-        val margin = AppUtils.dpToPixels(8,requireContext().applicationContext)
+        val margin = AppUtils.dpToPixels(8, requireContext().applicationContext)
         binding.root.updateLayoutParams<MarginLayoutParams> {
             marginStart = margin
             marginEnd = margin
@@ -159,6 +154,5 @@ class WebSearchDialogFragment : DialogFragment() {
         private const val WIKI_ARTICLE_PAGE_BASE_URL = "https://en.wikipedia.org/?curid="
         const val GOOGLE_SEARCH = 1
         const val WIKI_ARTICLE_PAGE = 2
-        // revisit see if we can use enum here to represent the web operation we want to do
     }
 }

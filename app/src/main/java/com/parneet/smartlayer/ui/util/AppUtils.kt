@@ -34,7 +34,11 @@ object AppUtils {
 
     }
 
-    fun toggleVisibility(toggleVisibility: Boolean, view: View?, shouldGoInvisible: Boolean = false) {
+    fun toggleVisibility(
+        toggleVisibility: Boolean,
+        view: View?,
+        shouldGoInvisible: Boolean = false
+    ) {
         if (view != null) {
             view.visibility = if (toggleVisibility) {
                 View.VISIBLE

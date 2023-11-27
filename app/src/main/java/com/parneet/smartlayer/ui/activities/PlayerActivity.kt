@@ -267,10 +267,12 @@ class PlayerActivity : AppCompatActivity() {
             }"
         )
         getInfoButton().let {
-            it.setOnClickListener { if (showInfoDrawerIfAvailable()) {
-                viewModel.currentText = getSubtitleText()
-                binding.drawerLayout.open()
-            } }
+            it.setOnClickListener {
+                if (showInfoDrawerIfAvailable()) {
+                    viewModel.currentText = getSubtitleText()
+                    binding.drawerLayout.open()
+                }
+            }
         }
 
         getAddSubButton().setOnClickListener {

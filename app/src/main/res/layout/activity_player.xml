@@ -32,6 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start">
+
         <include
             android:id="@+id/included_info_layout"
             layout="@layout/info_layout" />

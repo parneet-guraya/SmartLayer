@@ -1,6 +1,5 @@
 package com.parneet.smartlayer.model
 
-import android.graphics.Bitmap
 import android.net.Uri
 
 data class Video(
