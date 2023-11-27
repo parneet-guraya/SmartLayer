@@ -19,11 +19,15 @@ import kotlinx.coroutines.launch
 
 class PlayerViewModel(private val application: Application) : AndroidViewModel(application) {
     var videoUri: Uri? = null
-    var subtitleUri: Uri? = null
+        private set
     var playWhenReady: Boolean = true
     var playBackPosition: Long = 0L
     var currentPlayingMediaItem: MediaItem? = null
+        private set
     var trackSelectionParameters: TrackSelectionParameters? = null
+
+    private var _subtitlesUriListState = MutableStateFlow(listOf<Uri?>())
+    val subtitlesUriListState = _subtitlesUriListState.asStateFlow()
 
     private var openNLPTokenizer: OpenNLPTokenizer? = null
     private val mlKitTranslationService = MlKitTranslationService()
@@ -37,6 +41,26 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private val _subtitleHeaderState = MutableStateFlow(SubtitleHeaderState())
     val subtitleHeaderState = _subtitleHeaderState.asStateFlow()
 
+
+    fun setCurrentMedia(videoUri: Uri?) {
+        if (videoUri != null) {
+            currentPlayingMediaItem = MediaItem.fromUri(videoUri)
+        }
+    }
+
+    fun updateCurrentMediaItem(mediaItem: MediaItem?) {
+        if (mediaItem != null) {
+            currentPlayingMediaItem = mediaItem
+        }
+    }
+
+    fun addSubtitle(subtitleUri: Uri?) {
+        _subtitlesUriListState.update { list ->
+            val newList = list.toMutableList()
+            newList.add(subtitleUri)
+            newList.toList()
+        }
+    }
 
     fun initializeSubtitleHeader(text: String) {
         _subtitleHeaderState.update {

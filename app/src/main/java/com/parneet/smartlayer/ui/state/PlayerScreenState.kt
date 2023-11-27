@@ -1,18 +1,6 @@
 package com.parneet.smartlayer.ui.state
 
-import android.net.Uri
-import androidx.media3.common.MediaItem
-import androidx.media3.common.TrackSelectionParameters
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
-
-data class PlayerScreenState(
-    var videoUri: Uri? = null,
-    var subtitleUri: Uri? = null,
-    var playWhenReady: Boolean = true,
-    var playBackPosition: Long = 0L,
-    var currentPlayingMediaItem: MediaItem? = null,
-    var trackSelectionParameters: TrackSelectionParameters? = null
-)
 
 data class SubtitleHeaderState(
     val currentText: String = "",

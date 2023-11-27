@@ -21,7 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaItem.SubtitleConfiguration
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -54,9 +54,6 @@ class PlayerActivity : AppCompatActivity() {
             window.attributes.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
         }
-        viewModel.videoUri = intent.getParcelableExtra(
-            VideoFolderFragment.EXTRA_VIDEO_URI
-        )
         val title = intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE)
         getVideoTitleView().text = title
         setInfoIconVisible(true)
@@ -72,6 +69,10 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
+        val uri: Uri? = intent.getParcelableExtra(
+            VideoFolderFragment.EXTRA_VIDEO_URI
+        )
+        viewModel.setCurrentMedia(uri)
         observeViewStates()
 
         (binding.includedInfoLayout.targetLanguageSpinner.editText as? MaterialAutoCompleteTextView)?.apply {
@@ -121,6 +122,13 @@ class PlayerActivity : AppCompatActivity() {
     private fun observeViewStates() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // subtitles list state
+                launch {
+                    viewModel.subtitlesUriListState.collect { subUriList ->
+                        setMediaItemWithSubtitleTrack(subUriList)
+                    }
+                }
+
                 // subtitle header state
                 launch {
                     viewModel.subtitleHeaderState.collect { state ->
@@ -244,13 +252,8 @@ class PlayerActivity : AppCompatActivity() {
                 if (viewModel.trackSelectionParameters != null) {
                     exoPlayer.trackSelectionParameters = viewModel.trackSelectionParameters!!
                 }
-                binding.playerView.player = exoPlayer
-                if (viewModel.currentPlayingMediaItem == null) {
-                    val mediaItem = MediaItem.fromUri(viewModel.videoUri!!)
-                    viewModel.currentPlayingMediaItem = mediaItem
-                }
-                if (viewModel.subtitleUri != null) {
-                    setMediaItemWithSubtitleTrack(viewModel.subtitleUri)
+                if (viewModel.subtitlesUriListState.value.isNotEmpty()) {
+                    setMediaItemWithSubtitleTrack(viewModel.subtitlesUriListState.value)
                 } else {
                     exoPlayer.setMediaItem(viewModel.currentPlayingMediaItem!!)
                 }
@@ -268,17 +271,14 @@ class PlayerActivity : AppCompatActivity() {
                 exoPlayer.prepare()
 
             }
-        viewModel.subtitleUri?.let { subUri ->
-            println("add subtitle Uri: $subUri")
-            setMediaItemWithSubtitleTrack(subUri)
-        }
+        binding.playerView.player = player
     }
 
     private fun releasePlayer() {
         player?.let { exoPlayer ->
             viewModel.playWhenReady = exoPlayer.playWhenReady
             viewModel.playBackPosition = exoPlayer.currentPosition
-            viewModel.currentPlayingMediaItem = exoPlayer.currentMediaItem
+            viewModel.updateCurrentMediaItem(exoPlayer.currentMediaItem)
             viewModel.trackSelectionParameters = exoPlayer.trackSelectionParameters
             exoPlayer.release()
         }
@@ -337,23 +337,29 @@ class PlayerActivity : AppCompatActivity() {
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 val intent = activityResult.data
                 if (intent != null) {
-                    viewModel.subtitleUri = intent.data
-                    setMediaItemWithSubtitleTrack(viewModel.subtitleUri)
+                    val subUri = intent.data
+                    viewModel.addSubtitle(subUri)
                 }
             }
 
         }
     }
 
-    private fun setMediaItemWithSubtitleTrack(uri: Uri?) {
-        if (uri != null) {
+    private fun setMediaItemWithSubtitleTrack(subUriList: List<Uri?>) {
+        if (subUriList.isNotEmpty()) {
             val currentMediaItem = viewModel.currentPlayingMediaItem
             val currentPosition = viewModel.playBackPosition
-            val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
-                .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
+            val subtitleConfigurationList = mutableListOf<SubtitleConfiguration>()
+            subUriList.onEach { subUri ->
+                if (subUri != null) {
+                    val subtitleConfiguration = SubtitleConfiguration.Builder(subUri)
+                        .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel("Default").build()
+                    subtitleConfigurationList.add(subtitleConfiguration)
+                }
+            }
             val updatedMediaItem =
                 currentMediaItem?.buildUpon()
-                    ?.setSubtitleConfigurations(listOf(subtitleConfiguration))
+                    ?.setSubtitleConfigurations(subtitleConfigurationList)
                     ?.build()
 
             if (updatedMediaItem != null) {
