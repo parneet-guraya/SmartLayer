@@ -133,11 +133,6 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         _subtitleHeaderState.update { it.copy(currentText = text) }
     }
 
-    fun addSubTextToHeader(text: String) {
-        _subtitleHeaderState.update { it.copy(currentText = text) }
-        _wordsChipGroupState.update { it.copy() }
-    }
-
     fun translateText(
         originalString: String,
         sourceLanguage: String,
