@@ -109,7 +109,7 @@ class PlayerActivity : AppCompatActivity() {
                         binding.includedInfoLayout.wordsChipGroup.removeAllViews()
                         AppUtils.toggleLoading(
                             state.isLoading,
-                            binding.includedInfoLayout.wordsChipGroup,
+                            null,
                             binding.includedInfoLayout.splittingWordsProgressIndicator
                         )
                         when {
