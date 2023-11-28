@@ -22,11 +22,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.topAppBar)
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         binding.topAppBar.setupWithNavController(navController)
-        setSupportActionBar(binding.topAppBar)
 
         navController.addOnDestinationChangedListener { controller, destination, arguments ->
             binding.topAppBar.title = when (destination.id) {
