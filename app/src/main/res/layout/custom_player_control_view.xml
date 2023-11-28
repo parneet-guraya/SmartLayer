@@ -60,13 +60,7 @@
             <ImageButton
                 android:id="@+id/add_subtitle_button"
                 style="@style/ExoStyledControls.Button.Bottom"
-                android:layout_toStartOf="@id/exo_settings"
                 android:src="@drawable/baseline_text_snippet_24" />
-
-            <ImageButton
-                android:id="@id/exo_settings"
-                style="@style/ExoStyledControls.Button.Bottom.Settings"
-                android:layout_alignParentEnd="true" />
 
         </LinearLayout>
 
@@ -121,8 +115,8 @@
                 style="@style/ExoStyledControls.Button.Bottom.CC" />
 
             <ImageButton
-                android:id="@id/exo_fullscreen"
-                style="@style/ExoStyledControls.Button.Bottom.FullScreen" />
+                android:id="@id/exo_settings"
+                style="@style/ExoStyledControls.Button.Bottom.Settings" />
 
             <ImageButton
                 android:id="@id/exo_overflow_show"
