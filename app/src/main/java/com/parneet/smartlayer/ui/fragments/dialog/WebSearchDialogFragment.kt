@@ -16,7 +16,7 @@ import android.webkit.WebViewClient
 import androidx.activity.addCallback
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
-import com.google.android.material.snackbar.Snackbar
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WebViewLayoutBinding
 import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.util.AppUtils
@@ -122,8 +122,7 @@ class WebSearchDialogFragment : DialogFragment() {
             if (webView.canGoBack()) {
                 webView.goBack()
             } else {
-                Snackbar.make(it, "At the home page, can't go back!", Snackbar.LENGTH_SHORT)
-                    .show()
+                AppUtils.showSnackBar(binding.root, getString(R.string.web_dialog_cannot_go_back))
             }
         }
         binding.closeDialogButton.setOnClickListener { dialog?.dismiss() }

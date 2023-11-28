@@ -1,7 +1,9 @@
 package com.parneet.smartlayer.ui.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.RetrofitClient
 import com.parneet.smartlayer.data.wikiarticles.WikiArticlesRepository
@@ -13,7 +15,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class WikipediaArticlesDialogViewModel : ViewModel() {
+class WikipediaArticlesDialogViewModel(private val application: Application) :
+    AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(WikiArticlesDialogScreenState())
     val uiState = _uiState.asStateFlow()
@@ -37,7 +40,8 @@ class WikipediaArticlesDialogViewModel : ViewModel() {
                 is Resource.Error -> _uiState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = response.exception.message ?: "Error Fetching Articles"
+                        errorMessage = response.exception.message
+                            ?: application.applicationContext.getString(R.string.error_fetching_articles)
                     )
                 }
 

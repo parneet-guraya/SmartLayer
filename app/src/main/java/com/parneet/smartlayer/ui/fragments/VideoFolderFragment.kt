@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
 import com.parneet.smartlayer.ui.activities.PlayerActivity
 import com.parneet.smartlayer.ui.activities.logDebug
@@ -73,7 +74,7 @@ class VideoFolderFragment : Fragment() {
 
                         (state.isListEmpty) -> AppUtils.showSnackBar(
                             binding.root,
-                            "No Videos"
+                            getString(R.string.no_videos)
                         )
 
                         else -> viewModel.videoListAdapter.submitList(

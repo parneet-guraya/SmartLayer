@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.about -> {
-                println("about")
+                getString(R.string.about)
                 true
             }
 

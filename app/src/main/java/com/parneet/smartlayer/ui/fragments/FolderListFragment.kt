@@ -86,7 +86,7 @@ class FolderListFragment : Fragment() {
 
                         (state.isListEmpty) -> AppUtils.showSnackBar(
                             binding.root,
-                            "No Video Folders are present!"
+                            getString(R.string.no_video_folders)
                         )
 
                         else -> viewModel.adapter.submitList(state.folderList)
@@ -105,8 +105,11 @@ class FolderListFragment : Fragment() {
                 observeState()
                 viewModel.loadVideoFolders()
             } else {
-                Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_SHORT)
-                    .show()
+                AppUtils.showToast(
+                    requireContext().applicationContext,
+                    getString(R.string.permission_denied),
+                    Toast.LENGTH_SHORT
+                )
                 findNavController().navigate(R.id.permissionDeniedFragment)
             }
         }

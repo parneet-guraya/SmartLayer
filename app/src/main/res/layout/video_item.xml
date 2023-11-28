@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="start"
-            android:hint="Happy Birthday 2023 1080p Video"
+            android:hint="@string/video_item_text_placeholder"
             android:maxLines="2"
             android:padding="8dp"
             android:textSize="18sp"

@@ -14,7 +14,7 @@
         android:gravity="center"
         android:padding="8dp"
         android:layout_centerInParent="true"
-        android:text="Permission is denied. App needs the permission in order to work properly" />
+        android:text="@string/permission_denied_message" />
 
     <Button
         android:id="@+id/open_app_settings"
@@ -23,6 +23,6 @@
         android:layout_below="@id/rationale_message"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
-        android:text="Open Settings" />
+        android:text="@string/open_settings" />
 
 </RelativeLayout>

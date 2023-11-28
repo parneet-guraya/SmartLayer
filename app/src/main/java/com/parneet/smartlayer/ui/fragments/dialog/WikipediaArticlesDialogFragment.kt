@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.WikipediaArticlesDialogViewModel
@@ -72,7 +73,7 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
 
                         (state.isListEmpty) -> AppUtils.showSnackBar(
                             binding.root,
-                            "No Articles to show!!"
+                            getString(R.string.wiki_article_dialog_no_articles)
                         )
 
                         else -> viewModel.adapter.submitList(state.articlesList)

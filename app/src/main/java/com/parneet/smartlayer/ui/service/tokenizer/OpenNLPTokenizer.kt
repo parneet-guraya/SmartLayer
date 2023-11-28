@@ -14,7 +14,7 @@ class OpenNLPTokenizer(private val context: Context) {
 
     suspend fun initialize() {
         withContext(Dispatchers.IO) {
-            modelInputStream = context.assets.open("opennlp-en-ud-ewt-tokens-1.0-1.9.3.bin")
+            modelInputStream = context.assets.open(MODEL_FILE_NAME)
             val model = TokenizerModel(modelInputStream)
             tokenizer = TokenizerME(model)
         }
@@ -31,4 +31,7 @@ class OpenNLPTokenizer(private val context: Context) {
         modelInputStream.close()
     }
 
+    companion object {
+    private const val MODEL_FILE_NAME = "opennlp-en-ud-ewt-tokens-1.0-1.9.3.bin"
+    }
 }

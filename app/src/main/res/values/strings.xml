@@ -3,4 +3,28 @@
     <string name="sample_palm_hint">Answering Question using Google\'s PALM2 Text generation model</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="web_dialog_cannot_go_back">At the home page, can\'t go back!</string>
+    <string name="wiki_article_dialog_no_articles">No Articles to show!!</string>
+    <string name="no_video_folders">No Video Folders are present!</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="no_videos">No Videos</string>
+    <string name="default_string">Default</string>
+    <string name="error_while_translating">Error while translating</string>
+    <string name="error_while_tokenizing">Error while tokenizing string.</string>
+    <string name="error_fetching_articles">Error Fetching Articles</string>
+    <string name="player_video_title_placeholder">Sample Video 1080p</string>
+    <string name="folder_item_text_placeholder">Downloads</string>
+    <string name="video_item_text_placeholder">Happy Birthday 2023 1080p Video</string>
+    <string name="permission_denied_message">Permission is denied. App needs the permission in order to work properly</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="subtitle_container_text_placeholder">This is the long subtitle text, that is showing for the current frame.</string>
+    <string name="pick_words">Pick Words</string>
+    <string name="google_search">Google Search</string>
+    <string name="wikipedia_articles">Wikipedia Articles</string>
+    <string name="wiki_search">Wiki Search</string>
+    <string name="translate">Translate</string>
+    <string name="lang_hindi">Hindi</string>
+    <string name="translate_result_text_placeholder">Translate on Google</string>
+    <string name="information">Information</string>
+    <string name="about">About</string>
 </resources>

@@ -17,7 +17,12 @@ data class WordsChipGroupState(
 data class TranslatorState(
     val isLoading: Boolean = false,
     val translateResult: String = "",
-    val currentSourceLang: String = MlKitTranslationService.langMap["English"]!!,
-    val currentTargetLang: String = MlKitTranslationService.langMap["Hindi"]!!,
+    val currentSourceLang: String = MlKitTranslationService.langMap[DEFAULT_SOURCE_LANGUAGE]!!,
+    val currentTargetLang: String = MlKitTranslationService.langMap[DEFAULT_TARGET_LANGUAGE]!!,
     val errorMessage: String = ""
-)
+){
+    companion object{
+        private const val DEFAULT_SOURCE_LANGUAGE ="English"
+        private const val DEFAULT_TARGET_LANGUAGE ="Hindi"
+    }
+}
