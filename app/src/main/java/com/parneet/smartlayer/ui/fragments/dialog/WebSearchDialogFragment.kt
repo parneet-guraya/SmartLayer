@@ -18,7 +18,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WebViewLayoutBinding
-import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.util.AppUtils
 
 
@@ -51,9 +50,7 @@ class WebSearchDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner) {
-            logDebug("backpressdispatcher")
             if (binding.webView.canGoBack()) {
-                logDebug("go back")
                 binding.webView.goBack()
             }
         }

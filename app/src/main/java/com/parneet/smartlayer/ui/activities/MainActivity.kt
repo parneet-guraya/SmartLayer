@@ -10,11 +10,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityMainBinding
 
-const val LOG_TAG = "MYCUSTOMLOGTAG"
-
-fun logDebug(message: String) {
-    Log.d(LOG_TAG, message)
-}
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

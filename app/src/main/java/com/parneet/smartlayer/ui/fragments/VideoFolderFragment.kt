@@ -15,7 +15,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
 import com.parneet.smartlayer.ui.activities.PlayerActivity
-import com.parneet.smartlayer.ui.activities.logDebug
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.VideoListFragmentViewModel
 import kotlinx.coroutines.launch
@@ -53,7 +52,7 @@ class VideoFolderFragment : Fragment() {
         if (bucketId != null) {
             viewModel.loadVideos(bucketId)
         } else {
-            logDebug("BucketId is null")
+            // bucket is null
         }
     }
 

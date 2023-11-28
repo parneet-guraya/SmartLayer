@@ -113,7 +113,7 @@ class PlayerActivity : AppCompatActivity() {
                             binding.includedInfoLayout.splittingWordsProgressIndicator
                         )
                         when {
-                            (state.errorMessage.isNotEmpty()) -> logDebug(state.errorMessage)
+                            (state.errorMessage.isNotEmpty()) -> {}
 
                             (!state.words.isNullOrEmpty()) -> {
                                 state.words.onEach { word ->
@@ -121,7 +121,7 @@ class PlayerActivity : AppCompatActivity() {
                                 }
                             }
 
-                            else -> logDebug("Empty Tokens List")
+                            else -> {}
                         }
 
                     }
@@ -200,7 +200,6 @@ class PlayerActivity : AppCompatActivity() {
             setSimpleItems(MlKitTranslationService.langMap.keys.toTypedArray())
             setOnItemClickListener { _, view, _, _ ->
                 val textView = view as TextView
-                logDebug(textView.text.toString())
                 val selectedTargetLang = MlKitTranslationService.langMap[textView.text.toString()]!!
                 viewModel.changeTargetLanguage(selectedTargetLang)
                 viewModel.translateText(
@@ -374,7 +373,6 @@ class PlayerActivity : AppCompatActivity() {
                 }
                 if (isChecked) {
                     // chip selected
-                    logDebug(buttonView.text.toString())
                     val text = buttonView.text.toString()
                     val modifiedText =
                         viewModel.subtitleHeaderState.value.currentText.plus(" ").plus(text)

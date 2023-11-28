@@ -12,7 +12,6 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Video
-import com.parneet.smartlayer.ui.activities.logDebug
 
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
@@ -44,7 +43,7 @@ class VideoListAdapter(
         val video = currentList[position]
         val result = loadThumbnail(video.uri)
         when (result) {
-            is Resource.Error -> logDebug(result.exception.message!!)
+            is Resource.Error -> {}
             is Resource.Success -> {
                 holder.videoThumbnailIV.load(result.data) {
                     crossfade(true)
