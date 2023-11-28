@@ -103,7 +103,9 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
             subUriList.onEach { subUri ->
                 if (subUri != null) {
                     val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(subUri)
-                        .setMimeType(MimeTypes.APPLICATION_SUBRIP).setLabel(application.applicationContext.getString(R.string.default_string)).build()
+                        .setMimeType(MimeTypes.APPLICATION_SUBRIP)
+                        .setLabel(application.applicationContext.getString(R.string.default_string))
+                        .build()
                     subtitleConfigurationList.add(subtitleConfiguration)
                 }
             }
@@ -180,7 +182,8 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 _wordsChipGroupState.update {
                     it.copy(
                         isLoading = false,
-                        errorMessage = e.message ?: application.applicationContext.getString(R.string.error_while_tokenizing)
+                        errorMessage = e.message
+                            ?: application.applicationContext.getString(R.string.error_while_tokenizing)
                     )
                 }
             }

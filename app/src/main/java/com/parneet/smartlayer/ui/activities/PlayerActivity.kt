@@ -82,6 +82,7 @@ class PlayerActivity : AppCompatActivity() {
         initializeTranslatorSpinner()
         addListeners()
     }
+
     private fun observeViewStates() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

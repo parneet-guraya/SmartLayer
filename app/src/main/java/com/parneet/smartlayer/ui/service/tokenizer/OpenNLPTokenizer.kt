@@ -32,6 +32,6 @@ class OpenNLPTokenizer(private val context: Context) {
     }
 
     companion object {
-    private const val MODEL_FILE_NAME = "opennlp-en-ud-ewt-tokens-1.0-1.9.3.bin"
+        private const val MODEL_FILE_NAME = "opennlp-en-ud-ewt-tokens-1.0-1.9.3.bin"
     }
 }
