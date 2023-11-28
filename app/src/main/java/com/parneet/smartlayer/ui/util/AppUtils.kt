@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.view.View
+import android.widget.Toast
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.progressindicator.BaseProgressIndicatorSpec
 import com.google.android.material.snackbar.Snackbar
@@ -59,6 +60,14 @@ object AppUtils {
 
     fun showSnackBar(view: View, message: String?, duration: Int = Snackbar.LENGTH_SHORT) {
         if (message != null) Snackbar.make(view, message, duration).show()
+    }
+
+    fun showToast(
+        applicationContext: Context,
+        message: String?,
+        duration: Int = Toast.LENGTH_SHORT
+    ) {
+        if (message != null) Toast.makeText(applicationContext, message, duration).show()
     }
 
     fun getReadMediaPermission(): String {
