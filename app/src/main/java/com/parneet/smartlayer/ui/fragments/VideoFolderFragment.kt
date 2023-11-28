@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -23,6 +24,12 @@ class VideoFolderFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: VideoListFragmentViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val bucketDisplayName = arguments?.getString(FolderListFragment.EXTRA_BUCKET_DISPLAY_NAME)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = bucketDisplayName
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,7 +42,6 @@ class VideoFolderFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
-        println("BucketId: $bucketId")
 
         observeState()
         viewModel.initializeAdapter { uri, title ->

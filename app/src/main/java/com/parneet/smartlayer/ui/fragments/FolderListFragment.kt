@@ -57,7 +57,12 @@ class FolderListFragment : Fragment() {
     }
 
     private fun initializeRecyclerView() {
-        viewModel.initializeListAdapter { bucketId -> goToVideoList(bucketId) }
+        viewModel.initializeListAdapter { bucketId, bucketDisplayName ->
+            goToVideoList(
+                bucketId,
+                bucketDisplayName
+            )
+        }
         binding.foldersRecyclerView.layoutManager =
             LinearLayoutManager(requireContext())
         binding.foldersRecyclerView.adapter = viewModel.adapter
@@ -107,8 +112,11 @@ class FolderListFragment : Fragment() {
         }
     }
 
-    private fun goToVideoList(bucketId: String) {
-        val bundle = Bundle().also { bundle -> bundle.putString(EXTRA_BUCKET_ID, bucketId) }
+    private fun goToVideoList(bucketId: String, bucketDisplayName: String) {
+        val bundle = Bundle().also { bundle ->
+            bundle.putString(EXTRA_BUCKET_ID, bucketId)
+            bundle.putString(EXTRA_BUCKET_DISPLAY_NAME, bucketDisplayName)
+        }
         findNavController().navigate(R.id.action_folderListFragment_to_videoFolderFragment, bundle)
     }
 
@@ -119,6 +127,7 @@ class FolderListFragment : Fragment() {
 
     companion object {
         const val EXTRA_BUCKET_ID = "EXTRA_BUCKET_ID"
+        const val EXTRA_BUCKET_DISPLAY_NAME = "EXTRA_BUCKET_DISPLAY_NAME"
     }
 
 }

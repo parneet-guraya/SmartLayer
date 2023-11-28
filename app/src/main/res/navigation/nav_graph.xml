@@ -8,7 +8,6 @@
     <fragment
         android:id="@+id/folderListFragment"
         android:name="com.parneet.smartlayer.ui.fragments.FolderListFragment"
-        android:label="fragment_folder_list"
         tools:layout="@layout/fragment_folder_list">
         <action
             android:id="@+id/action_folderListFragment_to_videoFolderFragment"
@@ -17,12 +16,10 @@
     <fragment
         android:id="@+id/videoFolderFragment"
         android:name="com.parneet.smartlayer.ui.fragments.VideoFolderFragment"
-        android:label="fragment_video_folder"
         tools:layout="@layout/fragment_video_folder" />
     <fragment
         android:id="@+id/permissionDeniedFragment"
         android:name="com.parneet.smartlayer.ui.fragments.PermissionDeniedFragment"
-        android:label="fragment_permission_denied"
         tools:layout="@layout/fragment_permission_denied">
         <action
             android:id="@+id/action_permissionDeniedFragment_to_folderListFragment"

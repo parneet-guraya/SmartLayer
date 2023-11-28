@@ -20,9 +20,9 @@ class FolderListFragmentViewModel(private val application: Application) :
     private val videoRepository = VideoRepository()
 
 
-    fun initializeListAdapter(onItemClick: (bucketId: String) -> Unit) {
-        adapter = FolderListAdapter { bucketId ->
-            onItemClick(bucketId)
+    fun initializeListAdapter(onItemClick: (bucketId: String, bucketDisplayName: String) -> Unit) {
+        adapter = FolderListAdapter { bucketId, bucketDisplayName ->
+            onItemClick(bucketId, bucketDisplayName)
         }
     }
 

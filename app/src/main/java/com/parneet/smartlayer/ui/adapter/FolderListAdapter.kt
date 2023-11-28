@@ -9,18 +9,18 @@ import com.parneet.smartlayer.databinding.FolderItemBinding
 import com.parneet.smartlayer.model.Folder
 
 class FolderListAdapter(
-    private val onItemClick: (bucketId: String) -> Unit
+    private val onItemClick: (bucketId: String, bucketDisplayName: String) -> Unit
 ) : ListAdapter<Folder, FolderListAdapter.FolderItemViewHolder>(FolderItemDiffUtil) {
 
     class FolderItemViewHolder(
         binding: FolderItemBinding,
         foldersList: List<Folder>,
-        onItemClick: (bucketId: String) -> Unit
+        onItemClick: (bucketId: String, bucketDisplayName: String) -> Unit
     ) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
                 val folder = foldersList[absoluteAdapterPosition]
-                onItemClick(folder.bucketId)
+                onItemClick(folder.bucketId, folder.bucketDisplayName)
             }
         }
 
