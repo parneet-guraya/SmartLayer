@@ -6,7 +6,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
@@ -15,9 +17,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -25,6 +31,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.ui.DefaultTimeBar
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
@@ -49,9 +56,10 @@ class PlayerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.attributes.layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
         }
         val title = intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE)
         getVideoTitleView().text = title
@@ -65,15 +73,10 @@ class PlayerActivity : AppCompatActivity() {
 
         }
         onBackPressedDispatcher.addCallback(drawerBackPressCallback!!)
-        initWindowInsetsController()
-        binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
-            if (isFullScreen) {
-                enterImmersiveMode()
-            } else {
-                exitImmersiveMode()
-            }
 
-        }
+        initWindowInsetsController()
+        applyWindowInsets()
+        enterImmersiveMode()
         val uri: Uri? = intent.getParcelableExtra(
             VideoFolderFragment.EXTRA_VIDEO_URI
         )
@@ -306,6 +309,10 @@ class PlayerActivity : AppCompatActivity() {
         return binding.playerView.findViewById(R.id.back_arrow_button)
     }
 
+    private fun getPlayerTopBar(): FrameLayout {
+        return binding.playerView.findViewById(R.id.exo_top_bar)
+    }
+
     private fun showInfoDrawerIfAvailable(): Boolean {
         val exoPlayer = viewModel.player
         if (exoPlayer != null) {
@@ -405,8 +412,37 @@ class PlayerActivity : AppCompatActivity() {
         windowInsetsController?.hide(type)
     }
 
-    private fun exitImmersiveMode() {
-        val type = WindowInsetsCompat.Type.systemBars()
-        windowInsetsController?.show(type)
+    private fun applyWindowInsets() {
+        val playerView = binding.playerView
+        val playerBottomBar =
+            playerView.findViewById<FrameLayout>(androidx.media3.ui.R.id.exo_bottom_bar)
+        val playerTopBar = getPlayerTopBar()
+        val playerProgress =
+            playerView.findViewById<DefaultTimeBar>(androidx.media3.ui.R.id.exo_progress)
+        val progressBottomMargin = playerProgress.marginBottom
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets =
+                windowInsets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+
+            playerTopBar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                topMargin = insets.top
+            }
+            playerBottomBar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = insets.bottom
+            }
+            playerProgress.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = insets.bottom + progressBottomMargin
+            }
+
+            playerBottomBar.updatePadding(left = insets.left, right = insets.right)
+            playerTopBar.updatePadding(left = insets.left, right = insets.right)
+            playerProgress.updatePadding(left = insets.left, right = insets.right)
+            binding.includedInfoLayout.root.updatePadding(
+                left = insets.left,
+                top = insets.top,
+                bottom = insets.bottom
+            )
+            WindowInsetsCompat.CONSUMED
+        }
     }
 }
