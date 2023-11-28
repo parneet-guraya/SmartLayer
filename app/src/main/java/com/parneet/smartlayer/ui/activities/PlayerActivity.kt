@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -43,6 +44,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewModel: PlayerViewModel by viewModels()
     private var windowInsetsController: WindowInsetsControllerCompat? = null
     private val subPickerLauncher: ActivityResultLauncher<Intent> = onGetSub()
+    private var drawerBackPressCallback: OnBackPressedCallback? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -56,6 +58,13 @@ class PlayerActivity : AppCompatActivity() {
         getBackArrowButton().setOnClickListener {
             super.onBackPressed()
         }
+        drawerBackPressCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                binding.drawerLayout.close()
+            }
+
+        }
+        onBackPressedDispatcher.addCallback(drawerBackPressCallback!!)
         initWindowInsetsController()
         binding.playerView.setFullscreenButtonClickListener { isFullScreen ->
             if (isFullScreen) {
@@ -73,7 +82,6 @@ class PlayerActivity : AppCompatActivity() {
         initializeTranslatorSpinner()
         addListeners()
     }
-
     private fun observeViewStates() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -212,11 +220,13 @@ class PlayerActivity : AppCompatActivity() {
                 }
 
                 override fun onDrawerOpened(drawerView: View) {
+                    drawerBackPressCallback?.isEnabled = true
                     viewModel.player?.pause()
                     updateInfoDrawerText(viewModel.currentText)
                 }
 
                 override fun onDrawerClosed(drawerView: View) {
+                    drawerBackPressCallback?.isEnabled = false
                     viewModel.player?.play()
                 }
 
