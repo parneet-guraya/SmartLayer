@@ -1,3 +1,11 @@
+<div align="center">
+    <img src="./app/src/main/ic_launcher-playstore.png" width="128" height="128" style="display: block; margin: 0 auto"/>
+    <h1>SmartLayer</h1>
+    <p>An Android application for searching info about the content on the go.</p>
+</div>
+
+---
+
 # SmartLayer Media Player
 
 SmartLayer is an intelligent media player application for Android that enhances the video watching experience by allowing users to interact with subtitles in a smart way. Extract subtitles on the fly, perform searches on Google or Wikipedia based on subtitles or selected words, and translate them, all from within the app.
