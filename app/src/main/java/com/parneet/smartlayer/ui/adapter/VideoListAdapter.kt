@@ -16,6 +16,7 @@ import com.parneet.smartlayer.model.Video
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
     private val loadThumbnail: (uri: Uri) -> Resource<Bitmap?>,
+    private val millisToTimeFormat: (durationMillis: Int) -> String
 ) : ListAdapter<Video, VideoListAdapter.VideoItemViewHolder>(VideoItemDiffUtil) {
 
     class VideoItemViewHolder(
@@ -32,6 +33,7 @@ class VideoListAdapter(
 
         val videoThumbnailIV = binding.videoThumbnail
         val videoTitleTV = binding.videoTitle
+        val durationTV = binding.duration
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoItemViewHolder {
@@ -47,12 +49,13 @@ class VideoListAdapter(
             is Resource.Success -> {
                 holder.videoThumbnailIV.load(result.data) {
                     crossfade(true)
-                    placeholder(R.color.black)
+                    placeholder(R.color.grey)
                 }
             }
         }
 
         holder.videoTitleTV.text = video.title
+        holder.durationTV.text = millisToTimeFormat(video.duration)
     }
 }
 

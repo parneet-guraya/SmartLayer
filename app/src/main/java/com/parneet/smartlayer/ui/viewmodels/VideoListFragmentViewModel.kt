@@ -31,39 +31,50 @@ class VideoListFragmentViewModel(private val application: Application) :
             when (response) {
                 is Resource.Error -> _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        errorMessage = response.exception.message!!
+                        isLoading = false, errorMessage = response.exception.message!!
                     )
                 }
 
                 is Resource.Success -> _uiState.update {
                     it.copy(
-                        isLoading = false,
-                        videoList = response.data
+                        isLoading = false, videoList = response.data
                     )
                 }
             }
         }
     }
 
+    private fun millisToTimeFormat(durationMillis: Int): String {
+        val durationInSeconds: Int = (durationMillis / 1000)
+
+        val hours = durationInSeconds / 3600;
+        val minutes = (durationInSeconds % 3600) / 60;
+        val seconds = durationInSeconds % 60;
+
+        return if (hours > 0) {
+            "${hours.toString().padStart(2, '0')}:${
+                minutes.toString().padStart(2, '0')
+            }:${seconds.toString().padStart(2, '0')}"
+        } else {
+            "${minutes.toString().padStart(2, '0')}:${
+                seconds.toString().padStart(2, '0')
+            }"
+        }
+    }
+
     fun initializeAdapter(
         onItemClick: (uri: Uri, title: String) -> Unit,
     ) {
-        videoListAdapter =
-            VideoListAdapter(
-                onItemClick = { uri, title ->
-                    onItemClick(uri, title)
-                },
-                loadThumbnail = { uri ->
-                    videoRepository.getVideoThumbnail(
-                        application.applicationContext,
-                        uri
-                    ) { sizeInDp ->
-                        AppUtils.dpToPixels(
-                            sizeInDp,
-                            application.applicationContext
-                        )
-                    }
-                })
+        videoListAdapter = VideoListAdapter(onItemClick = { uri, title ->
+            onItemClick(uri, title)
+        }, loadThumbnail = { uri ->
+            videoRepository.getVideoThumbnail(
+                application.applicationContext, uri
+            ) { sizeInDp ->
+                AppUtils.dpToPixels(
+                    sizeInDp, application.applicationContext
+                )
+            }
+        }, millisToTimeFormat = { millis -> millisToTimeFormat(millis) })
     }
 }
