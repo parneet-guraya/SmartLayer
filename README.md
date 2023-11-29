@@ -6,19 +6,11 @@
 
 ---
 
-# SmartLayer Media Player
+### Introduction
 
-SmartLayer is an intelligent media player application for Android that enhances the video watching experience by allowing users to interact with subtitles in a smart way. Extract subtitles on the fly, perform searches on Google or Wikipedia based on subtitles or selected words, and translate them, all from within the app.
+SmartLayer is a media player application for Android that enhances the video watching experience by allowing users to interact with subtitles in a smart way. Extract subtitles on the fly, perform searches on Google or Wikipedia articles based on selected words, and translate them, all from within the app. No more going back and forth to learn about content.
 
-## Features
-
-- **Video Playback**: Enjoy your favorite videos with a smooth playback experience.
-- **Subtitle Extraction**: Easily capture the subtitles displayed at any given moment with just a click.
-- **Selective Search**: Highlight a section of the subtitle or just a word to initiate a search.
-- **Integrated Web View**: Conduct Google and Wikipedia searches and view the results directly within the app, providing a seamless experience.
-- **Translation**: Translate the selected subtitles or words into your preferred language instantly.
-
-## Screenshots
+### Screenshots
 
 Below are some key features highlighted with screenshots from the application:
 
@@ -62,4 +54,20 @@ Below are some key features highlighted with screenshots from the application:
   </tr>
 </table>
 
+### Features
 
+- **Media Files**: Access video files from within the app.
+- **Video Playback**: Enjoy your favorite videos with a smooth playback experience.
+- **Custom Subtitle Track**: Choose your preferred subtitle track from your phone.
+- **Info Drawer**: Easily capture the subtitles displayed at any given moment with just a click.
+- **Selection**: Highlight a section of the subtitle or just a word of choice and learn about content on the go.
+- **Wiki Articles Search**: Search for wiki articles based on chosen words and read article in webview.
+- **Integrated Web View**: Search on Google with chosen words and surf webpages.
+- **Translation**: Translate the selected subtitles or words into your preferred language instantly.
+
+### Frameworks and Libraries
+- **Media3:** A suite of libraries for media playback used in the app to render video media, which is a part of the Android Jetpack suite.
+- **ML Kit for Translation:** ML Kit's on-device translation API by Google.Utilized for language translation features within the app.
+- **Retrofit:** A type-safe HTTP client for Android and Java, used for network operations and API integration.
+- **Coil:** An image loading library for Android, backed by Kotlin Coroutines.
+- **OpenNLP Model:** Apache OpenNLP is a machine learning based toolkit for the processing of natural language text,being used in the app for tokenizing string(subtitle text) into tokens (words)
