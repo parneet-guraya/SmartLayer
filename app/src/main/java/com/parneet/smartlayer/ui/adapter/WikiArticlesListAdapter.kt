@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.parneet.smartlayer.R
-import com.parneet.smartlayer.databinding.WikipediaArticlesListBinding
+import com.parneet.smartlayer.databinding.WikipediaArticlesListItemBinding
 import com.parneet.smartlayer.model.Page
 
 class WikiArticlesListAdapter(
@@ -16,7 +16,7 @@ class WikiArticlesListAdapter(
     private var articlesList: List<Page> = listOf()
 
     class ListItemViewHolder(
-        binding: WikipediaArticlesListBinding,
+        binding: WikipediaArticlesListItemBinding,
         onItemClick: (pageId: Int) -> Unit,
         articlesList: List<Page>
     ) :
@@ -35,7 +35,7 @@ class WikiArticlesListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListItemViewHolder {
         return ListItemViewHolder(
-            WikipediaArticlesListBinding.inflate(
+            WikipediaArticlesListItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             ),
             onItemClick,
