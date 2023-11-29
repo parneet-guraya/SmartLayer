@@ -23,12 +23,11 @@ SmartLayer is an intelligent media player application for Android that enhances 
 Below are some key features highlighted with screenshots from the application:
 
 <p align="center">
-    <img src="screenshots/folder_screen.jpg" width="30%" />
+ <img src="screenshots/folder_screen.jpg" width="30%" />
     <img src="screenshots/video_list_screen.jpg" width="30%" />
     <img src="screenshots/player_screen.jpg" width="30%" />
 
-    <img src="screenshots/info_drawer_view.jpg" width="30%" />
+  <img src="screenshots/info_drawer_view.jpg" width="30%" />
     <img src="screenshots/web_dialog_screen.jpg" width="30%" />
-    <img src="screenshots/wiki_articles_dialog.jpg" width="30%" />
+    <img src="screenshots/wiki_articles_dialog.jpg" width="30%"/>
 </p>
-
