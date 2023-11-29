@@ -10,6 +10,9 @@
 
 SmartLayer is a media player application for Android that enhances the video watching experience by allowing users to interact with subtitles in a smart way. Extract subtitles on the fly, perform searches on Google or Wikipedia articles based on selected words, and translate them, all from within the app. No more going back and forth to learn about content.
 
+## Installation
+[<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/parneet-guraya/SmartLayer/releases/tag/v1.0.0)
+
 ### Screenshots
 
 Below are some key features highlighted with screenshots from the application:
