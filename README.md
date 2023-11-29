@@ -31,3 +31,35 @@ Below are some key features highlighted with screenshots from the application:
     <img src="screenshots/web_dialog_screen.jpg" width="30%" />
     <img src="screenshots/wiki_articles_dialog.jpg" width="30%"/>
 </p>
+
+<table>
+  <tr>
+    <!-- First GIF Container -->
+    <td align="center">
+      <h3>Information Drawer</h3>
+      <img src="screenshots/word_choosing_demo.gif" alt="Description of image 1" width="100%" style="border-radius: 10px;">
+      <ul>
+        <li>Just click on the `i` button and choose words of your choice.</li>
+          <li>Instant translation as you choose words.</li>
+      </ul>
+    </td>
+    <!-- Second GIF Container -->
+    <td align="center">
+      <h3>Wikipedia Articles Search</h3>
+      <img src="screenshots/wiki_articles_dialog.gif" alt="Description of image 2" width="100%" style="border-radius: 10px;">
+      <ul>
+        <li>Search for articles on Wikipedia and read them in web view on the go.</li>
+      </ul>
+    </td>
+    <!-- Third GIF Container -->
+    <td align="center">
+      <h3>Web Search (Google)</h3>
+      <img src="screenshots/web_search_dialog.gif" alt="Description of image 3" width="100%" style="border-radius: 10px;">
+      <ul>
+        <li>Make a google search in the webview and surf web pages also.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+
