@@ -62,7 +62,6 @@ dependencies {
 
     implementation("androidx.webkit:webkit:1.8.0")
 
-    implementation("com.google.mlkit:language-id:17.0.4")
     implementation("com.google.mlkit:translate:17.0.1")
 
     // coroutines
