@@ -20,8 +20,14 @@
         <activity
             android:name=".ui.activities.PlayerActivity"
             android:configChanges="orientation|screenSize|screenLayout"
-            android:exported="false"
-            android:theme="@style/FullScreenTheme" />
+            android:exported="true"
+            android:theme="@style/FullScreenTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true">

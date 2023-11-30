@@ -77,7 +77,7 @@ class PlayerActivity : AppCompatActivity() {
         enterImmersiveMode()
         val uri: Uri? = intent.getParcelableExtra(
             VideoFolderFragment.EXTRA_VIDEO_URI
-        )
+        ) ?: intent?.data
         viewModel.setCurrentMedia(uri)
         observeViewStates()
         initializeTranslatorSpinner()
