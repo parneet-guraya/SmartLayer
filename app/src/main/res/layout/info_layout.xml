@@ -103,7 +103,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:text="@string/google_search"
-            app:chipIcon="@drawable/web_search_24px"
+            app:chipIcon="@drawable/googleg_standard_color_18"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/web_search_header" />
 
