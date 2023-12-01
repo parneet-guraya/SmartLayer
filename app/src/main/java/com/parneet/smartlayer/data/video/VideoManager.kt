@@ -5,7 +5,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Size
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Video
 import kotlinx.coroutines.Dispatchers
@@ -95,6 +97,39 @@ object VideoManager {
                 }
             }
             return@withContext videoList
+        }
+    }
+
+    suspend fun getSubtitleName(subtitleUri: Uri?, applicationContext: Context): String {
+        var displayName: String = applicationContext.getString(R.string.default_string)
+        return if (subtitleUri != null) {
+            withContext(Dispatchers.IO) {
+                val cursor = applicationContext.contentResolver.query(
+                    subtitleUri,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+                )
+
+                cursor.use { cur ->
+                    if (cur != null) {
+                        if (cur.moveToFirst()) {
+                            val displayNameColumnIndex =
+                                cur.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME)
+                            if (displayNameColumnIndex >= 0) {
+                                displayName =
+                                    cur.getString(displayNameColumnIndex)
+                            }
+
+                        }
+                    }
+                }
+                return@withContext displayName
+            }
+        } else {
+            displayName
         }
     }
 

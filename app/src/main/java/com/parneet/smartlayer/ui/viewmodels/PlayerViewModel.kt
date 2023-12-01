@@ -10,11 +10,14 @@ import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.exoplayer.ExoPlayer
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
+import com.parneet.smartlayer.data.video.VideoRepository
+import com.parneet.smartlayer.model.Subtitle
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.state.SubtitleHeaderState
 import com.parneet.smartlayer.ui.state.TranslatorState
 import com.parneet.smartlayer.ui.state.WordsChipGroupState
+import com.parneet.smartlayer.ui.util.AppUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -29,7 +32,9 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private var trackSelectionParameters: TrackSelectionParameters? = null
     var currentText: String? = ""
 
-    private var _subtitlesUriListState = MutableStateFlow(listOf<Uri?>())
+    private val videoRepository = VideoRepository()
+
+    private var _subtitlesUriListState = MutableStateFlow(listOf<Subtitle>())
     val subtitlesUriListState = _subtitlesUriListState.asStateFlow()
 
     private var openNLPTokenizer: OpenNLPTokenizer? = null
@@ -58,10 +63,35 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     fun addSubtitle(subtitleUri: Uri?) {
-        _subtitlesUriListState.update { list ->
-            val newList = list.toMutableList()
-            newList.add(subtitleUri)
-            newList.toList()
+        viewModelScope.launch {
+            _subtitlesUriListState.update { subtitleList ->
+                val title = getSubtitleDisplayName(subtitleUri)
+                val subtitle = Subtitle(subtitleUri, title)
+                val newList = subtitleList.toMutableList()
+                newList.add(subtitle)
+                newList.toList()
+            }
+        }
+    }
+
+    private suspend fun getSubtitleDisplayName(subtitleUri: Uri?): String? {
+        val defaultTitle = application.applicationContext.getString(R.string.default_string)
+        val titleResponse =
+            videoRepository.getSubtitleName(
+                application.applicationContext,
+                subtitleUri,
+                defaultTitle
+            )
+        return when (titleResponse) {
+            is Resource.Error -> {
+                AppUtils.showToast(
+                    application.applicationContext!!,
+                    titleResponse.exception.message
+                )
+                titleResponse.data
+            }
+
+            is Resource.Success -> titleResponse.data
         }
     }
 
@@ -95,16 +125,22 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         player = null
     }
 
-    fun setMediaItemWithSubtitleTrack(subUriList: List<Uri?>) {
+    fun setMediaItemWithSubtitleTrack(subUriList: List<Subtitle>) {
         if (subUriList.isNotEmpty()) {
             val currentMediaItem = currentPlayingMediaItem
             val currentPosition = playBackPosition
             val subtitleConfigurationList = mutableListOf<MediaItem.SubtitleConfiguration>()
-            subUriList.onEach { subUri ->
-                if (subUri != null) {
-                    val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(subUri)
+            subUriList.onEach { subtitle ->
+                val uri = subtitle.uri
+                val title = subtitle.title
+                if (uri != null) {
+                    val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
                         .setMimeType(MimeTypes.APPLICATION_SUBRIP)
-                        .setLabel(application.applicationContext.getString(R.string.default_string))
+                        .also {
+                            if (title != null) {
+                                it.setLabel(title)
+                            }
+                        }
                         .build()
                     subtitleConfigurationList.add(subtitleConfiguration)
                 }

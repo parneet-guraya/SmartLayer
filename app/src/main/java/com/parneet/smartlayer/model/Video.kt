@@ -8,3 +8,4 @@ data class Video(
     val duration: Int,
     val uri: Uri
 )
+data class Subtitle(val uri: Uri?, val title: String?)

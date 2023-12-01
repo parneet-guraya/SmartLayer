@@ -48,5 +48,18 @@ class VideoRepository {
         }
     }
 
+    suspend fun getSubtitleName(
+        applicationContext: Context,
+        subtitleUri: Uri?,
+        defaultTitle: String
+    ): Resource<String> {
+        return try {
+            val title = VideoManager.getSubtitleName(subtitleUri, applicationContext)
+            Resource.Success(title)
+        } catch (e: Exception) {
+            Resource.Error(e,defaultTitle)
+        }
+    }
+
 
 }
