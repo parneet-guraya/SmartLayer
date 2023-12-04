@@ -1,8 +1,10 @@
 package com.parneet.smartlayer.ui.adapter
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -13,7 +15,6 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Video
-import com.parneet.smartlayer.ui.util.AppUtils
 
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
@@ -31,7 +32,11 @@ class VideoListAdapter(
                 val video = videosList[absoluteAdapterPosition]
                 onItemClick(video.uri, video.title)
             }
-            binding.morePopMenuButton.setOnClickListener { AppUtils.showSnackBar(binding.root,"Pop menu clicked!!!")
+            binding.morePopMenuButton.setOnClickListener {
+                showPopupMenu(
+                    binding.root.context,
+                    binding.morePopMenuButton
+                )
             }
         }
 
@@ -39,8 +44,10 @@ class VideoListAdapter(
         val videoTitleTV = binding.videoTitle
         val durationTV = binding.duration
 
-        private fun showPopupMenu(){
-
+        private fun showPopupMenu(context: Context?, anchorView: View?) {
+            val popupMenu = PopupMenu(context, anchorView)
+            popupMenu.menuInflater?.inflate(R.menu.video_item_popup_menu, popupMenu.menu)
+            popupMenu.show()
         }
     }
 
