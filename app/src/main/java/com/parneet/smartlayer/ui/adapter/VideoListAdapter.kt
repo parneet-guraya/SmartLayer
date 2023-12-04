@@ -19,13 +19,15 @@ import com.parneet.smartlayer.model.Video
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
     private val loadThumbnail: (uri: Uri) -> Resource<Bitmap?>,
-    private val millisToTimeFormat: (durationMillis: Int) -> String
+    private val millisToTimeFormat: (durationMillis: Int) -> String,
+    private val onPopupMenuItemClick: (menuItemId: Int, uri:Uri) -> Boolean
 ) : ListAdapter<Video, VideoListAdapter.VideoItemViewHolder>(VideoItemDiffUtil) {
 
     class VideoItemViewHolder(
         binding: VideoItemBinding,
-        videosList: List<Video>,
-        onItemClick: (uri: Uri, title: String) -> Unit
+        private val videosList: List<Video>,
+        onItemClick: (uri: Uri, title: String) -> Unit,
+        private val onPopupMenuItemClick: (menuItemId: Int, uri:Uri) -> Boolean
     ) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
@@ -47,13 +49,17 @@ class VideoListAdapter(
         private fun showPopupMenu(context: Context?, anchorView: View?) {
             val popupMenu = PopupMenu(context, anchorView)
             popupMenu.menuInflater?.inflate(R.menu.video_item_popup_menu, popupMenu.menu)
+            val video = videosList[absoluteAdapterPosition]
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                onPopupMenuItemClick(menuItem.itemId,video.uri)
+            }
             popupMenu.show()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoItemViewHolder {
         val binding = VideoItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return VideoItemViewHolder(binding, currentList, onItemClick)
+        return VideoItemViewHolder(binding, currentList, onItemClick, onPopupMenuItemClick)
     }
 
     override fun onBindViewHolder(holder: VideoItemViewHolder, position: Int) {

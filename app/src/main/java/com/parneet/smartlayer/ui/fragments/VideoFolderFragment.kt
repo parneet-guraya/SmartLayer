@@ -44,9 +44,15 @@ class VideoFolderFragment : Fragment() {
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
 
         observeState()
-        viewModel.initializeAdapter { uri, title ->
+        viewModel.initializeAdapter(onItemClick = { uri, title ->
             startPlayer(uri, title)
-        }
+        }, onShareMenuItemClick = { uri ->
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "video/*"
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            startActivity(shareIntent)
+        })
 
         binding.videoListRecyclerView.adapter = viewModel.videoListAdapter
         if (bucketId != null) {

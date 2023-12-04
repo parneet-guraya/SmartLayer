@@ -4,6 +4,7 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.ui.adapter.VideoListAdapter
@@ -62,8 +63,29 @@ class VideoListFragmentViewModel(private val application: Application) :
         }
     }
 
+    private fun popupMenuItemClickListener(
+        itemId: Int,
+        uri: Uri,
+        onShareMenuItemClick: (uri: Uri) -> Unit
+    ): Boolean {
+        return when (itemId) {
+            R.id.action_share -> {
+                onShareMenuItemClick(uri)
+                true
+            }
+
+            R.id.action_details -> {
+                // show details
+                true
+            }
+
+            else -> false
+        }
+    }
+
     fun initializeAdapter(
         onItemClick: (uri: Uri, title: String) -> Unit,
+        onShareMenuItemClick: (uri: Uri) -> Unit
     ) {
         videoListAdapter = VideoListAdapter(onItemClick = { uri, title ->
             onItemClick(uri, title)
@@ -75,6 +97,13 @@ class VideoListFragmentViewModel(private val application: Application) :
                     sizeInDp, application.applicationContext
                 )
             }
-        }, millisToTimeFormat = { millis -> millisToTimeFormat(millis) })
+        }, millisToTimeFormat = { millis -> millisToTimeFormat(millis) },
+            onPopupMenuItemClick = { menuItemId, uri ->
+                popupMenuItemClickListener(
+                    menuItemId,
+                    uri,
+                    onShareMenuItemClick
+                )
+            })
     }
 }
