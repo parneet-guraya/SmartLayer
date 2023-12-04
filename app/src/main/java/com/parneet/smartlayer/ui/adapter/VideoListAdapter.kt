@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -12,6 +13,7 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.databinding.VideoItemBinding
 import com.parneet.smartlayer.model.Video
+import com.parneet.smartlayer.ui.util.AppUtils
 
 class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
@@ -29,11 +31,17 @@ class VideoListAdapter(
                 val video = videosList[absoluteAdapterPosition]
                 onItemClick(video.uri, video.title)
             }
+            binding.morePopMenuButton.setOnClickListener { AppUtils.showSnackBar(binding.root,"Pop menu clicked!!!")
+            }
         }
 
         val videoThumbnailIV = binding.videoThumbnail
         val videoTitleTV = binding.videoTitle
         val durationTV = binding.duration
+
+        private fun showPopupMenu(){
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoItemViewHolder {
