@@ -76,6 +76,7 @@ class VideoListFragmentViewModel(private val application: Application) :
 
             R.id.action_details -> {
                 // show details
+
                 true
             }
 

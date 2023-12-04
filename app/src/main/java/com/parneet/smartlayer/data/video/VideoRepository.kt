@@ -6,6 +6,7 @@ import android.net.Uri
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Video
+import com.parneet.smartlayer.model.VideoMetaData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -57,9 +58,20 @@ class VideoRepository {
             val title = VideoManager.getSubtitleName(subtitleUri, applicationContext)
             Resource.Success(title)
         } catch (e: Exception) {
-            Resource.Error(e,defaultTitle)
+            Resource.Error(e, defaultTitle)
         }
     }
 
+    suspend fun getVideoMetaData(
+        applicationContext: Context,
+        video: Video
+    ): Resource<VideoMetaData> {
+        return try {
+            val videoMetaData = VideoManager.fetchMetaData(applicationContext, video)
+            Resource.Success(videoMetaData)
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
 
 }

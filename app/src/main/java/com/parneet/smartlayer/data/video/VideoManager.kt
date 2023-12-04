@@ -3,13 +3,17 @@ package com.parneet.smartlayer.data.video
 import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Size
+import androidx.core.net.toFile
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.model.Folder
+import com.parneet.smartlayer.model.Resolution
 import com.parneet.smartlayer.model.Video
+import com.parneet.smartlayer.model.VideoMetaData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -130,6 +134,30 @@ object VideoManager {
             }
         } else {
             displayName
+        }
+    }
+
+    suspend fun fetchMetaData(
+        applicationContext: Context,
+        video: Video
+    ): VideoMetaData {
+        return withContext(Dispatchers.IO) {
+
+            MediaMetadataRetriever().use { metadataRetriever ->
+                val uri = video.uri
+                metadataRetriever.setDataSource(applicationContext, uri)
+
+                val title = video.title
+                val duration = video.duration
+                val size = uri.toFile().length()
+                val width =
+                    metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+                val height =
+                    metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+                val resolution = Resolution(width, height)
+
+                return@withContext VideoMetaData(title, duration, size, resolution)
+            }
         }
     }
 
