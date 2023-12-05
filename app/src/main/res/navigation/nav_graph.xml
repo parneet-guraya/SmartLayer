@@ -16,7 +16,11 @@
     <fragment
         android:id="@+id/videoFolderFragment"
         android:name="com.parneet.smartlayer.ui.fragments.VideoFolderFragment"
-        tools:layout="@layout/fragment_video_folder" />
+        tools:layout="@layout/fragment_video_folder" >
+        <action
+            android:id="@+id/action_videoFolderFragment_to_videoDetailsFragment"
+            app:destination="@id/videoDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/permissionDeniedFragment"
         android:name="com.parneet.smartlayer.ui.fragments.PermissionDeniedFragment"
@@ -27,4 +31,7 @@
             app:popUpTo="@id/folderListFragment"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/videoDetailsFragment"
+        android:name="com.parneet.smartlayer.ui.fragments.VideoDetailsFragment" />
 </navigation>

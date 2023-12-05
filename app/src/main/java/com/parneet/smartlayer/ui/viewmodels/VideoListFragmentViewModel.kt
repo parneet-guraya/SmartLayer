@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
+import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.adapter.VideoListAdapter
 import com.parneet.smartlayer.ui.state.VideoListScreenState
 import com.parneet.smartlayer.ui.util.AppUtils
@@ -65,18 +66,19 @@ class VideoListFragmentViewModel(private val application: Application) :
 
     private fun popupMenuItemClickListener(
         itemId: Int,
-        uri: Uri,
-        onShareMenuItemClick: (uri: Uri) -> Unit
+        video: Video,
+        onShareMenuItemClick: (uri: Uri) -> Unit,
+        onDetailsMenuItemClick: (video: Video) -> Unit
     ): Boolean {
         return when (itemId) {
             R.id.action_share -> {
-                onShareMenuItemClick(uri)
+                onShareMenuItemClick(video.uri)
                 true
             }
 
             R.id.action_details -> {
                 // show details
-
+                onDetailsMenuItemClick(video)
                 true
             }
 
@@ -86,7 +88,8 @@ class VideoListFragmentViewModel(private val application: Application) :
 
     fun initializeAdapter(
         onItemClick: (uri: Uri, title: String) -> Unit,
-        onShareMenuItemClick: (uri: Uri) -> Unit
+        onShareMenuItemClick: (uri: Uri) -> Unit,
+        onDetailsMenuItemClick: (video: Video) -> Unit
     ) {
         videoListAdapter = VideoListAdapter(onItemClick = { uri, title ->
             onItemClick(uri, title)
@@ -99,11 +102,12 @@ class VideoListFragmentViewModel(private val application: Application) :
                 )
             }
         }, millisToTimeFormat = { millis -> millisToTimeFormat(millis) },
-            onPopupMenuItemClick = { menuItemId, uri ->
+            onPopupMenuItemClick = { menuItemId, video ->
                 popupMenuItemClickListener(
                     menuItemId,
-                    uri,
-                    onShareMenuItemClick
+                    video,
+                    onShareMenuItemClick,
+                    onDetailsMenuItemClick
                 )
             })
     }

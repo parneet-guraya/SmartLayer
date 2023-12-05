@@ -12,8 +12,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
+import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.activities.PlayerActivity
 import com.parneet.smartlayer.ui.util.AppUtils
 import com.parneet.smartlayer.ui.viewmodels.VideoListFragmentViewModel
@@ -43,6 +45,7 @@ class VideoFolderFragment : Fragment() {
 
         val bucketId = arguments?.getString(FolderListFragment.EXTRA_BUCKET_ID)
 
+        // TODO: See if we can create and pass interface (defining all the actions needed by popup menu)
         observeState()
         viewModel.initializeAdapter(onItemClick = { uri, title ->
             startPlayer(uri, title)
@@ -52,7 +55,10 @@ class VideoFolderFragment : Fragment() {
             shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivity(shareIntent)
-        })
+        },
+            onDetailsMenuItemClick = { video ->
+                navigateToDetailsScreen(video)
+            })
 
         binding.videoListRecyclerView.adapter = viewModel.videoListAdapter
         if (bucketId != null) {
@@ -60,6 +66,11 @@ class VideoFolderFragment : Fragment() {
         } else {
             // bucket is null
         }
+    }
+
+    private fun navigateToDetailsScreen(video: Video) {
+        val bundle = Bundle().also { it.putParcelable(EXTRA_VIDEO,video) }
+        findNavController().navigate(R.id.action_videoFolderFragment_to_videoDetailsFragment,bundle)
     }
 
     private fun observeState() {
@@ -106,5 +117,6 @@ class VideoFolderFragment : Fragment() {
     companion object {
         const val EXTRA_VIDEO_URI = "EXTRA_VIDEO_URI"
         const val EXTRA_VIDEO_TITLE = "EXTRA_VIDEO_TITLE"
+        const val EXTRA_VIDEO = "EXTRA_VIDEO"
     }
 }

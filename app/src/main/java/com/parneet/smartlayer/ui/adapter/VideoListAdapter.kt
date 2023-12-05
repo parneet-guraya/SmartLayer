@@ -20,14 +20,14 @@ class VideoListAdapter(
     private val onItemClick: (uri: Uri, title: String) -> Unit,
     private val loadThumbnail: (uri: Uri) -> Resource<Bitmap?>,
     private val millisToTimeFormat: (durationMillis: Int) -> String,
-    private val onPopupMenuItemClick: (menuItemId: Int, uri:Uri) -> Boolean
+    private val onPopupMenuItemClick: (menuItemId: Int, video:Video) -> Boolean
 ) : ListAdapter<Video, VideoListAdapter.VideoItemViewHolder>(VideoItemDiffUtil) {
 
     class VideoItemViewHolder(
         binding: VideoItemBinding,
         private val videosList: List<Video>,
         onItemClick: (uri: Uri, title: String) -> Unit,
-        private val onPopupMenuItemClick: (menuItemId: Int, uri:Uri) -> Boolean
+        private val onPopupMenuItemClick: (menuItemId: Int, video:Video) -> Boolean
     ) : ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
@@ -51,7 +51,7 @@ class VideoListAdapter(
             popupMenu.menuInflater?.inflate(R.menu.video_item_popup_menu, popupMenu.menu)
             val video = videosList[absoluteAdapterPosition]
             popupMenu.setOnMenuItemClickListener { menuItem ->
-                onPopupMenuItemClick(menuItem.itemId,video.uri)
+                onPopupMenuItemClick(menuItem.itemId,video)
             }
             popupMenu.show()
         }
