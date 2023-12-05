@@ -52,6 +52,7 @@
             android:id="@+id/more_pop_menu_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:background="@android:color/transparent"
             android:src="@drawable/baseline_more_vert_24"
             app:layout_constraintStart_toEndOf="@id/video_title"
