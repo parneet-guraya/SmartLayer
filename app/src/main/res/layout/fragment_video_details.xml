@@ -49,4 +49,10 @@
         android:text="Resolution: 1920 X 1080"
         android:textSize="16sp" />
 
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_circular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true" />
 </RelativeLayout>

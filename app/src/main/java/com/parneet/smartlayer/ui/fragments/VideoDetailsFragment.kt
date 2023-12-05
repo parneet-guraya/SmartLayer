@@ -57,18 +57,23 @@ class VideoDetailsFragment : Fragment() {
                 }
             }
             lifecycleScope.launch {
+                UIUtils.toggleLoading(true,binding.root,binding.progressCircular)
                 val response =
                     videoRepository.getVideoMetaData(applicationContext, it)
                 when (response) {
                     is Resource.Error -> {
                         println("getVideoMetaData response: ${response.exception}")
+                        UIUtils.toggleLoading(false,binding.root,binding.progressCircular)
                         UIUtils.showSnackBar(
                             binding.root,
                             response.exception.message
                         )
                     }
 
-                    is Resource.Success -> bindData(response.data)
+                    is Resource.Success -> {
+                        UIUtils.toggleLoading(false,binding.root,binding.progressCircular)
+                        bindData(response.data)
+                    }
                 }
             }
         }
