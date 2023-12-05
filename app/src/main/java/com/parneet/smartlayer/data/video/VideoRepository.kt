@@ -40,10 +40,39 @@ class VideoRepository {
     fun getVideoThumbnail(
         applicationContext: Context,
         uri: Uri,
+        widthInDp: Int,
+        heightInDp: Int,
         sizeInPixels: (Int) -> Int
     ): Resource<Bitmap?> {
         return try {
-            Resource.Success(VideoManager.loadThumbnail(applicationContext, uri, sizeInPixels))
+            Resource.Success(
+                VideoManager.loadThumbnail(
+                    applicationContext,
+                    uri,
+                    widthInDp,
+                    heightInDp,
+                    sizeInPixels
+                )
+            )
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
+    fun getVideoThumbnail(
+        applicationContext: Context,
+        uri: Uri,
+        widthInPixels: Int,
+        heightInPixels: Int,
+    ): Resource<Bitmap?> {
+        return try {
+            Resource.Success(
+                VideoManager.loadThumbnail(
+                    applicationContext,
+                    uri,
+                    widthInPixels,
+                    heightInPixels)
+            )
         } catch (e: Exception) {
             Resource.Error(e)
         }

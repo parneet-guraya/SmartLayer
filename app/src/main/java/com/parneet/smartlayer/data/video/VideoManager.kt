@@ -8,7 +8,6 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Size
-import androidx.core.net.toFile
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.Resolution
@@ -16,6 +15,7 @@ import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.model.VideoMetaData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 object VideoManager {
 
@@ -145,11 +145,12 @@ object VideoManager {
 
             MediaMetadataRetriever().use { metadataRetriever ->
                 val uri = video.uri
+                val path = getFilePath(applicationContext, uri)
                 metadataRetriever.setDataSource(applicationContext, uri)
 
                 val title = video.title
                 val duration = video.duration
-                val size = uri.toFile().length()
+                val size = path?.let { File(it).length() } ?: 0
                 val width =
                     metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
                 val height =
@@ -161,12 +162,55 @@ object VideoManager {
         }
     }
 
-    fun loadThumbnail(applicationContext: Context, uri: Uri, sizeInPixels: (Int) -> Int): Bitmap? {
+    private fun getFilePath(applicationContext: Context, uri: Uri): String? {
+        val cursor = applicationContext.contentResolver.query(
+            uri,
+            null,
+            null,
+            null,
+            null,
+            null
+        )
+        var filePath: String? = null
+        cursor.use { cur ->
+            if (cur != null) {
+                val filePathIndex = cur.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+                if (cur.moveToFirst()) {
+                    filePath = cur.getString(filePathIndex)
+                }
+            }
+        }
+        return filePath
+    }
+
+    fun loadThumbnail(
+        applicationContext: Context,
+        uri: Uri,
+        widthInDp: Int,
+        heightInDp: Int,
+        sizeInPixels: (Int) -> Int
+    ): Bitmap? {
         return applicationContext.contentResolver.loadThumbnail(
             uri,
             Size(
-                sizeInPixels(160),
-                sizeInPixels(90)
+                sizeInPixels(widthInDp),
+                sizeInPixels(heightInDp)
+            ),
+            null
+        )
+    }
+
+    fun loadThumbnail(
+        applicationContext: Context,
+        uri: Uri,
+        widthInPixels: Int,
+        heightInPixels: Int,
+    ): Bitmap? {
+        return applicationContext.contentResolver.loadThumbnail(
+            uri,
+            Size(
+                widthInPixels,
+                heightInPixels
             ),
             null
         )

@@ -95,7 +95,7 @@ class VideoListFragmentViewModel(private val application: Application) :
             onItemClick(uri, title)
         }, loadThumbnail = { uri ->
             videoRepository.getVideoThumbnail(
-                application.applicationContext, uri
+                application.applicationContext, uri, 160, 90
             ) { sizeInDp ->
                 AppUtils.dpToPixels(
                     sizeInDp, application.applicationContext
