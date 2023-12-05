@@ -12,7 +12,7 @@ import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentVideoDetailsBinding
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.model.VideoMetaData
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import kotlinx.coroutines.launch
 
 class VideoDetailsFragment : Fragment() {
@@ -43,7 +43,7 @@ class VideoDetailsFragment : Fragment() {
                 when (thumbnailResponse) {
                     is Resource.Error -> {
                         println("getVideoThumbnail response: ${thumbnailResponse.exception}")
-                        AppUtils.showSnackBar(
+                        UIUtils.showSnackBar(
                             binding.root,
                             thumbnailResponse.exception.message
                         )
@@ -58,7 +58,7 @@ class VideoDetailsFragment : Fragment() {
                 when (response) {
                     is Resource.Error -> {
                         println("getVideoMetaData response: ${response.exception}")
-                        AppUtils.showSnackBar(
+                        UIUtils.showSnackBar(
                             binding.root,
                             response.exception.message
                         )

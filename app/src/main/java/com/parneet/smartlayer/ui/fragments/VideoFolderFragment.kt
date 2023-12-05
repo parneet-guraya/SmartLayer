@@ -17,7 +17,7 @@ import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentVideoFolderBinding
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.activities.PlayerActivity
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import com.parneet.smartlayer.ui.viewmodels.VideoListFragmentViewModel
 import kotlinx.coroutines.launch
 
@@ -77,18 +77,18 @@ class VideoFolderFragment : Fragment() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    AppUtils.toggleLoading(
+                    UIUtils.toggleLoading(
                         state.isLoading,
                         binding.videoListRecyclerView,
                         binding.progressCircular
                     )
                     when {
-                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                        (state.errorMessage.isNotEmpty()) -> UIUtils.showSnackBar(
                             binding.root,
                             state.errorMessage
                         )
 
-                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                        (state.isListEmpty) -> UIUtils.showSnackBar(
                             binding.root,
                             getString(R.string.no_videos)
                         )

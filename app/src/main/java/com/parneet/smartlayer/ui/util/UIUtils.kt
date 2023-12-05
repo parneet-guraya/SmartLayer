@@ -9,7 +9,7 @@ import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.progressindicator.BaseProgressIndicatorSpec
 import com.google.android.material.snackbar.Snackbar
 
-object AppUtils {
+object UIUtils {
 
     fun toggleLoading(
         showLoading: Boolean,

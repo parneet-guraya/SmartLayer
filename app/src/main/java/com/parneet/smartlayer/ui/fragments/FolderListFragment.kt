@@ -18,7 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentFolderListBinding
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import com.parneet.smartlayer.ui.viewmodels.FolderListFragmentViewModel
 import kotlinx.coroutines.launch
 
@@ -45,14 +45,14 @@ class FolderListFragment : Fragment() {
         println("requestPermissionIfNeeded called")
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                AppUtils.getReadMediaPermission()
+                UIUtils.getReadMediaPermission()
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             initializeRecyclerView()
             observeState()
             viewModel.loadVideoFolders()
         } else {
-            requestPermissionLauncher.launch(AppUtils.getReadMediaPermission())
+            requestPermissionLauncher.launch(UIUtils.getReadMediaPermission())
         }
     }
 
@@ -73,18 +73,18 @@ class FolderListFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
                     println("folder state")
-                    AppUtils.toggleLoading(
+                    UIUtils.toggleLoading(
                         state.isLoading,
                         binding.foldersRecyclerView,
                         binding.progressCircular
                     )
                     when {
-                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                        (state.errorMessage.isNotEmpty()) -> UIUtils.showSnackBar(
                             binding.root,
                             state.errorMessage
                         )
 
-                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                        (state.isListEmpty) -> UIUtils.showSnackBar(
                             binding.root,
                             getString(R.string.no_video_folders)
                         )
@@ -105,7 +105,7 @@ class FolderListFragment : Fragment() {
                 observeState()
                 viewModel.loadVideoFolders()
             } else {
-                AppUtils.showToast(
+                UIUtils.showToast(
                     requireContext().applicationContext,
                     getString(R.string.permission_denied),
                     Toast.LENGTH_SHORT

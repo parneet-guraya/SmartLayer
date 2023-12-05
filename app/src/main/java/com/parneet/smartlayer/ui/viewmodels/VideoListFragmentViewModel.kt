@@ -10,7 +10,7 @@ import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.adapter.VideoListAdapter
 import com.parneet.smartlayer.ui.state.VideoListScreenState
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -97,7 +97,7 @@ class VideoListFragmentViewModel(private val application: Application) :
             videoRepository.getVideoThumbnail(
                 application.applicationContext, uri, 160, 90
             ) { sizeInDp ->
-                AppUtils.dpToPixels(
+                UIUtils.dpToPixels(
                     sizeInDp, application.applicationContext
                 )
             }

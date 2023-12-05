@@ -18,7 +18,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WebViewLayoutBinding
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 
 
 class WebSearchDialogFragment : DialogFragment() {
@@ -60,7 +60,7 @@ class WebSearchDialogFragment : DialogFragment() {
         val window = dialog?.window
         val params = window?.attributes
 
-        val margin = AppUtils.dpToPixels(8, requireContext().applicationContext)
+        val margin = UIUtils.dpToPixels(8, requireContext().applicationContext)
         binding.root.updateLayoutParams<MarginLayoutParams> {
             marginStart = margin
             marginEnd = margin
@@ -85,7 +85,7 @@ class WebSearchDialogFragment : DialogFragment() {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                AppUtils.toggleLoading(
+                UIUtils.toggleLoading(
                     true,
                     null,
                     binding.progressCircular,
@@ -95,7 +95,7 @@ class WebSearchDialogFragment : DialogFragment() {
 
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                AppUtils.toggleLoading(
+                UIUtils.toggleLoading(
                     false,
                     null,
                     binding.progressCircular,
@@ -119,7 +119,7 @@ class WebSearchDialogFragment : DialogFragment() {
             if (webView.canGoBack()) {
                 webView.goBack()
             } else {
-                AppUtils.showSnackBar(binding.root, getString(R.string.web_dialog_cannot_go_back))
+                UIUtils.showSnackBar(binding.root, getString(R.string.web_dialog_cannot_go_back))
             }
         }
         binding.closeDialogButton.setOnClickListener { dialog?.dismiss() }

@@ -3,11 +3,9 @@ package com.parneet.smartlayer.ui.activities
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.TextView
@@ -40,7 +38,7 @@ import com.parneet.smartlayer.ui.fragments.VideoFolderFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WebSearchDialogFragment
 import com.parneet.smartlayer.ui.fragments.dialog.WikipediaArticlesDialogFragment
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
 import kotlinx.coroutines.launch
 
@@ -109,7 +107,7 @@ class PlayerActivity : AppCompatActivity() {
                 launch {
                     viewModel.wordsChipGroupState.collect { state ->
                         binding.includedInfoLayout.wordsChipGroup.removeAllViews()
-                        AppUtils.toggleLoading(
+                        UIUtils.toggleLoading(
                             state.isLoading,
                             null,
                             binding.includedInfoLayout.splittingWordsProgressIndicator
@@ -131,13 +129,13 @@ class PlayerActivity : AppCompatActivity() {
                 // translator state
                 launch {
                     viewModel.translatorState.collect { state ->
-                        AppUtils.toggleLoading(
+                        UIUtils.toggleLoading(
                             state.isLoading,
                             binding.includedInfoLayout.translatedTextView,
                             binding.includedInfoLayout.translateLoadingBar
                         )
                         when {
-                            (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                            (state.errorMessage.isNotEmpty()) -> UIUtils.showSnackBar(
                                 binding.root,
                                 state.errorMessage
                             )

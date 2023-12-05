@@ -17,7 +17,7 @@ import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.state.SubtitleHeaderState
 import com.parneet.smartlayer.ui.state.TranslatorState
 import com.parneet.smartlayer.ui.state.WordsChipGroupState
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -84,7 +84,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
             )
         return when (titleResponse) {
             is Resource.Error -> {
-                AppUtils.showToast(
+                UIUtils.showToast(
                     application.applicationContext!!,
                     titleResponse.exception.message
                 )

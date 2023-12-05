@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.FragmentPermissionDeniedBinding
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 
 class PermissionDeniedFragment : Fragment() {
     private var _binding: FragmentPermissionDeniedBinding? = null
@@ -40,7 +40,7 @@ class PermissionDeniedFragment : Fragment() {
     private fun checkIfGranted() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                AppUtils.getReadMediaPermission()
+                UIUtils.getReadMediaPermission()
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             findNavController().navigate(R.id.action_permissionDeniedFragment_to_folderListFragment)

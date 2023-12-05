@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.WikipediaArticlesDialogFragmentBinding
-import com.parneet.smartlayer.ui.util.AppUtils
+import com.parneet.smartlayer.ui.util.UIUtils
 import com.parneet.smartlayer.ui.viewmodels.WikipediaArticlesDialogViewModel
 import kotlinx.coroutines.launch
 
@@ -60,18 +60,18 @@ class WikipediaArticlesDialogFragment(private val onItemClick: (pageId: Int) -> 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { state ->
-                    AppUtils.toggleLoading(
+                    UIUtils.toggleLoading(
                         state.isLoading,
                         binding.articlesRecyclerView,
                         binding.progressCircular
                     )
                     when {
-                        (state.errorMessage.isNotEmpty()) -> AppUtils.showSnackBar(
+                        (state.errorMessage.isNotEmpty()) -> UIUtils.showSnackBar(
                             binding.root,
                             state.errorMessage
                         )
 
-                        (state.isListEmpty) -> AppUtils.showSnackBar(
+                        (state.isListEmpty) -> UIUtils.showSnackBar(
                             binding.root,
                             getString(R.string.wiki_article_dialog_no_articles)
                         )
