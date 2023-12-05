@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import coil.load
+import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.databinding.FragmentVideoDetailsBinding
@@ -77,9 +78,9 @@ class VideoDetailsFragment : Fragment() {
         val title = videoMetaData.title
         updateActionBarTitle(title)
         binding.titleTextView.text = title
-        binding.durationTextView.text = CommonUtils.millisToTimeFormat(videoMetaData.duration)
-        binding.sizeTextView.text = Formatter.formatFileSize(requireContext(),videoMetaData.fileSize)
-        val resolution = "${videoMetaData.resolution.width} X ${videoMetaData.resolution.height}"
+        binding.durationTextView.text = "${getString(R.string.duration)}: ${CommonUtils.millisToTimeFormat(videoMetaData.duration)}"
+        binding.sizeTextView.text = "${getString(R.string.size)}: ${Formatter.formatFileSize(requireContext(),videoMetaData.fileSize)}"
+        val resolution = "${getString(R.string.resolution)}: ${videoMetaData.resolution.width} X ${videoMetaData.resolution.height}"
         binding.resolutionTextView.text = resolution
     }
 
