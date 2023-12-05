@@ -8,6 +8,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityMainBinding
+import com.parneet.smartlayer.ui.fragments.FolderListFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -23,13 +24,17 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         binding.topAppBar.setupWithNavController(navController)
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
             binding.topAppBar.title = when (destination.id) {
                 R.id.folderListFragment -> {
                     getString(R.string.app_name)
                 }
 
-                else -> getString(R.string.app_name)
+                R.id.videoFolderFragment -> {
+                    arguments?.getString(FolderListFragment.EXTRA_BUCKET_DISPLAY_NAME)
+                }
+
+                else -> ""
             }
         }
     }

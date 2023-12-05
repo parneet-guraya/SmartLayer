@@ -5,6 +5,7 @@ import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import coil.load
@@ -73,11 +74,17 @@ class VideoDetailsFragment : Fragment() {
     }
 
     private fun bindData(videoMetaData: VideoMetaData) {
-        binding.titleTextView.text = videoMetaData.title
+        val title = videoMetaData.title
+        updateActionBarTitle(title)
+        binding.titleTextView.text = title
         binding.durationTextView.text = CommonUtils.millisToTimeFormat(videoMetaData.duration)
         binding.sizeTextView.text = Formatter.formatFileSize(requireContext(),videoMetaData.fileSize)
         val resolution = "${videoMetaData.resolution.width} X ${videoMetaData.resolution.height}"
         binding.resolutionTextView.text = resolution
+    }
+
+    private fun updateActionBarTitle(title:String){
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = title
     }
 
     override fun onDestroyView() {
