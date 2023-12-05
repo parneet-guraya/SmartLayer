@@ -10,6 +10,7 @@ import com.parneet.smartlayer.data.video.VideoRepository
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.ui.adapter.VideoListAdapter
 import com.parneet.smartlayer.ui.state.VideoListScreenState
+import com.parneet.smartlayer.ui.util.CommonUtils
 import com.parneet.smartlayer.ui.util.UIUtils
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,24 +44,6 @@ class VideoListFragmentViewModel(private val application: Application) :
                     )
                 }
             }
-        }
-    }
-
-    private fun millisToTimeFormat(durationMillis: Int): String {
-        val durationInSeconds: Int = (durationMillis / 1000)
-
-        val hours = durationInSeconds / 3600;
-        val minutes = (durationInSeconds % 3600) / 60;
-        val seconds = durationInSeconds % 60;
-
-        return if (hours > 0) {
-            "${hours.toString().padStart(2, '0')}:${
-                minutes.toString().padStart(2, '0')
-            }:${seconds.toString().padStart(2, '0')}"
-        } else {
-            "${minutes.toString().padStart(2, '0')}:${
-                seconds.toString().padStart(2, '0')
-            }"
         }
     }
 
@@ -101,7 +84,7 @@ class VideoListFragmentViewModel(private val application: Application) :
                     sizeInDp, application.applicationContext
                 )
             }
-        }, millisToTimeFormat = { millis -> millisToTimeFormat(millis) },
+        }, millisToTimeFormat = { millis -> CommonUtils.millisToTimeFormat(millis) },
             onPopupMenuItemClick = { menuItemId, video ->
                 popupMenuItemClickListener(
                     menuItemId,
