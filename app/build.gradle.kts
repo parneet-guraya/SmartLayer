@@ -87,6 +87,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 
+    // newpipe extractor for youtube
+    implementation ("com.github.teamnewpipe:newpipeextractor:289db1178ab66694c23893e6a487d4708343c47b")
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
