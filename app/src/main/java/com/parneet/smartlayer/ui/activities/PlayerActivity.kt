@@ -73,9 +73,19 @@ class PlayerActivity : AppCompatActivity() {
         initWindowInsetsController()
         applyWindowInsets()
         enterImmersiveMode()
-        val uri: Uri? = intent.getParcelableExtra(
+        var uri: Uri? = intent.getParcelableExtra(
             VideoFolderFragment.EXTRA_VIDEO_URI
-        ) ?: intent?.data
+        )
+        if (uri == null) {
+            if (intent.action == Intent.ACTION_VIEW) {
+                uri = intent?.data
+            } else if (intent.action == Intent.ACTION_SEND) {
+                val intentString = intent?.getStringExtra(Intent.EXTRA_TEXT)
+                uri = Uri.parse(intentString)
+                println(intentString)
+            }
+        }
+
         viewModel.setCurrentMedia(uri)
         observeViewStates()
         initializeTranslatorSpinner()
