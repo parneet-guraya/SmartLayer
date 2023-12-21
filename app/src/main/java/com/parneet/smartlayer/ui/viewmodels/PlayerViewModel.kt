@@ -3,6 +3,8 @@ package com.parneet.smartlayer.ui.viewmodels
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -11,6 +13,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
+import com.parneet.smartlayer.data.video.youtube.YoutubeVideoStreamService
 import com.parneet.smartlayer.model.Subtitle
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
@@ -33,6 +36,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var currentText: String? = ""
 
     private val videoRepository = VideoRepository()
+    private lateinit var mediaSource: Pair<Uri?, VideoUriType>
 
     private var _subtitlesUriListState = MutableStateFlow(listOf<Subtitle>())
     val subtitlesUriListState = _subtitlesUriListState.asStateFlow()
@@ -49,17 +53,21 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private val _subtitleHeaderState = MutableStateFlow(SubtitleHeaderState())
     val subtitleHeaderState = _subtitleHeaderState.asStateFlow()
 
+    private val _videoTitleLiveData = MutableLiveData<String>()
+    val videoTitleLiveData: LiveData<String> = _videoTitleLiveData
 
-    fun setCurrentMedia(videoUri: Uri?) {
-        if (videoUri != null) {
-            currentPlayingMediaItem = MediaItem.fromUri(videoUri)
-        }
+    fun setMediaSource(videoUri: Uri?, videoUriType: VideoUriType = VideoUriType.LOCAL) {
+        mediaSource = Pair(videoUri, videoUriType)
     }
 
     private fun updateCurrentMediaItem(mediaItem: MediaItem?) {
         if (mediaItem != null) {
             currentPlayingMediaItem = mediaItem
         }
+    }
+
+    fun setVideoTitle(title: String) {
+        _videoTitleLiveData.value = title
     }
 
     fun addSubtitle(subtitleUri: Uri?) {
@@ -95,7 +103,11 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         }
     }
 
-    fun initializeMediaPlayer() {
+    suspend fun initializeMediaPlayer() {
+        if (currentPlayingMediaItem == null) {
+            setMediaItemFromSource(mediaSource.first, mediaSource.second)
+        }
+
         player = ExoPlayer.Builder(application.applicationContext)
             .build().also { exoPlayer ->
                 if (trackSelectionParameters != null) {
@@ -239,4 +251,32 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         openNLPTokenizer?.release()
         openNLPTokenizer = null
     }
+
+    private suspend fun setMediaItemFromSource(
+        videoUri: Uri?,
+        videoUriType: VideoUriType = VideoUriType.LOCAL
+    ) {
+        if (videoUri != null) {
+            when (videoUriType) {
+                VideoUriType.ONLINE_STREAM -> setOnlineStream(videoUri)
+                VideoUriType.LOCAL -> currentPlayingMediaItem = MediaItem.fromUri(videoUri)
+            }
+        }
+    }
+
+    private suspend fun setOnlineStream(videoUri: Uri) {
+        val youtubeVideoStreamService = YoutubeVideoStreamService()
+        println("VideoUri passed to stream: ${videoUri}")
+        val videoStream = youtubeVideoStreamService.getVideoStream(videoUri.toString())
+        println("VideoStream: $videoStream")
+        if (videoStream != null) {
+            println("Setting current Media item stream: ${videoStream.content}")
+            currentPlayingMediaItem = MediaItem.fromUri(videoStream.content)
+        }
+    }
+}
+
+enum class VideoUriType {
+    ONLINE_STREAM,
+    LOCAL
 }

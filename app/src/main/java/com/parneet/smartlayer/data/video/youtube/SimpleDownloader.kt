@@ -120,8 +120,7 @@ class SimpleDownloader private constructor(builder: OkHttpClient.Builder) : Down
         const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0"
         const val YOUTUBE_RESTRICTED_MODE_COOKIE_KEY = "youtube_restricted_mode_key"
         const val YOUTUBE_DOMAIN = "youtube.com"
-        var instance: SimpleDownloader? = null
-            private set
+        private var instance: SimpleDownloader? = null
 
         /**
          * It's recommended to call exactly once in the entire lifetime of the application.

@@ -40,6 +40,7 @@ import com.parneet.smartlayer.ui.fragments.dialog.WikipediaArticlesDialogFragmen
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.util.UIUtils
 import com.parneet.smartlayer.ui.viewmodels.PlayerViewModel
+import com.parneet.smartlayer.ui.viewmodels.VideoUriType
 import kotlinx.coroutines.launch
 
 
@@ -57,7 +58,6 @@ class PlayerActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        val title = intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE)
         getVideoTitleView().text = title
         getBackArrowButton().setOnClickListener {
             super.onBackPressed()
@@ -79,14 +79,17 @@ class PlayerActivity : AppCompatActivity() {
         if (uri == null) {
             if (intent.action == Intent.ACTION_VIEW) {
                 uri = intent?.data
+                viewModel.setMediaSource(uri)
             } else if (intent.action == Intent.ACTION_SEND) {
                 val intentString = intent?.getStringExtra(Intent.EXTRA_TEXT)
                 uri = Uri.parse(intentString)
+                viewModel.setMediaSource(uri, VideoUriType.ONLINE_STREAM)
                 println(intentString)
             }
+        } else {
+            viewModel.setMediaSource(uri)
         }
 
-        viewModel.setCurrentMedia(uri)
         observeViewStates()
         initializeTranslatorSpinner()
         addListeners()
@@ -276,26 +279,28 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        viewModel.initializeMediaPlayer()
-        binding.playerView.player = viewModel.player
-        println(
-            "Initialize player subs available: ${
-                viewModel.player?.currentTracks?.containsType(
-                    TRACK_TYPE_TEXT
-                )
-            }"
-        )
-        getInfoButton().let {
-            it.setOnClickListener {
-                if (showInfoDrawerIfAvailable()) {
-                    viewModel.currentText = getSubtitleText()
-                    binding.drawerLayout.open()
+        lifecycleScope.launch {
+            viewModel.initializeMediaPlayer()
+            binding.playerView.player = viewModel.player
+            println(
+                "Initialize player subs available: ${
+                    viewModel.player?.currentTracks?.containsType(
+                        TRACK_TYPE_TEXT
+                    )
+                }"
+            )
+            getInfoButton().let {
+                it.setOnClickListener {
+                    if (showInfoDrawerIfAvailable()) {
+                        viewModel.currentText = getSubtitleText()
+                        binding.drawerLayout.open()
+                    }
                 }
             }
-        }
 
-        getAddSubButton().setOnClickListener {
-            launchSubPicker()
+            getAddSubButton().setOnClickListener {
+                launchSubPicker()
+            }
         }
     }
 
