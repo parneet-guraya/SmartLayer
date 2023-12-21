@@ -58,7 +58,7 @@ class PlayerActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        getVideoTitleView().text = title
+
         getBackArrowButton().setOnClickListener {
             super.onBackPressed()
         }
@@ -73,24 +73,28 @@ class PlayerActivity : AppCompatActivity() {
         initWindowInsetsController()
         applyWindowInsets()
         enterImmersiveMode()
+        observeViewStates()
+
+        var uriType: VideoUriType = VideoUriType.LOCAL
         var uri: Uri? = intent.getParcelableExtra(
             VideoFolderFragment.EXTRA_VIDEO_URI
         )
         if (uri == null) {
             if (intent.action == Intent.ACTION_VIEW) {
                 uri = intent?.data
-                viewModel.setMediaSource(uri)
+                uriType = VideoUriType.LOCAL_OUTSIDE
             } else if (intent.action == Intent.ACTION_SEND) {
+                uriType = VideoUriType.ONLINE_STREAM
                 val intentString = intent?.getStringExtra(Intent.EXTRA_TEXT)
                 uri = Uri.parse(intentString)
-                viewModel.setMediaSource(uri, VideoUriType.ONLINE_STREAM)
-                println(intentString)
             }
-        } else {
-            viewModel.setMediaSource(uri)
         }
 
-        observeViewStates()
+        if (uri != null) {
+            setMediaSource(uri,uriType)
+            setMediaTitle(uri,uriType)
+        }
+
         initializeTranslatorSpinner()
         addListeners()
     }
@@ -159,6 +163,26 @@ class PlayerActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+        viewModel.videoTitleLiveData.observe(this){title ->
+            println("Video Title LiveData: $title")
+            getVideoTitleView().text = title
+        }
+    }
+
+    private fun setMediaSource(videoUri: Uri, videoUriType: VideoUriType) {
+        if (videoUriType == VideoUriType.ONLINE_STREAM) {
+            viewModel.setMediaSource(videoUri, videoUriType)
+        } else {
+            viewModel.setMediaSource(videoUri,videoUriType)
+        }
+    }
+
+    private fun setMediaTitle(videoUri: Uri,videoUriType: VideoUriType){
+        when(videoUriType){
+            VideoUriType.ONLINE_STREAM -> {}// added when initializing player because the video stream is resolved at that time
+            VideoUriType.LOCAL -> viewModel.setVideoTitle(intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE))
+            VideoUriType.LOCAL_OUTSIDE -> viewModel.getVideoTitle(videoUri)
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.FileUtils
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Size
@@ -158,6 +159,25 @@ object VideoManager {
                 val resolution = Resolution(width, height)
 
                 return@withContext VideoMetaData(title, duration, size, resolution)
+            }
+        }
+    }
+
+    suspend fun fetchVideoTitle(applicationContext: Context, uri: Uri): String? {
+        return withContext(Dispatchers.IO) {
+            val cursor = applicationContext.contentResolver.query(uri, null, null, null, null, null)
+            File("'").nameWithoutExtension
+            cursor.use { cur ->
+                if (cur != null) {
+                    val displayNameIndex =
+                        cur.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+                    if (cur.moveToFirst()) {
+                        val title = cur.getString(displayNameIndex)
+
+                        return@withContext title
+                    }
+                }
+                return@withContext null
             }
         }
     }

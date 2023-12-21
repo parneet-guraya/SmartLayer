@@ -71,7 +71,8 @@ class VideoRepository {
                     applicationContext,
                     uri,
                     widthInPixels,
-                    heightInPixels)
+                    heightInPixels
+                )
             )
         } catch (e: Exception) {
             Resource.Error(e)
@@ -98,6 +99,15 @@ class VideoRepository {
         return try {
             val videoMetaData = VideoManager.fetchMetaData(applicationContext, video)
             Resource.Success(videoMetaData)
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
+    suspend fun getVideoTitle(applicationContext: Context, uri: Uri): Resource<String?> {
+        return try {
+            val title = VideoManager.fetchVideoTitle(applicationContext, uri)
+            Resource.Success(title)
         } catch (e: Exception) {
             Resource.Error(e)
         }

@@ -53,10 +53,10 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private val _subtitleHeaderState = MutableStateFlow(SubtitleHeaderState())
     val subtitleHeaderState = _subtitleHeaderState.asStateFlow()
 
-    private val _videoTitleLiveData = MutableLiveData<String>()
-    val videoTitleLiveData: LiveData<String> = _videoTitleLiveData
+    private val _videoTitleLiveData = MutableLiveData<String?>()
+    val videoTitleLiveData: LiveData<String?> = _videoTitleLiveData
 
-    fun setMediaSource(videoUri: Uri?, videoUriType: VideoUriType = VideoUriType.LOCAL) {
+    fun setMediaSource(videoUri: Uri?, videoUriType: VideoUriType) {
         mediaSource = Pair(videoUri, videoUriType)
     }
 
@@ -66,8 +66,21 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         }
     }
 
-    fun setVideoTitle(title: String) {
+    fun setVideoTitle(title: String?) {
         _videoTitleLiveData.value = title
+    }
+
+    fun getVideoTitle(uri: Uri) {
+        viewModelScope.launch {
+            val fetchResult = videoRepository.getVideoTitle(application.applicationContext, uri)
+            when(fetchResult){
+                is Resource.Error -> {
+                    fetchResult.exception.printStackTrace()
+                    UIUtils.showToast(application.applicationContext, fetchResult.exception.message)
+                }
+                is Resource.Success -> setVideoTitle(fetchResult.data)
+            }
+        }
     }
 
     fun addSubtitle(subtitleUri: Uri?) {
@@ -254,12 +267,12 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
 
     private suspend fun setMediaItemFromSource(
         videoUri: Uri?,
-        videoUriType: VideoUriType = VideoUriType.LOCAL
+        videoUriType: VideoUriType
     ) {
         if (videoUri != null) {
             when (videoUriType) {
                 VideoUriType.ONLINE_STREAM -> setOnlineStream(videoUri)
-                VideoUriType.LOCAL -> currentPlayingMediaItem = MediaItem.fromUri(videoUri)
+                else -> currentPlayingMediaItem = MediaItem.fromUri(videoUri)
             }
         }
     }
@@ -278,5 +291,6 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
 
 enum class VideoUriType {
     ONLINE_STREAM,
-    LOCAL
+    LOCAL,
+    LOCAL_OUTSIDE
 }
