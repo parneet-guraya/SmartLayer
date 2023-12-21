@@ -1,5 +1,6 @@
 package com.parneet.smartlayer.data.video.youtube
 
+import com.parneet.smartlayer.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.NewPipe

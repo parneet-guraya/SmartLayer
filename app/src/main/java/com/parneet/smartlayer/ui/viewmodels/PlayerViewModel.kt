@@ -265,25 +265,26 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
         openNLPTokenizer = null
     }
 
-    private suspend fun setMediaItemFromSource(
+    private suspend fun getMediaItemFromSource(
         videoUri: Uri?,
         videoUriType: VideoUriType
     ) {
         if (videoUri != null) {
             when (videoUriType) {
-                VideoUriType.ONLINE_STREAM -> setOnlineStream(videoUri)
+                VideoUriType.ONLINE_STREAM -> getOnlineStream(videoUri)
                 else -> currentPlayingMediaItem = MediaItem.fromUri(videoUri)
             }
         }
     }
 
-    private suspend fun setOnlineStream(videoUri: Uri) {
+    private suspend fun getOnlineStream(videoUri: Uri) {
         val youtubeVideoStreamService = YoutubeVideoStreamService()
         println("VideoUri passed to stream: ${videoUri}")
         val videoStream = youtubeVideoStreamService.getVideoStream(videoUri.toString())
         println("VideoStream: $videoStream")
         if (videoStream != null) {
             println("Setting current Media item stream: ${videoStream.content}")
+            setVideoTitle(videoStream)
             currentPlayingMediaItem = MediaItem.fromUri(videoStream.content)
         }
     }
