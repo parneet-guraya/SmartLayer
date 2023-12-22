@@ -119,8 +119,7 @@ class VideoRepository {
         return try {
             val youtubeVideoStreamService = YoutubeVideoStreamService()
             val streamInfo = youtubeVideoStreamService.getVideoStream(youtubeVideoUrl)
-            val video720p =
-                streamInfo?.videoStreams?.first { videoStream -> videoStream.getResolution() == YoutubeVideoStreamService.RESOLUTION_720P }
+
             if (video720p != null) {
                 val streamVideo = StreamVideo(streamInfo.name, video720p.content)
                 Resource.Success(streamVideo)
