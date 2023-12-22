@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaItem.SubtitleConfiguration
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.exoplayer.ExoPlayer
@@ -117,8 +118,10 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     suspend fun initializeMediaPlayer() {
+        val uri: Uri? = mediaSource.first
+        val videoUriType: VideoUriType = mediaSource.second
         if (currentPlayingMediaItem == null) {
-            getMediaItemFromSource(mediaSource.first, mediaSource.second)
+            getMediaItemFromSource(uri, videoUriType)
         }
 
         player = ExoPlayer.Builder(application.applicationContext)
@@ -181,6 +184,36 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
             }
         }
     }
+
+//    fun addStreamSubtitles(streamSubtitleList: List<StreamSubtitle>) {
+//        if (streamSubtitleList.isNotEmpty()) {
+//            val currentMediaItem = currentPlayingMediaItem
+//            val currentPosition = playBackPosition
+//            val subtitleConfigurationList = mutableListOf<MediaItem.SubtitleConfiguration>()
+//            streamSubtitleList.onEach { subtitle ->
+//                val uri = Uri.parse(subtitle.subtitleStreamUrl)
+//                val title = subtitle.displayName
+//                if (uri != null) {
+//                    val subtitleConfiguration = MediaItem.SubtitleConfiguration.Builder(uri)
+//                        .setMimeType(MimeTypes.APPLICATION_TTML)
+//                        .also {
+//                            it.setLabel(title)
+//                        }
+//                        .build()
+//                    subtitleConfigurationList.add(subtitleConfiguration)
+//                }
+//            }
+//            val updatedMediaItem =
+//                currentMediaItem?.buildUpon()
+//                    ?.setSubtitleConfigurations(subtitleConfigurationList)
+//                    ?.build()
+//
+//            if (updatedMediaItem != null) {
+//                println("player set updated media item")
+//                player?.setMediaItem(updatedMediaItem, currentPosition)
+//            }
+//        }
+//    }
 
     fun initializeSubtitleHeader(text: String) {
         _subtitleHeaderState.update {
@@ -295,7 +328,27 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
                 if (streamVideo != null) {
                     setVideoTitle(streamVideo.title)
                     println("Stream URl: ${streamVideo.streamUrl}")
-                    currentPlayingMediaItem = MediaItem.fromUri(streamVideo.streamUrl)
+                    if (streamVideo.streamUrl != null) {
+                        val subtitleConfigList: List<SubtitleConfiguration>? =
+                            streamVideo.streamSubtitle?.map { streamSubtitle ->
+                                val streamUri = Uri.parse(streamSubtitle?.subtitleStreamUrl)
+                                SubtitleConfiguration.Builder(streamUri)
+                                    .setLabel(streamSubtitle?.displayName)
+                                    .setMimeType(MimeTypes.APPLICATION_TTML)
+                                    .build()
+                            }
+                        val mediaItem = MediaItem.fromUri(streamVideo.streamUrl)
+                        currentPlayingMediaItem = if (subtitleConfigList != null) {
+                            mediaItem
+                                .buildUpon()
+                                .setSubtitleConfigurations(subtitleConfigList)
+                                .build()
+                        } else {
+                            mediaItem
+                        }
+                    } else {
+                        // stream is null
+                    }
                 }
             }
         }
