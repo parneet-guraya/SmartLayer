@@ -13,7 +13,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
-import com.parneet.smartlayer.data.video.youtube.YoutubeVideoStreamService
 import com.parneet.smartlayer.model.Subtitle
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
@@ -73,11 +72,12 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     fun getVideoTitle(uri: Uri) {
         viewModelScope.launch {
             val fetchResult = videoRepository.getVideoTitle(application.applicationContext, uri)
-            when(fetchResult){
+            when (fetchResult) {
                 is Resource.Error -> {
                     fetchResult.exception.printStackTrace()
                     UIUtils.showToast(application.applicationContext, fetchResult.exception.message)
                 }
+
                 is Resource.Success -> setVideoTitle(fetchResult.data)
             }
         }
@@ -118,7 +118,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
 
     suspend fun initializeMediaPlayer() {
         if (currentPlayingMediaItem == null) {
-            setMediaItemFromSource(mediaSource.first, mediaSource.second)
+            getMediaItemFromSource(mediaSource.first, mediaSource.second)
         }
 
         player = ExoPlayer.Builder(application.applicationContext)
@@ -278,14 +278,26 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     private suspend fun getOnlineStream(videoUri: Uri) {
-        val youtubeVideoStreamService = YoutubeVideoStreamService()
         println("VideoUri passed to stream: ${videoUri}")
-        val videoStream = youtubeVideoStreamService.getVideoStream(videoUri.toString())
-        println("VideoStream: $videoStream")
-        if (videoStream != null) {
-            println("Setting current Media item stream: ${videoStream.content}")
-            setVideoTitle(videoStream)
-            currentPlayingMediaItem = MediaItem.fromUri(videoStream.content)
+        val streamVideoResource = videoRepository.getYoutubeStreamVideo(videoUri.toString())
+        when (streamVideoResource) {
+            is Resource.Error -> {
+                UIUtils.showToast(
+                    application.applicationContext,
+                    streamVideoResource.exception.message
+                )
+                println("Stream Error")
+            }
+
+            is Resource.Success -> {
+                val streamVideo = streamVideoResource.data
+                println("StreamVideo $streamVideo")
+                if (streamVideo != null) {
+                    setVideoTitle(streamVideo.title)
+                    println("Stream URl: ${streamVideo.streamUrl}")
+                    currentPlayingMediaItem = MediaItem.fromUri(streamVideo.streamUrl)
+                }
+            }
         }
     }
 }

@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import com.parneet.smartlayer.common.Resource
+import com.parneet.smartlayer.data.video.youtube.YoutubeVideoStreamService
 import com.parneet.smartlayer.model.Folder
+import com.parneet.smartlayer.model.StreamVideo
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.model.VideoMetaData
 import kotlinx.coroutines.Dispatchers
@@ -108,6 +110,24 @@ class VideoRepository {
         return try {
             val title = VideoManager.fetchVideoTitle(applicationContext, uri)
             Resource.Success(title)
+        } catch (e: Exception) {
+            Resource.Error(e)
+        }
+    }
+
+    suspend fun getYoutubeStreamVideo(youtubeVideoUrl: String): Resource<StreamVideo?> {
+        return try {
+            val youtubeVideoStreamService = YoutubeVideoStreamService()
+            val streamInfo = youtubeVideoStreamService.getVideoStream(youtubeVideoUrl)
+            val video720p =
+                streamInfo?.videoStreams?.first { videoStream -> videoStream.getResolution() == YoutubeVideoStreamService.RESOLUTION_720P }
+            if (video720p != null) {
+                val streamVideo = StreamVideo(streamInfo.name, video720p.content)
+                Resource.Success(streamVideo)
+            } else {
+                Resource.Success(null)
+            }
+
         } catch (e: Exception) {
             Resource.Error(e)
         }

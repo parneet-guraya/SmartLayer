@@ -1,12 +1,10 @@
 package com.parneet.smartlayer.data.video.youtube
 
-import com.parneet.smartlayer.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService
 import org.schabi.newpipe.extractor.stream.StreamInfo
-import org.schabi.newpipe.extractor.stream.VideoStream
 
 class YoutubeVideoStreamService {
     private lateinit var youtubeService: YoutubeService
@@ -16,13 +14,10 @@ class YoutubeVideoStreamService {
         youtubeService = NewPipe.getService(0) as YoutubeService
     }
 
-    suspend fun getVideoStream(youtubeVideoUrl: String): VideoStream? {
+    suspend fun getVideoStream(youtubeVideoUrl: String): StreamInfo? {
         return withContext(Dispatchers.IO) {
             try {
-                val streamInfo = StreamInfo.getInfo(youtubeService, youtubeVideoUrl)
-                val video720p =
-                    streamInfo.videoStreams.first { videoStream -> videoStream.getResolution() == RESOLUTION_720P }
-                return@withContext video720p
+                return@withContext StreamInfo.getInfo(youtubeService, youtubeVideoUrl)
             } catch (exception: Exception) {
                 println(exception.printStackTrace())
                 return@withContext null
@@ -31,6 +26,6 @@ class YoutubeVideoStreamService {
     }
 
     companion object {
-        private const val RESOLUTION_720P = "720p"
+        const val RESOLUTION_720P = "720p"
     }
 }
