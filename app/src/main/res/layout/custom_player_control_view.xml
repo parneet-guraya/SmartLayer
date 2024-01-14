@@ -62,6 +62,11 @@
                 style="@style/ExoStyledControls.Button.Bottom"
                 android:src="@drawable/baseline_text_snippet_24" />
 
+            <ImageButton
+                android:id="@+id/quality_controls"
+                style="@style/ExoStyledControls.Button.Bottom"
+                android:src="@drawable/baseline_tune_24" />
+
         </LinearLayout>
 
     </FrameLayout>
