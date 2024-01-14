@@ -7,9 +7,10 @@ import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.youtube.YoutubeVideoStreamService
 import com.parneet.smartlayer.model.Folder
 import com.parneet.smartlayer.model.StreamSubtitle
-import com.parneet.smartlayer.model.StreamVideo
+import com.parneet.smartlayer.model.StreamVideoOnly
 import com.parneet.smartlayer.model.Video
 import com.parneet.smartlayer.model.VideoMetaData
+import com.parneet.smartlayer.model.YoutubeStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -116,11 +117,15 @@ class VideoRepository {
         }
     }
 
-    suspend fun getYoutubeStreamVideo(youtubeVideoUrl: String): Resource<StreamVideo> {
+    suspend fun getYoutubeStreamVideo(youtubeVideoUrl: String): Resource<YoutubeStream> {
         return try {
             val youtubeVideoStreamService = YoutubeVideoStreamService()
-            val videoAudioStream = youtubeVideoStreamService.getVideoAudioStream(youtubeVideoUrl)
+//            val videoAudioStream = youtubeVideoStreamService.getVideoAudioStream(youtubeVideoUrl)
             val streamTitle = youtubeVideoStreamService.getStreamTitle(youtubeVideoUrl)
+
+            val vp9VideoOnlyStream = youtubeVideoStreamService.getVideoOnlyStream(youtubeVideoUrl)
+                ?.map { StreamVideoOnly(it.content, it.getResolution(), it.fps, it.codec) }
+
             val subtitlesStreamList = youtubeVideoStreamService.getSubtitlesStream(youtubeVideoUrl)
 
             val streamSubtitlesList = subtitlesStreamList?.map { subtitlesStream ->
@@ -134,9 +139,9 @@ class VideoRepository {
                     null
                 }
             }
-            val streamVideo =
-                StreamVideo(streamTitle, videoAudioStream?.content, streamSubtitlesList)
-            Resource.Success(streamVideo)
+            val youtubeStream =
+                YoutubeStream(streamTitle, vp9VideoOnlyStream!!, streamSubtitlesList)
+            Resource.Success(youtubeStream)
         } catch (e: Exception) {
             Resource.Error(e)
         }

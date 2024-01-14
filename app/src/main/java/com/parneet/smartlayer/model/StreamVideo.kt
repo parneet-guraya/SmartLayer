@@ -1,9 +1,16 @@
 package com.parneet.smartlayer.model
 
-data class StreamVideo(
+data class YoutubeStream(
     val title: String?,
-    val streamUrl: String?,
+    val videoOnlyStreams: List<StreamVideoOnly>,
     val streamSubtitle: List<StreamSubtitle?>?
+)
+
+data class StreamVideoOnly(
+    val streamUrl: String,
+    val resolution: String,
+    val fps: Int,
+    val codec: String
 )
 
 data class StreamSubtitle(

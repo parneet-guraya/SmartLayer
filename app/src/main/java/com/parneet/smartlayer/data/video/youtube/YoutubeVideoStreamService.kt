@@ -1,6 +1,5 @@
 package com.parneet.smartlayer.data.video.youtube
 
-import com.parneet.smartlayer.model.StreamSubtitle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.NewPipe
@@ -35,15 +34,23 @@ class YoutubeVideoStreamService {
         }
     }
 
-    suspend fun getStreamTitle(youtubeVideoUrl: String):String?{
+    suspend fun getVideoOnlyStream(youtubeVideoUrl: String): List<VideoStream>? {
+        fetchStreamInfoIfNot(youtubeVideoUrl)
+        return withContext(Dispatchers.IO) {
+            return@withContext streamInfo?.videoOnlyStreams
+        }
+    }
+
+    suspend fun getStreamTitle(youtubeVideoUrl: String): String? {
         fetchStreamInfoIfNot(youtubeVideoUrl)
         return streamInfo?.name
     }
 
-    suspend fun getSubtitlesStream(youtubeVideoUrl: String):List<SubtitlesStream?>?{
+    suspend fun getSubtitlesStream(youtubeVideoUrl: String): List<SubtitlesStream?>? {
         fetchStreamInfoIfNot(youtubeVideoUrl)
         return streamInfo?.subtitles
     }
+
     private suspend fun fetchStreamInfoIfNot(youtubeVideoUrl: String) {
         if (!isStreamInfoFetched) {
             getStreamInfo(youtubeVideoUrl)
