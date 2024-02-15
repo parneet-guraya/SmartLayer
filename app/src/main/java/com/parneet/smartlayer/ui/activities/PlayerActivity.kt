@@ -31,6 +31,7 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.DefaultTimeBar
 import com.google.android.material.chip.Chip
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.databinding.ActivityPlayerBinding
@@ -87,12 +88,13 @@ class PlayerActivity : AppCompatActivity() {
                 uriType = VideoUriType.ONLINE_STREAM
                 val intentString = intent?.getStringExtra(Intent.EXTRA_TEXT)
                 uri = Uri.parse(intentString)
+                setupQualitySelector()
             }
         }
-
+        viewModel.mediaUriType = uriType
         if (uri != null) {
-            setMediaSource(uri,uriType)
-            setMediaTitle(uri,uriType)
+            viewModel.setMediaSource(uri)
+            setMediaTitle(uri, viewModel.mediaUriType)
         }
 
         initializeTranslatorSpinner()
@@ -164,22 +166,14 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
-        viewModel.videoTitleLiveData.observe(this){title ->
+        viewModel.videoTitleLiveData.observe(this) { title ->
             println("Video Title LiveData: $title")
             getVideoTitleView().text = title
         }
     }
 
-    private fun setMediaSource(videoUri: Uri, videoUriType: VideoUriType) {
-        if (videoUriType == VideoUriType.ONLINE_STREAM) {
-            viewModel.setMediaSource(videoUri, videoUriType)
-        } else {
-            viewModel.setMediaSource(videoUri,videoUriType)
-        }
-    }
-
-    private fun setMediaTitle(videoUri: Uri,videoUriType: VideoUriType){
-        when(videoUriType){
+    private fun setMediaTitle(videoUri: Uri, videoUriType: VideoUriType) {
+        when (videoUriType) {
             VideoUriType.ONLINE_STREAM -> {}// added when initializing player because the video stream is resolved at that time
             VideoUriType.LOCAL -> viewModel.setVideoTitle(intent?.getStringExtra(VideoFolderFragment.EXTRA_VIDEO_TITLE))
             VideoUriType.LOCAL_OUTSIDE -> viewModel.getVideoTitle(videoUri)
@@ -346,6 +340,32 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun getPlayerTopBar(): FrameLayout {
         return binding.playerView.findViewById(R.id.exo_top_bar)
+    }
+
+    private fun getQualityControlButton(): ImageButton {
+        return binding.playerView.findViewById(R.id.quality_controls)
+    }
+
+    private fun setupQualitySelector() {
+        val qualityControlButton = getQualityControlButton()
+
+        qualityControlButton.visibility = View.VISIBLE
+        // show a dialog to set quality streams
+        qualityControlButton.setOnClickListener {
+            val qualityArray = viewModel.getVideoQualityTracksText()?.toTypedArray()
+
+            // build a dialog with radio , TODO: later come up with custom ui
+            val builder = MaterialAlertDialogBuilder(this)
+                .setTitle("Choose Quality")
+                .setSingleChoiceItems(
+                    qualityArray, viewModel.chosenQualityListItemIndex
+                ) { dialog, qualityTrackIndex ->
+                    println("${qualityArray?.get(qualityTrackIndex)} is chosen")
+                    viewModel.onVideoQualityChanged(qualityTrackIndex)
+                    dialog.dismiss()
+                }
+            builder.create().show()
+        }
     }
 
     private fun showInfoDrawerIfAvailable(): Boolean {

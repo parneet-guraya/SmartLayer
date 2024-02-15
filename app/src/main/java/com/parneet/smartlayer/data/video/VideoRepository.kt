@@ -117,13 +117,13 @@ class VideoRepository {
         }
     }
 
-    suspend fun getYoutubeStreamVideo(youtubeVideoUrl: String): Resource<YoutubeStream> {
+    suspend fun getYoutubeStream(youtubeVideoUrl: String): Resource<YoutubeStream> {
         return try {
             val youtubeVideoStreamService = YoutubeVideoStreamService()
 //            val videoAudioStream = youtubeVideoStreamService.getVideoAudioStream(youtubeVideoUrl)
             val streamTitle = youtubeVideoStreamService.getStreamTitle(youtubeVideoUrl)
 
-            val vp9VideoOnlyStream = youtubeVideoStreamService.getVideoOnlyStream(youtubeVideoUrl)
+            val vp9VideoOnlyStream = youtubeVideoStreamService.getVideoOnlyStream(youtubeVideoUrl)?.filter { it.codec == "vp9" }
                 ?.map { StreamVideoOnly(it.content, it.getResolution(), it.fps, it.codec) }
 
             val subtitlesStreamList = youtubeVideoStreamService.getSubtitlesStream(youtubeVideoUrl)

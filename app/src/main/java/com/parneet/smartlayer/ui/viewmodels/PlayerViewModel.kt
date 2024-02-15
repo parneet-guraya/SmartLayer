@@ -14,7 +14,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.parneet.smartlayer.R
 import com.parneet.smartlayer.common.Resource
 import com.parneet.smartlayer.data.video.VideoRepository
+import com.parneet.smartlayer.model.StreamSubtitle
 import com.parneet.smartlayer.model.Subtitle
+import com.parneet.smartlayer.model.YoutubeStream
 import com.parneet.smartlayer.ui.service.tokenizer.OpenNLPTokenizer
 import com.parneet.smartlayer.ui.service.translation.MlKitTranslationService
 import com.parneet.smartlayer.ui.state.SubtitleHeaderState
@@ -36,7 +38,7 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     var currentText: String? = ""
 
     private val videoRepository = VideoRepository()
-    private lateinit var mediaSource: Pair<Uri?, VideoUriType>
+    private var mediaSource: Uri? = null
 
     private var _subtitlesUriListState = MutableStateFlow(listOf<Subtitle>())
     val subtitlesUriListState = _subtitlesUriListState.asStateFlow()
@@ -56,8 +58,12 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     private val _videoTitleLiveData = MutableLiveData<String?>()
     val videoTitleLiveData: LiveData<String?> = _videoTitleLiveData
 
-    fun setMediaSource(videoUri: Uri?, videoUriType: VideoUriType) {
-        mediaSource = Pair(videoUri, videoUriType)
+    private var youtubeStream: YoutubeStream? = null
+    var mediaUriType: VideoUriType = VideoUriType.LOCAL
+    var chosenQualityListItemIndex: Int = 0
+
+    fun setMediaSource(videoUri: Uri?) {
+        mediaSource = videoUri
     }
 
     private fun updateCurrentMediaItem(mediaItem: MediaItem?) {
@@ -118,10 +124,9 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
     }
 
     suspend fun initializeMediaPlayer() {
-        val uri: Uri? = mediaSource.first
-        val videoUriType: VideoUriType = mediaSource.second
+        val uri: Uri? = mediaSource
         if (currentPlayingMediaItem == null) {
-            getMediaItemFromSource(uri, videoUriType)
+            getMediaItemFromSource(uri, mediaUriType)
         }
 
         player = ExoPlayer.Builder(application.applicationContext)
@@ -312,44 +317,88 @@ class PlayerViewModel(private val application: Application) : AndroidViewModel(a
 
     private suspend fun getOnlineStream(videoUri: Uri) {
         println("VideoUri passed to stream: ${videoUri}")
-        val streamVideoResource = videoRepository.getYoutubeStreamVideo(videoUri.toString())
-        when (streamVideoResource) {
+        val youtubeStreamResource = videoRepository.getYoutubeStream(videoUri.toString())
+        when (youtubeStreamResource) {
             is Resource.Error -> {
                 UIUtils.showToast(
                     application.applicationContext,
-                    streamVideoResource.exception.message
+                    youtubeStreamResource.exception.message
                 )
                 println("Stream Error")
             }
 
             is Resource.Success -> {
-                val streamVideo = streamVideoResource.data
-                println("StreamVideo $streamVideo")
-                if (streamVideo != null) {
-                    setVideoTitle(streamVideo.title)
-                    println("Stream URl: ${streamVideo.streamUrl}")
-                    if (streamVideo.streamUrl != null) {
-                        val subtitleConfigList: List<SubtitleConfiguration>? =
-                            streamVideo.streamSubtitle?.map { streamSubtitle ->
-                                val streamUri = Uri.parse(streamSubtitle?.subtitleStreamUrl)
-                                SubtitleConfiguration.Builder(streamUri)
-                                    .setLabel(streamSubtitle?.displayName)
-                                    .setMimeType(MimeTypes.APPLICATION_TTML)
-                                    .build()
-                            }
-                        val mediaItem = MediaItem.fromUri(streamVideo.streamUrl)
-                        currentPlayingMediaItem = if (subtitleConfigList != null) {
-                            mediaItem
-                                .buildUpon()
-                                .setSubtitleConfigurations(subtitleConfigList)
-                                .build()
-                        } else {
-                            mediaItem
-                        }
+                youtubeStream = youtubeStreamResource.data
+                println("StreamVideo $youtubeStream")
+                youtubeStream?.let {
+                    setVideoTitle(it.title)
+
+                    // playing the first stream in the list initially
+                    val mediaItem = MediaItem.fromUri(it.videoOnlyStreams[0].streamUrl)
+
+                    val youtubeStreamSubtitleConfiguration =
+                        getSubtitleConfigListForYoutubeStream(it.streamSubtitle)
+
+                    currentPlayingMediaItem = if (youtubeStreamSubtitleConfiguration != null) {
+                        mediaItem
+                            .buildUpon()
+                            .setSubtitleConfigurations(youtubeStreamSubtitleConfiguration)
+                            .build()
                     } else {
-                        // stream is null
+                        mediaItem
                     }
                 }
+
+            }
+        }
+    }
+
+    fun getVideoQualityTracksText(): List<String>? {
+        return youtubeStream?.let { stream -> stream.videoOnlyStreams.map { it.resolution } }
+    }
+
+    private fun getSubtitleConfigListForYoutubeStream(subtitleStreamList: List<StreamSubtitle?>?): List<SubtitleConfiguration>? {
+        return subtitleStreamList?.map { streamSubtitle ->
+            val streamUri = Uri.parse(streamSubtitle?.subtitleStreamUrl)
+            SubtitleConfiguration.Builder(streamUri)
+                .setLabel(streamSubtitle?.displayName)
+                .setMimeType(MimeTypes.APPLICATION_TTML)
+                .build()
+        }
+    }
+
+    fun onVideoQualityChanged(videoQualityTrackIndex: Int) {
+//        val mediaSource =
+//        MergingMediaSource(true)
+        if (videoQualityTrackIndex != chosenQualityListItemIndex) {
+            chosenQualityListItemIndex = videoQualityTrackIndex
+            player?.let {
+                playBackPosition = it.currentPosition
+                playWhenReady = true
+                it.pause()
+            }
+            val qualityString = getVideoQualityTracksText()?.get(videoQualityTrackIndex)
+            val chosenStream =
+                youtubeStream?.videoOnlyStreams?.first { it.resolution == qualityString }?.streamUrl
+            val updatedMediaItem = MediaItem.fromUri(chosenStream!!)
+            // TODO: not sure if it's right to also set the subtitle configs again when video quality is changed
+//            val subtitleConfiguration =
+//                getSubtitleConfigListForYoutubeStream(youtubeStream?.streamSubtitle)
+//            if (!subtitleConfiguration.isNullOrEmpty()) {
+//                updatedMediaItem.buildUpon().setSubtitleConfigurations(subtitleConfiguration)
+//                    .build()
+//            }
+            updateVideoMedia(updatedMediaItem)
+        }
+    }
+
+    private fun updateVideoMedia(updatedMediaItem: MediaItem) {
+        player?.let { exoPlayer ->
+            currentPlayingMediaItem?.run {
+                exoPlayer.setMediaItem(updatedMediaItem)
+                exoPlayer.seekTo(playBackPosition)
+                exoPlayer.playWhenReady = playWhenReady
+                exoPlayer.prepare()
             }
         }
     }

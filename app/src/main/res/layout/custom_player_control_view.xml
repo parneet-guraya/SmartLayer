@@ -64,6 +64,7 @@
 
             <ImageButton
                 android:id="@+id/quality_controls"
+                android:visibility="gone"
                 style="@style/ExoStyledControls.Button.Bottom"
                 android:src="@drawable/baseline_tune_24" />
 
